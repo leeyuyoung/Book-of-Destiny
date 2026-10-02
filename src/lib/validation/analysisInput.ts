@@ -27,6 +27,8 @@ const OCCUPATION_STATUS_VALUES = OCCUPATION_STATUSES.map((status) => status.valu
 ];
 
 export const OCCUPATION_DETAIL_REQUIRED: ReadonlySet<OccupationStatus> = new Set([
+  "student",
+  "job_seeking",
   "employee",
   "business_owner",
   "freelancer",
@@ -158,7 +160,13 @@ export const lifeStepSchema = z
     }
     const needsDetail = OCCUPATION_DETAIL_REQUIRED.has(values.occupationStatus as OccupationStatus);
     if (needsDetail && values.occupation.length === 0) {
-      ctx.addIssue({ code: "custom", path: ["occupation"], message: "어떤 일을 하고 계신지 적어주세요." });
+      const message =
+        values.occupationStatus === "student"
+          ? "어떤 학과(전공)인지 적어주세요."
+          : values.occupationStatus === "job_seeking"
+            ? "어떤 분야로 취업하고 싶은지 적어주세요."
+            : "어떤 일을 하고 계신지 적어주세요.";
+      ctx.addIssue({ code: "custom", path: ["occupation"], message });
     }
     if (values.occupation.length > OCCUPATION_MAX_LENGTH) {
       ctx.addIssue({
