@@ -214,10 +214,7 @@ function FinalReveal({ instant }: { instant: boolean }) {
       </motion.p>
 
       <motion.div {...reveal(2.2)} className="mt-9 flex w-full flex-col gap-3">
-        <ButtonLink href="/start">내 팔자 펼쳐보기</ButtonLink>
-        <ButtonLink href="/about" variant="ghost">
-          팔자서재는 어떤 곳인가요
-        </ButtonLink>
+        <ButtonLink href="/start">팔자 펼쳐보기</ButtonLink>
       </motion.div>
     </motion.div>
   );

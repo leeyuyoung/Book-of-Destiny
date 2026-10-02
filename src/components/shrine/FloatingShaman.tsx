@@ -2,6 +2,9 @@
 
 import { useEffect, useRef } from "react";
 
+/** 7초 영상을 약 10초로 늘려 동작이 더 느리고 묵직하게 보이도록 한다 */
+const PLAYBACK_RATE = 0.7;
+
 /** 얼굴(영상 위쪽 35% 지점)을 중심으로 확대하는 배율 */
 const FACE_ZOOM = 1.4;
 
@@ -21,6 +24,8 @@ export function FloatingShaman({ playDelay = 0, className }: FloatingShamanProps
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
+    video.defaultPlaybackRate = PLAYBACK_RATE;
+    video.playbackRate = PLAYBACK_RATE;
     const timer = window.setTimeout(() => {
       video.play().catch(() => {});
     }, playDelay * 1000);
