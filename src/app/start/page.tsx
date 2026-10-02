@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { InputWizard } from "@/components/input/InputWizard";
+import { InputWizardLoader } from "@/components/input/InputWizardLoader";
 import { PageShell } from "@/components/layout/PageShell";
 
 export const metadata: Metadata = {
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function StartPage() {
   return (
     <PageShell showFooter={false}>
-      <InputWizard />
+      <InputWizardLoader />
     </PageShell>
   );
 }
