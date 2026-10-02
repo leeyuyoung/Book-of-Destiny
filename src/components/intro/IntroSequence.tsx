@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
-import { FloatingShaman, type ShamanPose } from "@/components/shrine/FloatingShaman";
+import { FloatingShaman } from "@/components/shrine/FloatingShaman";
 import { ShamanBells } from "@/components/shrine/ShamanBells";
 import { ShrineBackground } from "@/components/shrine/ShrineBackground";
 import { Talisman } from "@/components/shrine/Talisman";
@@ -15,9 +15,6 @@ const LINE_HOLD_MS = 4200;
 const RITUAL_STAGE = -1;
 const FINAL_STAGE = INTRO_LINES.length;
 const EASE = [0.22, 0.61, 0.36, 1] as const;
-/** 첫 장면(고민 떠올리기)부터 INTRO_LINES 순서대로의 무당 표정·동작 */
-const SHAMAN_POSES: readonly ShamanPose[] = ["closed", "open", "shake", "point", "sweep"];
-
 const smokeExit = {
   opacity: 0,
   y: -24,
@@ -99,7 +96,7 @@ export function IntroSequence() {
               animate={{ opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 2.4, delay: 0.8, ease: EASE } }}
               exit={{ opacity: 0, y: -40, filter: "blur(12px)", transition: { duration: 1.1, ease: EASE } }}
             >
-              <FloatingShaman pose={SHAMAN_POSES[currentStage + 1] ?? "closed"} className="h-full" />
+              <FloatingShaman playDelay={1.6} className="h-full" />
             </motion.div>
           )}
         </AnimatePresence>
