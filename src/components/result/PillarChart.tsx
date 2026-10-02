@@ -15,6 +15,7 @@ type PillarChartProps = {
 export function PillarChart({ pillars }: PillarChartProps) {
   return (
     <div className="grid grid-cols-4 gap-2">
+      {!pillars.some((pillar) => pillar.label === "시주") && <UnknownHourPillar />}
       {pillars.map((pillar) => {
         const isDay = pillar.label === "일주";
         return (
@@ -45,6 +46,26 @@ export function PillarChart({ pillars }: PillarChartProps) {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+function UnknownHourPillar() {
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <span className="text-[11px] tracking-widest text-mist-dim">시주</span>
+      {[0, 1].map((index) => (
+        <div
+          key={index}
+          className="flex aspect-square w-full items-center justify-center rounded-xl border border-dashed border-line/70 bg-night/30"
+        >
+          <span className="font-serif text-xl text-mist-dim/60">?</span>
+        </div>
+      ))}
+      <span className="text-[10px] leading-tight text-mist-dim">출생시간
+        <br />
+        모름
+      </span>
     </div>
   );
 }

@@ -50,7 +50,7 @@ export function LockedReportPreview() {
           <span className="text-gold-soft">{formatPrice(DETAILED_REPORT_PRICE)}</span>
         </p>
         <Button onClick={() => setNotice(true)}>나의 책 전체 펼치기</Button>
-        <p className="text-[11px] text-mist-dim">결제 후 리포트가 작성되며, 입력하신 이메일로도 보내드립니다.</p>
+        <p className="text-[11px] text-mist-dim">결제하면 이미 완성된 전체 리포트가 바로 열리며, 입력하신 이메일로도 보내드립니다.</p>
         {notice && (
           <p role="status" className="text-xs text-gold/80">
             결제 연동은 PHASE 10에서 토스페이먼츠로 연결됩니다.

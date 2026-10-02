@@ -5,20 +5,33 @@ import { ChapterCard } from "@/components/result/ChapterCard";
 import { FiveElementBalance } from "@/components/result/FiveElementBalance";
 import { LockedReportPreview } from "@/components/result/LockedReportPreview";
 import { PillarChart } from "@/components/result/PillarChart";
+import { ButtonLink } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { Ornament } from "@/components/ui/SectionHeading";
-import { SAMPLE_BASIC_RESULT } from "@/lib/mock/sampleResult";
+import { TOKEN_PATTERN } from "@/lib/server/analysis";
+import { SAMPLE_FREE_RESULT, toFreeResultView } from "@/lib/server/resultView";
+import { getAnalysisStore } from "@/lib/server/store";
+import type { FreeResultView } from "@/types/result";
 
 export const metadata: Metadata = {
   title: "나의 첫 장",
   robots: { index: false, follow: false },
 };
 
+async function loadResult(token: string): Promise<FreeResultView | "generating" | "failed" | null> {
+  if (token === "sample") return SAMPLE_FREE_RESULT;
+  if (!TOKEN_PATTERN.test(token)) return null;
+  const record = await getAnalysisStore().get(token);
+  if (!record) return null;
+  if (record.status === "generating" || record.status === "failed") return record.status;
+  return toFreeResultView(record);
+}
+
 export default async function ResultPage({ params }: PageProps<"/result/[token]">) {
   const { token } = await params;
-  if (token !== "sample") notFound();
-
-  const result = SAMPLE_BASIC_RESULT;
+  const result = await loadResult(token);
+  if (!result) notFound();
+  if (result === "generating" || result === "failed") return <PendingNotice status={result} />;
 
   return (
     <PageShell>
@@ -30,7 +43,7 @@ export default async function ResultPage({ params }: PageProps<"/result/[token]"
           <p className="font-serif text-sm text-mist">{result.name} 님의 사주 한 줄</p>
         </Reveal>
         <Reveal delay={0.3}>
-          <h1 className="font-serif text-[26px] font-light leading-[1.7]">
+          <h1 className="font-serif text-[26px] font-light leading-[1.7] break-keep">
             <span className="text-gold-gradient">“{result.summary}”</span>
           </h1>
         </Reveal>
@@ -62,34 +75,6 @@ export default async function ResultPage({ params }: PageProps<"/result/[token]"
           </div>
         </ChapterCard>
 
-        <ChapterCard eyebrow="Chapter 1" title="나라는 사람">
-          <p>{result.personality.overview}</p>
-          <dl className="flex flex-col gap-5">
-            {result.personality.traits.map((trait) => (
-              <div key={trait.label}>
-                <dt className="font-serif text-sm text-gold-soft">{trait.label}</dt>
-                <dd className="mt-1.5 text-[14px] leading-[1.85] text-paper/80">{trait.body}</dd>
-              </div>
-            ))}
-          </dl>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <TagList title="나의 장점" items={result.personality.strengths} tone="gold" />
-            <TagList title="주의할 점" items={result.personality.cautions} tone="mist" />
-          </div>
-        </ChapterCard>
-
-        <ChapterCard eyebrow="Chapter 2" title="재물운 요약">
-          <p>{result.money.overview}</p>
-        </ChapterCard>
-
-        <ChapterCard eyebrow="Chapter 3" title="애정운 요약">
-          <p>{result.love.overview}</p>
-        </ChapterCard>
-
-        <ChapterCard eyebrow="Chapter 4" title="직업운 요약">
-          <p>{result.career.overview}</p>
-        </ChapterCard>
-
         <div className="mt-6">
           <LockedReportPreview />
         </div>
@@ -98,18 +83,31 @@ export default async function ResultPage({ params }: PageProps<"/result/[token]"
   );
 }
 
-function TagList({ title, items, tone }: { title: string; items: string[]; tone: "gold" | "mist" }) {
+function PendingNotice({ status }: { status: "generating" | "failed" }) {
   return (
-    <div className="rounded-2xl border border-line p-4">
-      <p className={`text-xs tracking-widest ${tone === "gold" ? "text-gold/80" : "text-mist"}`}>{title}</p>
-      <ul className="mt-3 flex flex-col gap-2">
-        {items.map((item) => (
-          <li key={item} className="flex gap-2 text-sm text-paper/80">
-            <span className={tone === "gold" ? "text-gold/70" : "text-mist-dim"}>·</span>
-            {item}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <PageShell>
+      <section className="flex flex-1 flex-col items-center justify-center gap-6 py-24 text-center">
+        <p className="font-serif text-lg font-light leading-relaxed">
+          {status === "generating" ? (
+            <>
+              아직 당신의 첫 장을
+              <br />
+              <span className="text-gold-gradient">쓰고 있습니다.</span>
+            </>
+          ) : (
+            <>
+              리포트를 완성하지 못했습니다.
+              <br />
+              <span className="text-mist">잠시 후 다시 시도해주세요.</span>
+            </>
+          )}
+        </p>
+        {status === "generating" ? (
+          <p className="text-sm text-mist">잠시 후 이 페이지를 새로고침해주세요.</p>
+        ) : (
+          <ButtonLink href="/start">다시 입력하기</ButtonLink>
+        )}
+      </section>
+    </PageShell>
   );
 }

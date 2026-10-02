@@ -157,7 +157,7 @@ export default function AboutPage() {
                 <span className="font-serif text-gold-soft">무료</span>
               </div>
               <p className="mt-3 text-sm leading-relaxed text-mist">
-                사주 한 줄 요약, 기본 성격, 재물·애정·직업운 요약, 당신을 설명하는 핵심 키워드
+                사주 한 줄 요약, 여덟 글자와 오행의 균형, 당신을 설명하는 핵심 키워드
               </p>
             </div>
           </Reveal>

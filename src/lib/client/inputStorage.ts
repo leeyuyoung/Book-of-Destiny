@@ -7,6 +7,7 @@ import {
 // sessionStorage는 탭을 닫으면 지워지므로, 개인정보가 기기에 오래 남지 않는다.
 const DRAFT_KEY = "palja:input-draft:v1";
 const PENDING_KEY = "palja:pending-analysis:v1";
+const TOKEN_KEY = "palja:analysis-token:v1";
 
 type Draft = { values: AnalysisFormValues; stepIndex: number };
 
@@ -66,5 +67,20 @@ export function loadPendingAnalysis(): unknown {
 export function clearPendingAnalysis() {
   try {
     window.sessionStorage.removeItem(PENDING_KEY);
+  } catch {}
+}
+
+export function saveAnalysisToken(token: string) {
+  writeJson(TOKEN_KEY, token);
+}
+
+export function loadAnalysisToken(): string | null {
+  const token = readJson(TOKEN_KEY);
+  return typeof token === "string" ? token : null;
+}
+
+export function clearAnalysisToken() {
+  try {
+    window.sessionStorage.removeItem(TOKEN_KEY);
   } catch {}
 }
