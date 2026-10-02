@@ -14,7 +14,7 @@ import {
 } from "manseryeok";
 import { calculateSaju as calculateWithSsaju } from "ssaju";
 import { SajuCalculationError } from "./errors";
-import { toKoreaStandardTime, type KoreaStandardTime } from "./koreaClock";
+import { todayInKorea, toKoreaStandardTime, type KoreaStandardTime, type SolarDate } from "./koreaClock";
 import type { CalculateSajuInput, SajuCalculation, SajuPillar } from "./types";
 
 // package.json에서 정확한 버전으로 고정되어 있다. 버전을 올리면 여기와 검증 스크립트를 함께 갱신한다.
@@ -29,20 +29,6 @@ const isLegacyClockYear = (year: number) => (year >= 1948 && year <= 1951) || (y
 const IPCHUN_INDEX = 2;
 
 type PillarKey = "year" | "month" | "day" | "hour";
-type SolarDate = { year: number; month: number; day: number };
-
-function todayInKorea(): SolarDate {
-  const [year, month, day] = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Seoul",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  })
-    .format(new Date())
-    .split("-")
-    .map(Number);
-  return { year, month, day };
-}
 
 const compareDates = (a: SolarDate, b: SolarDate) => a.year - b.year || a.month - b.month || a.day - b.day;
 

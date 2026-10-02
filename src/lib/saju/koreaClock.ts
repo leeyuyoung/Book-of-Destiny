@@ -50,6 +50,21 @@ function civilOffsetMin(year: number, month: number, day: number, hour: number):
   return offset + (inDst ? 60 : 0);
 }
 
+export type SolarDate = { year: number; month: number; day: number };
+
+export function todayInKorea(): SolarDate {
+  const [year, month, day] = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  })
+    .format(new Date())
+    .split("-")
+    .map(Number);
+  return { year, month, day };
+}
+
 export type KoreaStandardTime = {
   year: number;
   month: number;

@@ -1,7 +1,31 @@
 import { calculateFourPillars, getSolarTerm } from "manseryeok";
-import { calculateSaju, SajuCalculationError, type CalculateSajuInput, type SajuCalculation } from "../src/lib/saju";
+import { calculateSaju as calculateWithSsaju } from "ssaju";
+import {
+  buildSajuProfile,
+  calculateSaju,
+  SajuCalculationError,
+  type CalculateSajuInput,
+  type PillarPosition,
+  type SajuCalculation,
+} from "../src/lib/saju";
 
 type Birth = CalculateSajuInput["birth"];
+
+type SsajuResult = {
+  pillarDetails: Record<
+    PillarPosition,
+    { stemKo: string; branchKo: string; hiddenStems: Record<"여기" | "중기" | "정기", string | null> }
+  >;
+  tenGods: Record<PillarPosition, { stem: string; branch: string }>;
+  stages12: { bong: Record<PillarPosition, string> };
+  fiveElements: Record<string, number>;
+  gongmang: { branchesKo: string[] };
+  stemRelations: { type: string; pillars: PillarPosition[] }[];
+  branchRelations: Record<string, Record<string, string>>;
+  daeun: { startAge: number; list: { ganzhi: string }[] };
+};
+const ELEMENT_ORDER_KR = ["목", "화", "토", "금", "수"];
+const CARDINAL_BRANCHES = ["子", "午", "卯", "酉"];
 
 const solar = (year: number, month: number, day: number, hour: number | null, minute: number | null): Birth => ({
   calendarType: "solar",
@@ -256,6 +280,126 @@ for (let year = 1920; year <= 2025; year++) {
   }
 }
 report(edgeFailures === 0, `경계 검증 ${edgeChecked}건`, `불일치 ${edgeFailures}건`);
+
+console.log("\n■ 구조화 프로필 정답 비교 (1992-10-24 05:30 여, 기준일 2026-10-03)");
+{
+  const profile = buildSajuProfile(calculateSaju({ birth: solar(1992, 10, 24, 5, 30), gender: "female" }), {
+    referenceDate: { year: 2026, month: 10, day: 3 },
+  });
+  const byPosition = Object.fromEntries(profile.pillars.map((pillar) => [pillar.position, pillar]));
+  const hidden = (position: string) => byPosition[position].branch.hiddenStems.map((stem) => stem.korean).join("");
+  const relationKeys = profile.relations.map((relation) => `${relation.type}:${relation.hanja}`).sort();
+  const expectations: [string, unknown, unknown][] = [
+    ["지장간", ["year", "month", "day", "hour"].map(hidden).join(" "), "무임경 신정무 경신 갑을"],
+    ["12운성", ["hour", "day", "month", "year"].map((p) => byPosition[p].branch.twelveStage).join(" "), "장생 병 쇠 사"],
+    ["십신", ["year", "month", "hour"].map((p) => `${byPosition[p].stem.tenGod}/${byPosition[p].branch.tenGod}`).join(" "), "겁재/정인 정인/정관 식신/식신"],
+    ["오행", JSON.stringify(profile.fiveElements.counts), JSON.stringify({ wood: 2, fire: 0, earth: 1, metal: 3, water: 2 })],
+    ["부족 오행", profile.fiveElements.missing.join(","), "fire"],
+    ["합충", relationKeys.join(" "), ["천간합:庚乙", "육합:戌卯", "충:酉卯", "해:戌酉", "원진:申卯", "방합:申戌酉"].sort().join(" ")],
+    ["공망", `${profile.voidBranches.join("")} 월지공망=${byPosition.month.branch.isVoid}`, "술해 월지공망=true"],
+    ["대운", `${profile.luck.direction} ${profile.luck.startAge} ${profile.luck.periods.slice(0, 3).map((p) => p.korean).join(" ")}`, "backward 5 기유 무신 정미"],
+    ["현재 대운", profile.luck.currentIndex, 2],
+    ["만 나이", profile.age, 33],
+    ["2026년 세운", `${profile.yearlyFortunes[0].korean} 대운${profile.yearlyFortunes[0].luckIndex}`, "병오 대운2"],
+  ];
+  for (const [label, actual, expected] of expectations) {
+    report(actual === expected, `프로필 ${label}`, actual === expected ? String(actual) : `기대 ${expected} / 실제 ${actual}`);
+  }
+
+  const noTime = buildSajuProfile(calculateSaju({ birth: solar(1992, 10, 24, null, null), gender: "female" }));
+  const noTimeSummary = `${noTime.pillars.length}기둥 ${noTime.fiveElements.total}글자 ${JSON.stringify(noTime.fiveElements.counts)}`;
+  const noTimeExpected = `3기둥 6글자 ${JSON.stringify({ wood: 0, fire: 0, earth: 1, metal: 3, water: 2 })}`;
+  report(noTimeSummary === noTimeExpected, "프로필 출생시간 모름", noTimeSummary);
+}
+
+console.log("\n■ 구조화 프로필 ssaju 교차검증 (보정 없는 연도 무작위 2,000건)");
+{
+  const PROFILE_SAMPLE_COUNT = 2000;
+  const COMPARED_RELATIONS = ["육합", "삼합", "반합", "방합", "충", "형", "파", "해", "원진"] as const;
+  const mismatchCounts: Record<string, number> = {};
+  let compared = 0;
+  let skipped = 0;
+  const fail = (key: string, message: string) => {
+    mismatchCounts[key] = (mismatchCounts[key] ?? 0) + 1;
+    if (mismatchCounts[key] <= 3) console.log(`  [${key}] ${message}`);
+  };
+
+  for (let index = 0; index < PROFILE_SAMPLE_COUNT; index++) {
+    const birth = index % 2 === 0 ? randomBirth(1962, 1986) : randomBirth(1989, 2025);
+    const gender = random() < 0.5 ? "male" : "female";
+    const profile = buildSajuProfile(calculateSaju({ birth, gender }), { referenceDate: { year: 2026, month: 10, day: 3 } });
+    const other = calculateWithSsaju({
+      year: birth.year,
+      month: birth.month,
+      day: birth.day,
+      hour: birth.hour!,
+      minute: birth.minute!,
+      gender: gender === "male" ? "남" : "여",
+    } as Parameters<typeof calculateWithSsaju>[0]) as unknown as SsajuResult;
+
+    const ourPillars = profile.pillars.map((p) => `${p.stem.korean}${p.branch.korean}`).join(" ");
+    const theirPillars = (["year", "month", "day", "hour"] as const)
+      .map((p) => `${other.pillarDetails[p].stemKo}${other.pillarDetails[p].branchKo}`)
+      .join(" ");
+    if (ourPillars !== theirPillars) {
+      skipped++;
+      continue;
+    }
+    compared++;
+    const label = `${describe(birth)} ${ourPillars}`;
+
+    for (const pillar of profile.pillars) {
+      const theirs = other.pillarDetails[pillar.position];
+      const theirGods = other.tenGods[pillar.position];
+      if (pillar.position !== "day" && pillar.stem.tenGod !== theirGods.stem) fail("천간 십신", `${label} ${pillar.position}`);
+      if (pillar.branch.tenGod !== theirGods.branch) fail("지지 십신", `${label} ${pillar.position}`);
+      if (pillar.branch.twelveStage !== other.stages12.bong[pillar.position]) fail("12운성", `${label} ${pillar.position}`);
+      for (const role of ["여기", "중기", "정기"] as const) {
+        const ours = pillar.branch.hiddenStems.find((stem) => stem.role === role)?.hanja ?? null;
+        const their = theirs.hiddenStems[role];
+        if (role === "여기" && their === null) continue;
+        if (ours !== their) fail("지장간", `${label} ${pillar.position} ${role} 우리 ${ours} / ssaju ${their}`);
+      }
+    }
+
+    const theirCounts = ELEMENT_ORDER_KR.map((key) => other.fiveElements[key]).join(",");
+    const ourCounts = (["wood", "fire", "earth", "metal", "water"] as const).map((key) => profile.fiveElements.counts[key]).join(",");
+    if (ourCounts !== theirCounts) fail("오행", `${label} 우리 ${ourCounts} / ssaju ${theirCounts}`);
+
+    if (profile.voidBranches.join("") !== other.gongmang.branchesKo.join("")) fail("공망", label);
+
+    // ssaju와 정의가 다른 부분: 우리는 자형(같은 글자 형)을 포함하고, 반합은 왕지(子午卯酉)가 있어야 인정한다.
+    for (const type of COMPARED_RELATIONS) {
+      const ourRelations = profile.relations.filter(
+        (r) => r.type === type && !(type === "형" && new Set(r.hanja).size === 1),
+      );
+      const ours = [...new Set(ourRelations.flatMap((r) => r.positions))].sort().join(",");
+      const theirEntries = Object.entries(other.branchRelations[type] ?? {}).filter(
+        ([, description]) =>
+          type !== "반합" || description.split(", ").some((item) => [...item.slice(0, 2)].some((c) => CARDINAL_BRANCHES.includes(c))),
+      );
+      const theirs = theirEntries.map(([position]) => position).sort().join(",");
+      if (ours !== theirs) fail(type, `${label} 우리 [${ours}] / ssaju [${theirs}]`);
+    }
+    const ourStemCombos = profile.relations.filter((r) => r.type === "천간합").map((r) => [...r.positions].sort().join("-")).sort().join(" ");
+    const theirStemCombos = other.stemRelations.filter((r) => r.type === "합").map((r) => [...r.pillars].sort().join("-")).sort().join(" ");
+    if (ourStemCombos !== theirStemCombos) fail("천간합", `${label} 우리 [${ourStemCombos}] / ssaju [${theirStemCombos}]`);
+
+    const ourLuck = profile.luck.periods.slice(0, 8).map((p) => p.hanja).join(" ");
+    const theirLuck = other.daeun.list.slice(0, 8).map((p) => p.ganzhi).join(" ");
+    if (ourLuck !== theirLuck) fail("대운 간지", `${label} 우리 ${ourLuck} / ssaju ${theirLuck}`);
+    if (Math.abs(profile.luck.startAge - other.daeun.startAge) > 1) {
+      fail("대운수", `${label} 우리 ${profile.luck.startAge} / ssaju ${other.daeun.startAge}`);
+    }
+  }
+
+  const totalMismatches = Object.values(mismatchCounts).reduce((sum, count) => sum + count, 0);
+  report(
+    totalMismatches === 0,
+    `프로필 교차검증 ${compared}건 (8글자 다른 표본 ${skipped}건 제외)`,
+    totalMismatches === 0 ? "" : JSON.stringify(mismatchCounts),
+  );
+}
 
 if (failures > 0) {
   console.error(`\n${failures}개 항목 실패`);
