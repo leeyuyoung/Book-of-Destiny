@@ -3,46 +3,20 @@ type LogoMarkProps = {
   className?: string;
 };
 
+/** 붉은 낙관(도장) 모양의 로고 */
 export function LogoMark({ size = 56, className }: LogoMarkProps) {
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 64 64"
-      role="img"
-      aria-label="팔자서재 로고"
-      className={className}
-    >
-      <defs>
-        <linearGradient id="logo-gold" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#f3e6c4" />
-          <stop offset="60%" stopColor="#c8a96a" />
-          <stop offset="100%" stopColor="#8f7442" />
-        </linearGradient>
-      </defs>
-      <circle cx="32" cy="32" r="30" fill="none" stroke="url(#logo-gold)" strokeWidth="0.8" />
-      <circle cx="32" cy="32" r="24" fill="none" stroke="url(#logo-gold)" strokeWidth="0.5" opacity="0.6" />
-      {Array.from({ length: 8 }, (_, index) => {
-        const angle = (index / 8) * Math.PI * 2 - Math.PI / 2;
-        return (
-          <line
-            key={index}
-            x1={32 + Math.cos(angle) * 24}
-            y1={32 + Math.sin(angle) * 24}
-            x2={32 + Math.cos(angle) * 30}
-            y2={32 + Math.sin(angle) * 30}
-            stroke="url(#logo-gold)"
-            strokeWidth="0.8"
-          />
-        );
-      })}
+    <svg width={size} height={size} viewBox="0 0 64 64" role="img" aria-label="팔자서재 로고" className={className}>
+      <rect x="4" y="4" width="56" height="56" rx="6" fill="#a61c1a" />
+      <rect x="9" y="9" width="46" height="46" rx="3" fill="none" stroke="#f3d38c" strokeWidth="1.2" opacity="0.85" />
       <text
         x="32"
-        y="33"
+        y="33.5"
         textAnchor="middle"
         dominantBaseline="central"
-        fill="url(#logo-gold)"
-        fontSize="20"
+        fill="#f3e8d2"
+        fontSize="30"
+        fontWeight="700"
         fontFamily="var(--font-noto-serif-kr), serif"
       >
         書

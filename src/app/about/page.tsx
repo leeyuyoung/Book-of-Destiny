@@ -53,7 +53,7 @@ const PRINCIPLES = [
 
 export default function AboutPage() {
   return (
-    <PageShell showRing>
+    <PageShell intensity="full">
       <section className="flex min-h-[78dvh] flex-col items-center justify-center gap-8 py-16 text-center">
         <Reveal>
           <span className="font-display text-xs uppercase tracking-[0.45em] text-gold/80">

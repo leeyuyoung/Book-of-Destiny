@@ -1,17 +1,26 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #05050a;
-  --color-night: #0a0c17;
-  --color-indigo: #151a33;
-  --color-indigo-soft: #232a4d;
-  --color-gold: #c8a96a;
-  --color-gold-soft: #e6d3a3;
-  --color-gold-deep: #8f7442;
-  --color-paper: #ece6d8;
-  --color-mist: #9d9aae;
-  --color-mist-dim: #6b6880;
-  --color-line: rgb(200 169 106 / 0.18);
+  --color-ink: #080404;
+  --color-night: #120807;
+  --color-indigo: #1f0d0b;
+  --color-indigo-soft: #33150f;
+  --color-gold: #d9a441;
+  --color-gold-soft: #f3d38c;
+  --color-gold-deep: #8a5a1c;
+  --color-paper: #f3e8d2;
+  --color-mist: #bba595;
+  --color-mist-dim: #806b5f;
+  --color-line: rgb(217 164 65 / 0.2);
+
+  --color-crimson: #a61c1a;
+  --color-crimson-deep: #5c0d0b;
+  --color-cinnabar: #c42b1f;
+  --color-obang-blue: #1d4a9c;
+  --color-obang-red: #b01f1c;
+  --color-obang-yellow: #e0aa2e;
+  --color-obang-white: #ece4d4;
+  --color-obang-black: #1b1a1f;
 
   --color-wood: #6fae88;
   --color-fire: #d0675a;
@@ -22,21 +31,43 @@
   --font-serif: var(--font-noto-serif-kr), serif;
   --font-sans: var(--font-noto-sans-kr), system-ui, sans-serif;
   --font-display: var(--font-cormorant), var(--font-noto-serif-kr), serif;
+  --font-brush: var(--font-brush-kr), var(--font-noto-serif-kr), serif;
+  --font-eerie: var(--font-eerie-kr), var(--font-noto-serif-kr), serif;
 
-  --animate-drift-slow: drift 60s ease-in-out infinite alternate;
-  --animate-drift-slower: drift 90s ease-in-out infinite alternate-reverse;
   --animate-spin-celestial: spin 240s linear infinite;
-  --animate-spin-celestial-reverse: spin 360s linear infinite reverse;
   --animate-breathe: breathe 6s ease-in-out infinite;
+  --animate-flicker: flicker 2.4s ease-in-out infinite;
+  --animate-flicker-fast: flicker 1.3s ease-in-out infinite;
+  --animate-sway: sway 9s ease-in-out infinite alternate;
+  --animate-sway-slow: sway 13s ease-in-out infinite alternate-reverse;
+  --animate-glow-pulse: glow-pulse 4s ease-in-out infinite;
+  --animate-hover-float: hover-float 7s ease-in-out infinite;
 
-  @keyframes drift {
-    0% { transform: translate3d(-6%, -3%, 0) scale(1); }
-    100% { transform: translate3d(6%, 4%, 0) scale(1.15); }
+  @keyframes hover-float {
+    0%, 100% { transform: translateY(0) rotate(-1deg); }
+    50% { transform: translateY(-16px) rotate(1deg); }
   }
 
   @keyframes breathe {
     0%, 100% { opacity: 0.55; }
     50% { opacity: 1; }
+  }
+
+  @keyframes flicker {
+    0%, 100% { transform: scale(1, 1) skewX(0deg); opacity: 1; }
+    20% { transform: scale(0.94, 1.08) skewX(-2deg); opacity: 0.92; }
+    45% { transform: scale(1.04, 0.95) skewX(1.5deg); opacity: 1; }
+    70% { transform: scale(0.97, 1.05) skewX(-1deg); opacity: 0.88; }
+  }
+
+  @keyframes sway {
+    0% { transform: rotate(-1.6deg) skewX(1deg); }
+    100% { transform: rotate(1.8deg) skewX(-1.5deg); }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.06); }
   }
 }
 
@@ -55,24 +86,29 @@ body {
 }
 
 ::selection {
-  background: rgb(200 169 106 / 0.35);
+  background: rgb(166 28 26 / 0.5);
   color: var(--color-paper);
 }
 
 .text-gold-gradient {
-  background: linear-gradient(180deg, #f3e6c4 0%, #c8a96a 55%, #8f7442 100%);
+  background: linear-gradient(180deg, #fbe7b0 0%, #d9a441 55%, #8a5a1c 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
+.text-blood-glow {
+  color: #e2453a;
+  text-shadow: 0 0 18px rgb(196 43 31 / 0.65), 0 0 42px rgb(166 28 26 / 0.45);
+}
+
 .hairline {
-  background: linear-gradient(90deg, transparent, rgb(200 169 106 / 0.6), transparent);
+  background: linear-gradient(90deg, transparent, rgb(217 164 65 / 0.6), transparent);
   height: 1px;
 }
 
 .glass-card {
-  background: linear-gradient(180deg, rgb(21 26 51 / 0.55), rgb(10 12 23 / 0.7));
+  background: linear-gradient(180deg, rgb(52 20 14 / 0.55), rgb(18 8 7 / 0.78));
   border: 1px solid var(--color-line);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -83,8 +119,17 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.06;
+  opacity: 0.07;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* 부적에 쓰는 누런 괴황지 */
+.talisman-paper {
+  background-color: #e3b84a;
+  background-image:
+    radial-gradient(ellipse 120% 100% at 50% 50%, transparent 55%, rgb(140 80 10 / 0.35) 100%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='0.015 0.8' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 0.45  0 0 0 0 0.28  0 0 0 0 0.05  0 0 0 0.22 0'/></filter><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' seed='9' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.4  0 0 0 0 0.25  0 0 0 0 0.05  0 0 0 0.25 0'/></filter><rect width='100%' height='100%' filter='url(%23f)'/><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+    linear-gradient(180deg, #ecc75e 0%, #e0b043 55%, #d49f33 100%);
 }
 
 @media (prefers-reduced-motion: reduce) {

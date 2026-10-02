@@ -9,7 +9,7 @@ export const SERVICE = {
 
 export const INTRO_LINES: ReadonlyArray<readonly [string, string]> = [
   ["당신이 살아온 시간에는", "이유가 있습니다."],
-  ["지금의 고민도,", "당신의 흐름 안에 있습니다."],
+  ["지금의 고민도,", "당신의 운명 안에 있습니다."],
   ["오직 한 사람을 위해 쓰인", "인생의 기록."],
   ["이제, 당신의 다음 장을", "펼칠 시간입니다."],
 ];

@@ -8,8 +8,8 @@ const BASE =
 
 const VARIANTS: Record<Variant, string> = {
   primary:
-    "border border-gold/60 bg-gradient-to-b from-gold/20 to-gold/5 text-gold-soft shadow-[0_0_40px_-12px_rgb(200_169_106_/_0.6)] hover:border-gold hover:from-gold/30 hover:shadow-[0_0_50px_-8px_rgb(200_169_106_/_0.7)]",
-  ghost: "border border-line text-mist hover:border-gold/40 hover:text-paper",
+    "border border-gold/50 bg-gradient-to-b from-crimson to-crimson-deep text-gold-soft shadow-[0_0_40px_-8px_rgb(196_43_31_/_0.7),inset_0_1px_0_rgb(243_211_140_/_0.25)] hover:border-gold hover:shadow-[0_0_56px_-6px_rgb(196_43_31_/_0.9),inset_0_1px_0_rgb(243_211_140_/_0.35)]",
+  ghost: "border border-line bg-ink/40 text-mist backdrop-blur-sm hover:border-gold/40 hover:text-paper",
 };
 
 type ButtonProps = ComponentProps<"button"> & { variant?: Variant };

@@ -24,7 +24,7 @@ export function AnalyzingExperience() {
     <div className="flex flex-1 flex-col items-center justify-center gap-14 py-16 text-center">
       <div className="relative flex h-56 w-56 items-center justify-center">
         <svg viewBox="0 0 200 200" className="absolute inset-0 h-full w-full -rotate-90">
-          <circle cx="100" cy="100" r="92" fill="none" stroke="rgb(200 169 106 / 0.12)" strokeWidth="1" />
+          <circle cx="100" cy="100" r="92" fill="none" stroke="rgb(217 164 65 / 0.14)" strokeWidth="1" />
           <motion.circle
             cx="100"
             cy="100"
@@ -39,8 +39,8 @@ export function AnalyzingExperience() {
           />
           <defs>
             <linearGradient id="progress-gold" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#f3e6c4" />
-              <stop offset="100%" stopColor="#8f7442" />
+              <stop offset="0%" stopColor="#fbe7b0" />
+              <stop offset="100%" stopColor="#c42b1f" />
             </linearGradient>
           </defs>
         </svg>
