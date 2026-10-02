@@ -39,6 +39,15 @@ export async function createAnalysis(input: AnalysisInput): Promise<AnalysisReco
   return record;
 }
 
+/** 결제가 확인된 분석의 전체 리포트를 연다. 결제 승인 검증을 마친 서버 코드에서만 호출한다. */
+export async function markAnalysisPaid(token: string): Promise<boolean> {
+  const store = getAnalysisStore();
+  const record = await store.get(token);
+  if (!record || record.status !== "ready") return false;
+  if (record.paidAt === null) await store.update(token, { paidAt: Date.now() });
+  return true;
+}
+
 /** 전체 리포트를 한 번 생성해 저장한다. 실패해도 예외를 밖으로 던지지 않고 상태만 바꾼다. */
 export async function runReportGeneration(record: AnalysisRecord): Promise<void> {
   const store = getAnalysisStore();
@@ -54,7 +63,9 @@ export async function runReportGeneration(record: AnalysisRecord): Promise<void>
     // 사용자 입력이 섞이지 않도록 오류 코드와 메시지만 남긴다.
     const detail = error instanceof AiReportError ? error.message : String(error);
     console.error(`[analysis] ${record.token.slice(0, 6)}… report generation failed: ${detail}`);
-    await store.update(record.token, { status: "failed" });
+    await store
+      .update(record.token, { status: "failed" })
+      .catch((storeError) => console.error(`[analysis] could not mark failed: ${String(storeError)}`));
   } finally {
     inFlight.count--;
   }

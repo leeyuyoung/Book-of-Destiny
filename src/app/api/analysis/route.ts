@@ -1,41 +1,19 @@
 import { after } from "next/server";
 import { SajuCalculationError } from "@/lib/saju";
 import { createAnalysis, generationCapacityAvailable, runReportGeneration } from "@/lib/server/analysis";
+import { isSameOrigin, jsonError as fail, readJsonBody } from "@/lib/server/http";
 import { clientIp, consumeRateLimit } from "@/lib/server/rateLimit";
 import { analysisInputSchema } from "@/lib/validation/analysisInput";
 
 export const maxDuration = 300;
 
-const MAX_BODY_BYTES = 16 * 1024;
 const IP_LIMIT = { limit: 5, windowMs: 60 * 60 * 1000 };
 const EMAIL_LIMIT = { limit: 5, windowMs: 24 * 60 * 60 * 1000 };
-
-const fail = (status: number, message: string, headers?: HeadersInit) =>
-  Response.json({ message }, { status, headers: { "Cache-Control": "no-store", ...headers } });
-
-function isSameOrigin(request: Request) {
-  const origin = request.headers.get("origin");
-  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
-  if (!origin || !host) return false;
-  try {
-    return new URL(origin).host === host;
-  } catch {
-    return false;
-  }
-}
 
 export async function POST(request: Request) {
   if (!isSameOrigin(request)) return fail(403, "허용되지 않은 요청입니다.");
 
-  const body = await request.text();
-  if (new TextEncoder().encode(body).length > MAX_BODY_BYTES) return fail(413, "입력 내용이 너무 깁니다.");
-
-  let json: unknown;
-  try {
-    json = JSON.parse(body);
-  } catch {
-    return fail(400, "입력값을 다시 확인해주세요.");
-  }
+  const json = await readJsonBody(request);
   const parsed = analysisInputSchema.safeParse(json);
   if (!parsed.success) return fail(400, "입력값을 다시 확인해주세요.");
   const input = parsed.data;

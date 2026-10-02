@@ -76,7 +76,7 @@ export default async function ResultPage({ params }: PageProps<"/result/[token]"
         </ChapterCard>
 
         <div className="mt-6">
-          <LockedReportPreview />
+          <LockedReportPreview checkoutHref={token === "sample" ? undefined : `/checkout/${token}`} />
         </div>
       </div>
     </PageShell>

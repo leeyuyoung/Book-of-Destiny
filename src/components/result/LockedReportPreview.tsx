@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/Button";
+import { Button, ButtonLink } from "@/components/ui/Button";
 import { Ornament } from "@/components/ui/SectionHeading";
 import { DETAILED_REPORT_PRICE, REPORT_PARTS, formatPrice } from "@/lib/constants/service";
 
-export function LockedReportPreview() {
+/** checkoutHref가 없으면(샘플 화면) 결제 대신 안내만 보여준다. */
+export function LockedReportPreview({ checkoutHref }: { checkoutHref?: string }) {
   const [notice, setNotice] = useState(false);
 
   return (
@@ -49,11 +50,15 @@ export function LockedReportPreview() {
           <span className="text-mist-dim">상세 리포트</span>{" "}
           <span className="text-gold-soft">{formatPrice(DETAILED_REPORT_PRICE)}</span>
         </p>
-        <Button onClick={() => setNotice(true)}>나의 책 전체 펼치기</Button>
+        {checkoutHref ? (
+          <ButtonLink href={checkoutHref}>나의 책 전체 펼치기</ButtonLink>
+        ) : (
+          <Button onClick={() => setNotice(true)}>나의 책 전체 펼치기</Button>
+        )}
         <p className="text-[11px] text-mist-dim">결제하면 이미 완성된 전체 리포트가 바로 열리며, 입력하신 이메일로도 보내드립니다.</p>
         {notice && (
           <p role="status" className="text-xs text-gold/80">
-            결제 연동은 PHASE 10에서 토스페이먼츠로 연결됩니다.
+            샘플 화면입니다. 실제 결과 화면에서 결제할 수 있습니다.
           </p>
         )}
       </div>

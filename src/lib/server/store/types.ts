@@ -21,8 +21,28 @@ export type AnalysisRecord = {
   paidAt: number | null;
 };
 
+export type OrderStatus = "pending" | "paid";
+
+/** 결제 시도 1건. 금액은 서버가 정하고, 토스 승인 결과로만 paid가 된다. */
+export type OrderRecord = {
+  orderId: string;
+  token: string;
+  amount: number;
+  status: OrderStatus;
+  paymentKey: string | null;
+  method: string | null;
+  createdAt: number;
+  updatedAt: number;
+  approvedAt: number | null;
+};
+
+export type OrderPatch = Partial<Pick<OrderRecord, "status" | "paymentKey" | "method" | "approvedAt">>;
+
 export interface AnalysisStore {
   create(record: AnalysisRecord): Promise<void>;
   get(token: string): Promise<AnalysisRecord | null>;
   update(token: string, patch: Partial<Omit<AnalysisRecord, "token" | "createdAt">>): Promise<void>;
+  createOrder(order: OrderRecord): Promise<void>;
+  getOrder(orderId: string): Promise<OrderRecord | null>;
+  updateOrder(orderId: string, patch: OrderPatch): Promise<void>;
 }

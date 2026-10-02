@@ -17,6 +17,20 @@ export type FreeResultView = {
   birthTimeKnown: boolean;
 };
 
+export type ReportPartView = {
+  part: number;
+  title: string;
+  summary: string;
+  headline: string;
+  paragraphs: string[];
+};
+
+/** 결제가 확인된 뒤에만 만들어지는 전체 리포트 */
+export type FullReportView = FreeResultView & {
+  analyzedAt: string;
+  parts: ReportPartView[];
+};
+
 export type BasicResultView = {
   name: string;
   analyzedAt: string;

@@ -4,7 +4,16 @@ import { REPORT_PARTS } from "@/lib/constants/service";
 export const KEYWORD_COUNT = { min: 3, max: 5 } as const;
 export const PARAGRAPH_COUNT = { min: 3, max: 7 } as const;
 
-const text = (max: number) => z.string().trim().min(1).max(max);
+/** 한글·한자·영문·숫자·문장부호 외의 문자(모델이 가끔 섞는 다른 언어 단어)를 잡아낸다. */
+const FOREIGN_SCRIPT = /[^\p{Script=Hangul}\p{Script=Han}\p{Script=Latin}\p{Script=Common}\p{Script=Inherited}]/u;
+
+const text = (max: number) =>
+  z
+    .string()
+    .trim()
+    .min(1)
+    .max(max)
+    .refine((value) => !FOREIGN_SCRIPT.test(value), "한국어 외의 문자가 섞여 있습니다.");
 
 export const aiReportSchema = z.object({
   summary: text(120),
