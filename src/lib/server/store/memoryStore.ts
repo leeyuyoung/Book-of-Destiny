@@ -51,4 +51,10 @@ export class MemoryAnalysisStore implements AnalysisStore {
     if (!order) return;
     this.orders.set(orderId, { ...order, ...patch, updatedAt: Date.now() });
   }
+
+  async deleteStalePendingOrders(createdBefore: number) {
+    for (const [orderId, order] of this.orders) {
+      if (order.status === "pending" && order.createdAt < createdBefore) this.orders.delete(orderId);
+    }
+  }
 }

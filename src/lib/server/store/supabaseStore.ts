@@ -189,4 +189,11 @@ export class SupabaseAnalysisStore implements AnalysisStore {
       prefer: "return=minimal",
     });
   }
+
+  async deleteStalePendingOrders(createdBefore: number) {
+    await this.request(
+      `${ORDER_TABLE}?status=eq.pending&created_at=lt.${encodeURIComponent(toIso(createdBefore))}`,
+      { method: "DELETE", prefer: "return=minimal" },
+    );
+  }
 }

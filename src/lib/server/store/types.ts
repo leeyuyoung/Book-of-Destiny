@@ -21,9 +21,9 @@ export type AnalysisRecord = {
   paidAt: number | null;
 };
 
-export type OrderStatus = "pending" | "paid";
+export type OrderStatus = "pending" | "paid" | "canceled";
 
-/** 결제 시도 1건. 금액은 서버가 정하고, 토스 승인 결과로만 paid가 된다. */
+/** 결제 시도 1건. 금액은 서버가 정하고, 토스 승인 결과로만 paid가 된다. 환불되면 canceled. */
 export type OrderRecord = {
   orderId: string;
   token: string;
@@ -45,4 +45,6 @@ export interface AnalysisStore {
   createOrder(order: OrderRecord): Promise<void>;
   getOrder(orderId: string): Promise<OrderRecord | null>;
   updateOrder(orderId: string, patch: OrderPatch): Promise<void>;
+  /** createdBefore 이전에 만들어지고 끝내 결제되지 않은 주문을 지운다. */
+  deleteStalePendingOrders(createdBefore: number): Promise<void>;
 }

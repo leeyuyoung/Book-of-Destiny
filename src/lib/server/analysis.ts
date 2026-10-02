@@ -48,6 +48,11 @@ export async function markAnalysisPaid(token: string): Promise<boolean> {
   return true;
 }
 
+/** 환불된 리포트를 다시 잠근다. */
+export async function revokeAnalysisPaid(token: string): Promise<void> {
+  await getAnalysisStore().update(token, { paidAt: null });
+}
+
 /** 전체 리포트를 한 번 생성해 저장한다. 실패해도 예외를 밖으로 던지지 않고 상태만 바꾼다. */
 export async function runReportGeneration(record: AnalysisRecord): Promise<void> {
   const store = getAnalysisStore();

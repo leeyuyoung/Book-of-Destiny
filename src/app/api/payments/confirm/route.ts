@@ -25,9 +25,15 @@ export async function POST(request: Request) {
   } catch (error) {
     if (error instanceof PaymentError) {
       console.error(error.message);
-      return fail(error.status, error.userMessage);
+      return Response.json(
+        { message: error.userMessage, retryable: error.retryable },
+        { status: error.status, headers: { "Cache-Control": "no-store" } },
+      );
     }
     console.error("[payment] confirm failed", error);
-    return fail(500, "결제를 확인하지 못했습니다. 잠시 후 다시 시도해주세요.");
+    return Response.json(
+      { message: "결제를 확인하지 못했습니다. 잠시 후 다시 확인해주세요.", retryable: true },
+      { status: 500, headers: { "Cache-Control": "no-store" } },
+    );
   }
 }
