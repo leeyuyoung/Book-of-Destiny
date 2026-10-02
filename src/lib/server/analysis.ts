@@ -1,9 +1,11 @@
 import "server-only";
 
 import { randomBytes } from "node:crypto";
+import { after } from "next/server";
 import { buildSajuProfile, calculateSaju } from "@/lib/saju";
 import type { AnalysisInput } from "@/lib/validation/analysisInput";
 import { AiReportError, generateReport } from "./ai/generateReport";
+import { sendReportEmail } from "./email/sendReportEmail";
 import { getAnalysisStore, type AnalysisRecord } from "./store";
 
 /** 동시에 생성 중인 리포트 수 상한. 요청 폭주 시 AI 비용이 한꺼번에 커지는 것을 막는다. */
@@ -44,7 +46,10 @@ export async function markAnalysisPaid(token: string): Promise<boolean> {
   const store = getAnalysisStore();
   const record = await store.get(token);
   if (!record || record.status !== "ready") return false;
-  if (record.paidAt === null) await store.update(token, { paidAt: Date.now() });
+  if (record.paidAt === null) {
+    await store.update(token, { paidAt: Date.now() });
+    after(() => sendReportEmail(record));
+  }
   return true;
 }
 
