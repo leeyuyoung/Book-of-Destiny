@@ -6,13 +6,6 @@ import { buildReportEmail } from "./reportEmail";
 const RESEND_API = "https://api.resend.com/emails";
 const REQUEST_TIMEOUT_MS = 10_000;
 
-/** 메일 헤더는 ASCII만 안전하므로, 한글 보낸 사람 이름은 RFC 2047 방식으로 인코딩해야 깨지지 않는다. */
-function encodeSender(from: string) {
-  const match = /^\s*(.+?)\s*<([^>]+)>\s*$/.exec(from);
-  if (!match || /^[\x20-\x7e]*$/.test(match[1])) return from;
-  return `=?UTF-8?B?${Buffer.from(match[1], "utf8").toString("base64")}?= <${match[2]}>`;
-}
-
 /**
  * 결제가 끝난 리포트의 링크를 입력한 이메일로 보낸다.
  * 같은 리포트로 여러 번 불려도 Resend 멱등 키(24시간 유효)로 한 통만 나간다.
@@ -38,7 +31,7 @@ export async function sendReportEmail(record: Pick<AnalysisRecord, "token" | "na
         "Content-Type": "application/json",
         "Idempotency-Key": `report-email/${record.token}`,
       },
-      body: JSON.stringify({ from: encodeSender(from), to: [record.email], subject, html, text }),
+      body: JSON.stringify({ from, to: [record.email], subject, html, text }),
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
     if (!response.ok) {
