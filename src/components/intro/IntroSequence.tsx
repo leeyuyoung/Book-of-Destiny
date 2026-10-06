@@ -1,44 +1,88 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useCallback, useEffect, useState, type ReactNode } from "react";
-import { HeroineBackdrop } from "@/components/night/HeroineBackdrop";
+import { Fragment, useCallback, useEffect, useState } from "react";
+import { HeroineBackdrop, type HeroineScene } from "@/components/night/HeroineBackdrop";
 import { ButtonLink } from "@/components/ui/Button";
-import { HERO_COPY, INTRO_GREETING } from "@/lib/constants/service";
+import { HERO_COPY, INTRO_SCRIPT } from "@/lib/constants/service";
 
 const LIGHT_DELAY_MS = 500;
-const RITUAL_HOLD_MS = 6200;
+
+/** 화면을 누를 때마다 다음 컷으로 넘어간다. */
+const BEATS = [
+  { key: "tryst", scene: "tryst" },
+  { key: "sensed", scene: "sensed" },
+  { key: "who", scene: "noticed" },
+  { key: "stop", scene: "caught" },
+  { key: "tease", scene: "caught" },
+  { key: "secret", scene: "caught" },
+  { key: "fate", scene: "petal" },
+  { key: "reveal", scene: "fairy" },
+  { key: "final", scene: "offer" },
+] as const satisfies readonly { key: string; scene: HeroineScene }[];
+type Beat = (typeof BEATS)[number]["key"];
+
+const SCENES = [...new Set(BEATS.map((beat) => beat.scene))];
+const FINAL_INDEX = BEATS.length - 1;
+/** 선녀가 다가와 얼굴을 가까이 보여주는 구간 */
+const APPROACH_BEATS: readonly Beat[] = ["tease", "secret"];
+/** 첫 컷은 그림이 밝아진 뒤에 자막을 친다. */
+const TRYST_AT = 1.4;
+
+/** 자막 한 글자가 찍히는 간격(초). 띄어쓰기도 한 글자로 친다. */
+const TYPE_STEP_S = 0.075;
+/** 앞 줄을 다 친 뒤 다음 줄을 치기 전 숨 고르는 시간 */
+const TYPE_PAUSE_S = 0.5;
+
+const typedEnd = (lines: readonly string[], startAt = 0) =>
+  startAt + lines.reduce((count, line) => count + Array.from(line).length, 0) * TYPE_STEP_S;
+
+const TEASE_AT = typedEnd([INTRO_SCRIPT.teaseLead]) + TYPE_PAUSE_S;
+const FATE_AT = typedEnd([INTRO_SCRIPT.glance]) + TYPE_PAUSE_S;
+const REVEAL_AT = typedEnd(INTRO_SCRIPT.revealLead) + TYPE_PAUSE_S;
+const INVITE_AT = 0.6;
+const CTA_AT = typedEnd([HERO_COPY.invite], INVITE_AT) + 0.4;
+
+/** 컷마다 자막을 다 친 시각. 안내 문구는 이 뒤에 띄운다. */
+const COPY_END_S: Record<Beat, number> = {
+  tryst: typedEnd([INTRO_SCRIPT.tryst], TRYST_AT),
+  sensed: typedEnd([INTRO_SCRIPT.rustle]),
+  who: typedEnd([INTRO_SCRIPT.who]),
+  stop: typedEnd([INTRO_SCRIPT.stop]),
+  tease: typedEnd(INTRO_SCRIPT.tease, TEASE_AT),
+  secret: typedEnd(INTRO_SCRIPT.secret),
+  fate: typedEnd(INTRO_SCRIPT.fate, FATE_AT),
+  reveal: typedEnd([INTRO_SCRIPT.reveal], REVEAL_AT),
+  final: CTA_AT,
+};
+
 const EASE = [0.22, 0.61, 0.36, 1] as const;
 const mistExit = {
   opacity: 0,
   y: -24,
   filter: "blur(12px)",
-  transition: { duration: 1.1, ease: EASE },
+  transition: { duration: 0.8, ease: EASE },
 };
 
 export function IntroSequence() {
   const reducedMotion = useReducedMotion();
   const instant = !!reducedMotion;
-  const [revealed, setRevealed] = useState(false);
+  const [index, setIndex] = useState(0);
   const [lit, setLit] = useState(false);
-  const isFinal = instant || revealed;
+  const current = BEATS[instant ? FINAL_INDEX : index];
+  const isFinal = current.key === "final";
 
   useEffect(() => {
     const timer = window.setTimeout(() => setLit(true), LIGHT_DELAY_MS);
     return () => window.clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    if (isFinal) return;
-    const timer = window.setTimeout(() => setRevealed(true), RITUAL_HOLD_MS);
-    return () => window.clearTimeout(timer);
-  }, [isFinal]);
-
-  const reveal = useCallback(() => setRevealed(true), []);
+  const advance = useCallback(() => setIndex((value) => Math.min(value + 1, FINAL_INDEX)), []);
+  const skip = useCallback(() => setIndex(FINAL_INDEX), []);
 
   return (
-    <div className="relative isolate flex min-h-dvh w-full flex-col overflow-hidden" onClick={reveal}>
-      <HeroineBackdrop lit={instant || lit} />
+    <div className="relative isolate flex min-h-dvh w-full flex-col overflow-hidden" onClick={advance}>
+      <HeroineBackdrop lit={instant || lit} scenes={SCENES} scene={current.scene} approach={APPROACH_BEATS.includes(current.key)} lowVeil={isFinal} />
 
       <AnimatePresence>
         {!isFinal && (
@@ -46,7 +90,7 @@ export function IntroSequence() {
             type="button"
             onClick={(event) => {
               event.stopPropagation();
-              reveal();
+              skip();
             }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { delay: 1.5, duration: 1.2 } }}
@@ -61,7 +105,22 @@ export function IntroSequence() {
       <main className="relative z-10 flex flex-1 flex-col items-center justify-end px-7 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-16">
         <div className="flex min-h-[220px] w-full flex-col items-center justify-end">
           <AnimatePresence mode="wait">
-            {isFinal ? <FinalReveal key="final" instant={instant} /> : <RitualPrompt key="ritual" />}
+            <BeatCopy key={current.key} beat={current.key} instant={instant} />
+          </AnimatePresence>
+        </div>
+        <div className="mt-6 h-5">
+          <AnimatePresence mode="wait">
+            {!isFinal && (
+              <motion.p
+                key={current.key}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0, 0.75, 0.35, 0.75], transition: { delay: COPY_END_S[current.key] + 0.6, duration: 2.4, repeat: Infinity, repeatType: "reverse" } }}
+                exit={{ opacity: 0, transition: { duration: 0.3 } }}
+                className="font-serif text-xs tracking-[0.3em] text-mist-dim"
+              >
+                화면을 눌러 넘기기
+              </motion.p>
+            )}
           </AnimatePresence>
         </div>
       </main>
@@ -69,35 +128,144 @@ export function IntroSequence() {
   );
 }
 
-function RitualPrompt() {
+function BeatCopy({ beat, instant }: { beat: Beat; instant: boolean }) {
+  switch (beat) {
+    case "tryst":
+      return <Narration lines={[INTRO_SCRIPT.tryst]} startAt={TRYST_AT} />;
+    case "sensed":
+      return <Narration lines={[INTRO_SCRIPT.rustle]} />;
+    case "who":
+      return <Line lines={[INTRO_SCRIPT.who]} />;
+    case "stop":
+      return <Line lines={[INTRO_SCRIPT.stop]} />;
+    case "tease":
+      return (
+        <motion.div className="flex flex-col items-center text-center" exit={mistExit}>
+          <p className={LINE_CLASS}>
+            <Typed lines={[INTRO_SCRIPT.teaseLead]} />
+          </p>
+          <p className={`mt-4 text-[clamp(1.5rem,7vw,2.2rem)] ${GLOW_CLASS}`}>
+            <Typed lines={INTRO_SCRIPT.tease} startAt={TEASE_AT} />
+          </p>
+        </motion.div>
+      );
+    case "secret":
+      return (
+        <motion.h2 exit={mistExit} className="text-center font-brush text-[clamp(1.5rem,7.6vw,2.5rem)] leading-[1.25] tracking-[0.04em] break-keep">
+          <Typed lines={INTRO_SCRIPT.secret} charClassName="text-gold-gradient" />
+        </motion.h2>
+      );
+    case "fate":
+      return (
+        <motion.div className="flex flex-col items-center gap-[1lh] text-center font-serif text-[17px] font-light leading-relaxed tracking-[0.04em] break-keep text-paper" exit={mistExit}>
+          <p>
+            <Typed lines={[INTRO_SCRIPT.glance]} />
+          </p>
+          <p>
+            <Typed lines={INTRO_SCRIPT.fate} startAt={FATE_AT} />
+          </p>
+        </motion.div>
+      );
+    case "reveal":
+      return (
+        <motion.div className="flex flex-col items-center gap-3 text-center" exit={mistExit}>
+          <p className="font-serif text-[17px] font-light leading-relaxed tracking-[0.06em] break-keep text-paper/90">
+            <Typed lines={INTRO_SCRIPT.revealLead} />
+          </p>
+          <p className={`text-[clamp(1.5rem,7vw,2.2rem)] ${GLOW_CLASS}`}>
+            <Typed lines={[INTRO_SCRIPT.reveal]} startAt={REVEAL_AT} />
+          </p>
+        </motion.div>
+      );
+    case "final":
+      return <FinalReveal instant={instant} />;
+  }
+}
+
+const LINE_CLASS = "text-center font-serif text-[21px] font-light tracking-[0.08em] break-keep text-paper";
+/** 달빛을 받은 복숭아꽃처럼 번지는 강조 대사 */
+const GLOW_CLASS = "font-eerie leading-[1.35] tracking-[0.1em] break-keep text-blossom-glow";
+
+/** 인물의 대사가 아닌 상황 설명과 효과음. 대사보다 작고 흐리게 둔다. */
+function Narration({ lines, startAt }: { lines: readonly string[]; startAt?: number }) {
   return (
-    <motion.div className="flex flex-col items-center text-center" exit={mistExit}>
-      <motion.p
-        className="font-serif text-[19px] font-light tracking-[0.12em] text-paper/90"
-        initial={{ opacity: 0, filter: "blur(8px)" }}
-        animate={{ opacity: 1, filter: "blur(0px)", transition: { duration: 1.6, delay: 1.4, ease: EASE } }}
-      >
-        {INTRO_GREETING[0]}
-      </motion.p>
-      <GlowText className="mt-4 text-[clamp(1.5rem,7vw,2.2rem)]" delay={2.4}>
-        {INTRO_GREETING[1]}
-        <br />
-        {INTRO_GREETING[2]}
-      </GlowText>
-    </motion.div>
+    <motion.p exit={mistExit} className="text-center font-serif text-[15px] font-light italic tracking-[0.3em] break-keep text-mist">
+      <Typed lines={lines} startAt={startAt} />
+    </motion.p>
   );
 }
 
-/** 안개가 걷히듯 왼쪽에서 오른쪽으로 글자가 드러난다. */
-function GlowText({ children, className, delay }: { children: ReactNode; className?: string; delay: number }) {
+function Line({ lines }: { lines: readonly string[] }) {
   return (
-    <motion.p
-      className={`font-eerie leading-[1.35] tracking-[0.1em] break-keep text-blossom-glow ${className ?? ""}`}
-      initial={{ clipPath: "inset(-20% 100% -20% 0%)", opacity: 0.6 }}
-      animate={{ clipPath: "inset(-20% 0% -20% 0%)", opacity: 1, transition: { duration: 1.8, delay, ease: [0.6, 0.05, 0.3, 1] } }}
-    >
-      {children}
+    <motion.p exit={mistExit} className={LINE_CLASS}>
+      <Typed lines={lines} />
     </motion.p>
+  );
+}
+
+/** 줄 → 낱말 → 글자로 나누고, 글자마다 찍힐 시각을 붙인다. 띄어쓰기도 한 박자 쉰다. */
+function layoutTyping(lines: readonly string[], startAt: number) {
+  let step = 0;
+  return lines.map((line) =>
+    line.split(" ").map((word, wordIndex) => {
+      if (wordIndex > 0) step += 1;
+      return Array.from(word).map((char) => ({ char, at: startAt + step++ * TYPE_STEP_S }));
+    }),
+  );
+}
+
+/**
+ * 붓으로 한 자씩 써 내려가듯 글자가 차례로 또렷해진다.
+ * 자리는 처음부터 잡아 두어 글자가 늘어나도 줄이 흔들리지 않는다.
+ */
+function Typed({
+  lines,
+  startAt = 0,
+  charClassName,
+  instant = false,
+}: {
+  lines: readonly string[];
+  startAt?: number;
+  /** 배경을 글자 모양으로 오려 칠하는 효과는 글자마다 따로 입혀야 한다. */
+  charClassName?: string;
+  instant?: boolean;
+}) {
+  const rows = layoutTyping(lines, startAt);
+
+  return (
+    <>
+      <span className="sr-only">{lines.join(" ")}</span>
+      <span aria-hidden>
+        {rows.map((words, row) => (
+          <span key={row}>
+            {row > 0 && <br />}
+            {words.map((chars, wordIndex) => (
+              <Fragment key={wordIndex}>
+                {wordIndex > 0 && " "}
+                <span className="whitespace-nowrap">
+                  {chars.map(({ char, at }, charIndex) =>
+                    instant ? (
+                      <span key={charIndex} className={charClassName}>
+                        {char}
+                      </span>
+                    ) : (
+                      <motion.span
+                        key={charIndex}
+                        className={charClassName}
+                        initial={{ opacity: 0, filter: "blur(6px)" }}
+                        animate={{ opacity: 1, filter: "blur(0px)", transition: { duration: 0.35, delay: at, ease: EASE } }}
+                      >
+                        {char}
+                      </motion.span>
+                    ),
+                  )}
+                </span>
+              </Fragment>
+            ))}
+          </span>
+        ))}
+      </span>
+    </>
   );
 }
 
@@ -112,20 +280,11 @@ function FinalReveal({ instant }: { instant: boolean }) {
 
   return (
     <motion.div className="flex w-full max-w-md flex-col items-center text-center" onClick={(event) => event.stopPropagation()}>
-      <motion.h1 {...reveal(0.5)} className="font-brush text-[clamp(2rem,10.5vw,3rem)] leading-[1.2] tracking-[0.06em] break-keep">
-        <span className="text-gold-gradient">
-          {HERO_COPY.headline[0]}
-          <br />
-          {HERO_COPY.headline[1]}
-        </span>
-      </motion.h1>
-      <motion.div {...reveal(0.9)} className="mt-4 flex flex-col gap-[1lh] font-serif text-[15px] leading-relaxed break-keep text-mist">
-        {HERO_COPY.description.map((line) => (
-          <p key={line}>{line}</p>
-        ))}
-      </motion.div>
+      <h1 className="font-brush text-[clamp(1.9rem,9.5vw,2.75rem)] leading-[1.25] tracking-[0.06em] break-keep">
+        <Typed lines={[HERO_COPY.invite]} startAt={INVITE_AT} charClassName="text-gold-gradient" instant={instant} />
+      </h1>
 
-      <motion.div {...reveal(1.4)} className="mt-8 flex w-full flex-col gap-3">
+      <motion.div {...reveal(CTA_AT)} className="mt-6 flex w-full flex-col gap-3">
         <ButtonLink href="/start">{HERO_COPY.cta}</ButtonLink>
       </motion.div>
     </motion.div>
