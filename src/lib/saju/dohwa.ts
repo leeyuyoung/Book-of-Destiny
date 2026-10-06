@@ -39,6 +39,8 @@ export type CharmStar = {
   hanja: string;
   /** 이 살이 놓인 기둥. 비어 있으면 사주에 없다. */
   positions: PillarPosition[];
+  /** 이 살을 이루는 지지. 대운·세운에서 이 글자가 들어오면 살이 깨어난다. */
+  triggers: EarthlyBranch[];
 };
 
 export type CharmIndexKey = "allure" | "sensual" | "mystery" | "flirt" | "popularity";
@@ -70,6 +72,11 @@ const toDisplay = (value: number) =>
 
 const triadOf = (branch: EarthlyBranch) => TRIAD_GROUPS.find((group) => group.members.includes(branch))!;
 
+function triadStarTriggers(profile: SajuProfile, pick: (group: TriadGroup) => EarthlyBranch): EarthlyBranch[] {
+  const bases = profile.pillars.filter((pillar) => pillar.position === "year" || pillar.position === "day");
+  return [...new Set(bases.map((base) => pick(triadOf(base.branch.korean))))];
+}
+
 function triadStarPositions(profile: SajuProfile, pick: (group: TriadGroup) => EarthlyBranch): PillarPosition[] {
   const found = new Set<PillarPosition>();
   for (const base of profile.pillars.filter((pillar) => pillar.position === "year" || pillar.position === "day")) {
@@ -84,14 +91,27 @@ function triadStarPositions(profile: SajuProfile, pick: (group: TriadGroup) => E
 export function readDohwa(profile: SajuProfile): DohwaReading {
   const hongyeomTarget = HONGYEOM[profile.dayMaster.korean];
   const stars: CharmStar[] = [
-    { key: "dohwa", name: "도화살", hanja: "桃花煞", positions: triadStarPositions(profile, (group) => group.dohwa) },
+    {
+      key: "dohwa",
+      name: "도화살",
+      hanja: "桃花煞",
+      positions: triadStarPositions(profile, (group) => group.dohwa),
+      triggers: triadStarTriggers(profile, (group) => group.dohwa),
+    },
     {
       key: "hongyeom",
       name: "홍염살",
       hanja: "紅艶煞",
       positions: profile.pillars.filter((pillar) => pillar.branch.korean === hongyeomTarget).map((pillar) => pillar.position),
+      triggers: [hongyeomTarget],
     },
-    { key: "hwagae", name: "화개살", hanja: "華蓋煞", positions: triadStarPositions(profile, (group) => group.hwagae) },
+    {
+      key: "hwagae",
+      name: "화개살",
+      hanja: "華蓋煞",
+      positions: triadStarPositions(profile, (group) => group.hwagae),
+      triggers: triadStarTriggers(profile, (group) => group.hwagae),
+    },
   ];
   const starCount = (key: CharmStarKey) => stars.find((star) => star.key === key)!.positions.length;
 

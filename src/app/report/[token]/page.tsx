@@ -7,6 +7,7 @@ import { ReportWaiting } from "@/components/result/ReportWaiting";
 import { CharmStars, LoveTimelineTable, SectionTitle } from "@/components/result/ResultParts";
 import { TypeHero } from "@/components/result/TypeHero";
 import { Reveal } from "@/components/ui/Reveal";
+import { chapterOf } from "@/lib/constants/result";
 import { TOKEN_PATTERN } from "@/lib/server/analysis";
 import { toFullReportView } from "@/lib/server/resultView";
 import { getAnalysisStore } from "@/lib/server/store";
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const TIMELINE_CHAPTER = 7;
+const TIMELINE_CHAPTER = chapterOf("timeline").chapter;
 
 export default async function ReportPage({ params }: PageProps<"/report/[token]">) {
   const { token } = await params;

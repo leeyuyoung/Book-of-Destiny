@@ -7,12 +7,13 @@ export const SERVICE = {
     "태어난 순간의 여덟 글자에 숨은 당신의 매력과 인연의 흐름을, 달빛 아래에서 읽어드립니다.",
 } as const;
 
-/** 도화선녀가 사용자를 처음 맞이하는 대사 (docs/WORLDVIEW.md) */
-export const INTRO_GREETING = ["“왔구나.”", "“네 꽃은 아직", "피지 않았느냐?”"] as const;
+/** 도화선녀가 사용자를 처음 맞이하는 대사 */
+export const INTRO_GREETING = ["“잠깐.”", "“너, 사람 좀", "홀리고 다녔겠구나.”"] as const;
 
 export const HERO_COPY = {
-  headline: ["홀리는 사주는", "따로 있다"],
-  description: "자꾸 눈길이 가는 사람이 있지. 그 이유는 태어날 때 이미 정해졌단다.",
+  headline: ["색기 있는 사주는", "따로 있단다."],
+  /** 문단마다 한 줄씩 띄워 보여준다. */
+  description: ["괜히 눈길이 가는 사람이 있지.", "그 매력은 태어날 때 이미 정해졌단다."],
   cta: "숨겨진 도화력 확인하기",
 } as const;
 

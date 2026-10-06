@@ -79,58 +79,93 @@ export const CHARM_STAR_LABELS: Record<CharmStarKey, { name: string; hanja: stri
 
 /**
  * 결제 후 AI가 쓰는 연애 리포트의 장. guide는 AI 지시문에만 쓰이고, teaser는 결제 전 화면에 보인다.
- * 순서를 바꾸면 이미 저장된 리포트와 장 번호가 어긋나므로 내용만 고친다.
+ * 장 번호는 배열 순서로 매겨지고, 화면에서는 key로 장을 찾는다.
+ * 장 수나 순서를 바꾸면 이미 저장된 리포트는 형식 검사에서 걸러져 새로 생성해야 한다.
  */
-export const REPORT_CHAPTERS = [
+const CHAPTERS = [
   {
-    chapter: 1,
+    key: "nature",
     title: "너라는 꽃",
     teaser: "다들 너한테서 눈을 못 떼는 진짜 이유",
-    guide: "타고난 분위기와 첫인상, 사람들이 이 사람에게서 느끼는 매력의 정체",
+    guide: "타고난 분위기와 기질, 사람들이 이 사람에게서 느끼는 매력의 정체",
   },
   {
-    chapter: 2,
-    title: "숨겨둔 무기",
-    teaser: "남들은 평생 애써도 못 가지는 색기, 넌 아직 반도 안 꺼냈단다",
-    guide: "사주 속 매력살(도화·홍염·화개)이 어디에 어떻게 놓였고 어떤 식으로 드러나는지. 없다면 대신 매력을 만드는 글자",
+    key: "firstImpression",
+    title: "그들이 처음 본 너",
+    teaser: "이성의 눈에 비친 네 첫인상, 그리고 그 마음을 무너뜨리는 공략법",
+    guide:
+      "이성이 이 사람을 처음 봤을 때의 인상(첫눈에 받는 느낌, 첫 대화 뒤의 느낌, 헤어진 뒤 남는 잔상)과, 그 첫인상을 무기 삼아 마음에 둔 이성을 사로잡는 단계별 공략법",
   },
   {
-    chapter: 3,
+    key: "looks",
+    title: "네 얼굴에 깃든 도화",
+    teaser: "눈빛, 표정, 분위기. 네 사주가 그려 낸 외모의 결",
+    guide:
+      "일간·오행·매력살로 본 외모의 느낌(눈빛, 표정, 인상의 온도, 풍기는 분위기, 어울리는 이미지). 외모를 평가하거나 신체를 성적으로 묘사하지 말고 분위기와 비유로 쓴다",
+  },
+  {
+    key: "starTypes",
+    title: "네 색기의 종류",
+    teaser: "도화살, 홍염살, 화개살. 네가 쥔 살과 그것이 깨어나는 때",
+    guide:
+      "도화살·홍염살·화개살이 각각 어떤 색기인지 쉽게 풀고, 이 사람에게 있는 살은 어느 자리에서 어떻게 드러나는지, 없는 살은 무엇이 대신하는지. 살이 깨어나는 시기는 <dohwa>의 awakening에 있는 해와 대운만 근거로 짚는다",
+  },
+  {
+    key: "flirt",
     title: "숨만 쉬어도 홀리는 법",
     teaser: "네가 가장 치명적으로 보이는 순간, 그리고 상대를 무너뜨리는 너만의 플러팅",
-    guide: "가장 매력적으로 보이는 상황, 끌어당기는 방식, 이 사람에게 맞는 플러팅 화법",
+    guide: "가장 매력적으로 보이는 상황, 끌어당기는 방식, 이 사람에게 맞는 플러팅 포인트",
   },
   {
-    chapter: 4,
+    key: "language",
+    title: "밤새 너를 떠올리게 하는 말",
+    teaser: "상대가 밤새 네 말을 곱씹으며 잠 못 들게 만드는 언어 습관",
+    guide:
+      "이 사람 특유의 말투와 대화 습관 중 매력 포인트, 상대가 밤새 떠올리게 만드는 화법과 연락 습관, 바로 써먹을 문장 예시 2~3개, 매력을 깎는 말버릇",
+  },
+  {
+    key: "styling",
+    title: "도화를 피우는 치장",
+    teaser: "네 도화를 두 배로 피워 줄 색, 향, 분위기",
+    guide: "오행의 균형으로 본 어울리는 색과 향의 결, 스타일과 분위기 연출, 매력이 가장 살아나는 장소와 시간대",
+  },
+  {
+    key: "admirers",
     title: "네 향기에 취하는 자들",
     teaser: "지금 이 순간에도 네 곁을 맴돌며 애태우는 자들의 정체",
     guide: "이 사람에게 끌려오는 이성의 유형과 특징, 그들이 다가오는 방식",
   },
   {
-    chapter: 5,
+    key: "inLove",
     title: "사랑에 빠진 너",
     teaser: "왜 매번 같은 지점에서 흔들리고, 같은 이유로 무너지는지",
     guide: "연애할 때의 모습, 반복되는 연애 패턴, 갈등과 이별이 생기는 지점",
   },
   {
-    chapter: 6,
+    key: "match",
     title: "네 짝, 그리고 독이 되는 자",
     teaser: "네 꽃을 터뜨려 줄 운명, 그리고 시들게 할 독",
     guide: "잘 맞는 상대와 피해야 할 상대의 성향, 그 사주적 근거",
   },
   {
-    chapter: 7,
+    key: "timeline",
     title: "인연이 감겨드는 때",
     teaser: "앞으로 3년, 네 도화가 폭발하고 인연이 쏟아지는 때",
     guide: "세운 목록의 앞 3년을 따라 연애운의 흐름과 인연이 들어오는 시기",
   },
   {
-    chapter: 8,
+    key: "heart",
     title: "지금 네 마음에게",
     teaser: "네가 품은 그 사람을 끌어당길, 네 다음 한 수",
     guide: "연애 상태와 고민에 대한 직접적인 답과 구체적인 행동 제안",
   },
 ] as const;
+
+export type ReportChapterKey = (typeof CHAPTERS)[number]["key"];
+
+export const REPORT_CHAPTERS = CHAPTERS.map((chapter, index) => ({ ...chapter, chapter: index + 1 }));
+
+export const chapterOf = (key: ReportChapterKey) => REPORT_CHAPTERS.find((chapter) => chapter.key === key)!;
 
 /** 앞으로 몇 년의 연애운을 표로 보여줄지 */
 export const LOVE_TIMELINE_YEARS = 3;

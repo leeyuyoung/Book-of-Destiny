@@ -16,7 +16,7 @@ import {
 import { ReviewCarousel } from "@/components/result/ReviewCarousel";
 import { TypeHero } from "@/components/result/TypeHero";
 import { Reveal } from "@/components/ui/Reveal";
-import { REPORT_CHAPTERS } from "@/lib/constants/result";
+import { chapterOf } from "@/lib/constants/result";
 import { DETAILED_REPORT_PRICE, formatPrice } from "@/lib/constants/service";
 import { TOKEN_PATTERN } from "@/lib/server/analysis";
 import { sampleFreeResult, toFreeResultView } from "@/lib/server/resultView";
@@ -35,7 +35,8 @@ async function loadResult(token: string) {
   return { result: toFreeResultView(record), paid: record.paidAt !== null };
 }
 
-const chapter = (number: number) => REPORT_CHAPTERS[number - 1];
+const starTypes = chapterOf("starTypes");
+const timeline = chapterOf("timeline");
 
 export default async function ResultPage({ params }: PageProps<"/result/[token]">) {
   const { token } = await params;
@@ -85,30 +86,35 @@ export default async function ResultPage({ params }: PageProps<"/result/[token]"
           </section>
         </Reveal>
 
+        <LockedChapter chapter={chapterOf("firstImpression")} />
+        <LockedChapter chapter={chapterOf("looks")} />
+
         <Reveal>
           <section className="flex flex-col gap-5">
             <SectionTitle
-              eyebrow="매력살"
-              title="네 사주에 숨은 매력살"
-              description="도화살, 홍염살, 화개살. 몇 개를 쥐고 태어났는지, 어디에 숨겨 뒀는지가 네 끌림의 결을 정한단다."
+              eyebrow={`제${starTypes.chapter}장`}
+              title={starTypes.title}
+              description="도화살, 홍염살, 화개살. 몇 개를 쥐고 태어났는지, 어디에 숨겨 뒀는지, 언제 깨어나는지가 네 색기의 결을 정한단다."
             />
             <CharmStars />
             <BlurredText />
           </section>
         </Reveal>
 
-        <LockedChapter chapter={chapter(2)} />
-        <LockedChapter chapter={chapter(3)} />
+        <LockedChapter chapter={chapterOf("flirt")} />
 
         {!paid && <MidCheckoutPrompt checkoutHref={checkoutHref} />}
 
         <ReviewCarousel />
 
-        <LockedChapter chapter={chapter(4)} />
-        <LockedChapter chapter={chapter(6)} />
+        <LockedChapter chapter={chapterOf("language")} />
+        <LockedChapter chapter={chapterOf("styling")} />
+        <LockedChapter chapter={chapterOf("admirers")} />
+        <LockedChapter chapter={chapterOf("inLove")} />
+        <LockedChapter chapter={chapterOf("match")} />
 
         <section className="flex flex-col gap-4">
-          <SectionTitle eyebrow={`제${chapter(7).chapter}장`} title={chapter(7).title} description={chapter(7).teaser} />
+          <SectionTitle eyebrow={`제${timeline.chapter}장`} title={timeline.title} description={timeline.teaser} />
           <LoveTimelineTable years={result.timelineYears} />
         </section>
 

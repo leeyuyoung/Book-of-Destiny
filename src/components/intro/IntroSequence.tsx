@@ -111,17 +111,19 @@ function FinalReveal({ instant }: { instant: boolean }) {
         };
 
   return (
-    <motion.div className="flex w-full max-w-sm flex-col items-center text-center" onClick={(event) => event.stopPropagation()}>
-      <motion.h1 {...reveal(0.5)} className="font-brush text-[clamp(2.4rem,11vw,3.4rem)] leading-[1.2] tracking-[0.06em] break-keep">
+    <motion.div className="flex w-full max-w-md flex-col items-center text-center" onClick={(event) => event.stopPropagation()}>
+      <motion.h1 {...reveal(0.5)} className="font-brush text-[clamp(2rem,10.5vw,3rem)] leading-[1.2] tracking-[0.06em] break-keep">
         <span className="text-gold-gradient">
           {HERO_COPY.headline[0]}
           <br />
           {HERO_COPY.headline[1]}
         </span>
       </motion.h1>
-      <motion.p {...reveal(0.9)} className="mt-4 font-serif text-[15px] leading-relaxed break-keep text-mist">
-        {HERO_COPY.description}
-      </motion.p>
+      <motion.div {...reveal(0.9)} className="mt-4 flex flex-col gap-[1lh] font-serif text-[15px] leading-relaxed break-keep text-mist">
+        {HERO_COPY.description.map((line) => (
+          <p key={line}>{line}</p>
+        ))}
+      </motion.div>
 
       <motion.div {...reveal(1.4)} className="mt-8 flex w-full flex-col gap-3">
         <ButtonLink href="/start">{HERO_COPY.cta}</ButtonLink>

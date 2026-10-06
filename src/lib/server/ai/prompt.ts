@@ -1,6 +1,6 @@
 import "server-only";
 
-import { CHARM_INDICES, DOHWA_TYPES, LOVE_TIMELINE_YEARS, REPORT_CHAPTERS, gradeOf } from "@/lib/constants/result";
+import { CHARM_INDICES, DOHWA_TYPES, LOVE_TIMELINE_YEARS, REPORT_CHAPTERS, chapterOf, gradeOf } from "@/lib/constants/result";
 import { readDohwa, type SajuProfile } from "@/lib/saju";
 import { ELEMENT_KOREAN } from "@/lib/saju/tables";
 import { relationshipLabel, type RelationshipStatus } from "@/lib/validation/analysisInput";
@@ -23,7 +23,7 @@ export const REPORT_INSTRUCTIONS = `당신은 '도화사주'의 도화선녀다.
 
 [원칙]
 1. 사주 데이터(여덟 글자, 십신, 12운성, 합충, 대운, 세운, 매력살)는 이미 만세력으로 계산이 끝난 값이다. 절대 다시 계산하거나 바꾸지 말고 주어진 값만 근거로 해석한다. 데이터에 없는 격국·용신·신살은 언급하지 않는다.
-2. <dohwa>의 도화 지수·유형·매력살은 사용자가 이미 본 값이다. 숫자와 유형 이름을 그대로 쓰고, 이와 어긋나는 말을 하지 않는다. 매력살이 없으면 없다고 숨기지 말고, 대신 매력을 만드는 다른 글자를 짚는다.
+2. <dohwa>의 도화 지수·유형·매력살은 사용자가 이미 본 값이다. 숫자와 유형 이름을 그대로 쓰고, 이와 어긋나는 말을 하지 않는다. 매력살이 없으면 없다고 숨기지 말고, 대신 매력을 만드는 다른 글자를 짚는다. 매력살이 깨어나는 시기는 <dohwa>의 awakening에 적힌 해와 대운만 말하고, 목록이 비어 있으면 앞으로 10년 안에는 뚜렷한 때가 없다고 솔직히 말한 뒤 원국의 힘을 쓰는 법으로 이어 간다.
 3. 해석마다 근거가 되는 글자나 구조를 자연스럽게 밝힌다(예: "일지 午火가…"). 전문용어는 처음 나올 때 쉬운 말로 풀어준다.
 4. 겁주거나 운명을 단정하지 않는다. 죽음·중병·사고·이혼을 예언하지 않는다. 바람·집착·조종 같은 해로운 행동을 권하지 않는다.
 5. 누구에게나 맞는 막연한 문장을 피하고, 이 사람의 사주 구조와 연애 상태·고민에 맞닿은 구체적인 문장을 쓴다.
@@ -37,7 +37,8 @@ export const REPORT_INSTRUCTIONS = `당신은 '도화사주'의 도화선녀다.
 - chapters: 아래 ${REPORT_CHAPTERS.length}개 장을 순서대로(chapter 1~${REPORT_CHAPTERS.length}). 각 장은 headline(그 장의 핵심을 찌르는 도발적인 한 문장)과 paragraphs(3~4개 문단, 문단마다 3~4문장).
 ${CHAPTER_GUIDE}
 - loveTimeline: 세운 목록의 앞 ${LOVE_TIMELINE_YEARS}년을 순서대로. year는 그 해 연도, mood는 그 해 연애운을 담은 10~20자 문구, body는 그 해 인연의 흐름과 할 일을 담은 2문장.
-- 8장은 <concern>의 고민에 직접 답한다. <concern>이 비어 있으면 <life>의 연애 상태에서 지금 가장 궁금해할 만한 것을 골라 답한다.`;
+- ${chapterOf("heart").chapter}장은 <concern>의 고민에 직접 답한다. <concern>이 비어 있으면 <life>의 연애 상태에서 지금 가장 궁금해할 만한 것을 골라 답한다.
+- 장끼리 같은 내용을 되풀이하지 않는다. 각 장은 자기 주제에만 집중한다.`;
 
 const element = (key: keyof typeof ELEMENT_KOREAN) => ELEMENT_KOREAN[key];
 
@@ -57,6 +58,16 @@ function dohwaPayload(profile: SajuProfile) {
         ? `${star.name}: ${star.positions.map((position) => POSITION_LABEL[position]).join("·")}에 있음`
         : `${star.name}: 없음`,
     ),
+    awakening: reading.stars.map((star) => ({
+      star: star.name,
+      trigger: star.triggers.join("·"),
+      years: profile.yearlyFortunes
+        .filter((fortune) => star.triggers.includes(fortune.branch.korean))
+        .map((fortune) => `${fortune.year}년 ${fortune.hanja}(${fortune.korean})`),
+      luckPeriods: profile.luck.periods
+        .filter((period) => period.startYear + 9 >= profile.referenceDate.year && star.triggers.includes(period.branch.korean))
+        .map((period) => `${period.startAge}~${period.startAge + 9}세 대운 ${period.hanja}(${period.korean})`),
+    })),
   };
 }
 
