@@ -1,113 +1,121 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageShell } from "@/components/layout/PageShell";
-import { ChapterCard } from "@/components/result/ChapterCard";
-import { FiveElementBalance } from "@/components/result/FiveElementBalance";
-import { LockedReportPreview } from "@/components/result/LockedReportPreview";
-import { PillarChart } from "@/components/result/PillarChart";
-import { ButtonLink } from "@/components/ui/Button";
+import { DohwaScoreCard } from "@/components/result/DohwaScoreCard";
+import { ManseryeokTable } from "@/components/result/ManseryeokTable";
+import {
+  BlurredText,
+  CharmStars,
+  FinalCheckoutPrompt,
+  LockedChapter,
+  LoveTimelineTable,
+  MidCheckoutPrompt,
+  SectionTitle,
+  StickyCheckoutBar,
+} from "@/components/result/ResultParts";
+import { ReviewCarousel } from "@/components/result/ReviewCarousel";
+import { TypeHero } from "@/components/result/TypeHero";
 import { Reveal } from "@/components/ui/Reveal";
-import { Ornament } from "@/components/ui/SectionHeading";
+import { REPORT_CHAPTERS } from "@/lib/constants/result";
+import { DETAILED_REPORT_PRICE, formatPrice } from "@/lib/constants/service";
 import { TOKEN_PATTERN } from "@/lib/server/analysis";
-import { SAMPLE_FREE_RESULT, toFreeResultView } from "@/lib/server/resultView";
+import { sampleFreeResult, toFreeResultView } from "@/lib/server/resultView";
 import { getAnalysisStore } from "@/lib/server/store";
-import type { FreeResultView } from "@/types/result";
 
 export const metadata: Metadata = {
-  title: "나의 첫 장",
+  title: "나의 도화 지수",
   robots: { index: false, follow: false },
 };
 
-async function loadResult(token: string): Promise<FreeResultView | "generating" | "failed" | null> {
-  if (token === "sample") return SAMPLE_FREE_RESULT;
+async function loadResult(token: string) {
+  if (token === "sample") return { result: sampleFreeResult(), paid: false };
   if (!TOKEN_PATTERN.test(token)) return null;
   const record = await getAnalysisStore().get(token);
   if (!record) return null;
-  if (record.status === "generating" || record.status === "failed") return record.status;
-  return toFreeResultView(record);
+  return { result: toFreeResultView(record), paid: record.paidAt !== null };
 }
+
+const chapter = (number: number) => REPORT_CHAPTERS[number - 1];
 
 export default async function ResultPage({ params }: PageProps<"/result/[token]">) {
   const { token } = await params;
-  const result = await loadResult(token);
-  if (!result) notFound();
-  if (result === "generating" || result === "failed") return <PendingNotice status={result} />;
+  const loaded = await loadResult(token);
+  if (!loaded) notFound();
+  const { result, paid } = loaded;
+
+  const checkoutHref = token === "sample" ? "/start" : `/checkout/${token}`;
+  const sticky = paid
+    ? { href: `/report/${token}`, label: "펼친 꽃 다시 보러 가기" }
+    : token === "sample"
+      ? { href: "/start", label: "내 꽃도 보러 가기" }
+      : { href: checkoutHref, label: `숨겨진 도화력 확인하기 · ${formatPrice(DETAILED_REPORT_PRICE)}` };
 
   return (
     <PageShell>
-      <section className="flex flex-col items-center gap-6 pb-12 pt-16 text-center">
+      <TypeHero name={result.name} type={result.dohwa.type} eyebrow="제1장 · 네 꽃의 이름"
+        hook="근데 이게 전부가 아니란다. 넌 아직 가진 걸 반도 안 꺼냈어. 그걸 깨우는 법, 내가 알려 주마."
+      />
+
+      <div className="mt-12 flex flex-col gap-14 pb-28">
         <Reveal>
-          <span className="font-display text-xs uppercase tracking-[0.4em] text-gold/80">Chapter 0 · Prologue</span>
+          <section className="flex flex-col gap-5">
+            <SectionTitle
+              eyebrow="도화 지수"
+              title={
+                <>
+                  너, 생각보다 훨씬
+                  <br />
+                  <span className="text-blossom-glow">색기 있는 아이란다</span>
+                </>
+              }
+            />
+            <DohwaScoreCard dohwa={result.dohwa} />
+          </section>
         </Reveal>
-        <Reveal delay={0.15}>
-          <p className="font-serif text-sm text-mist">{result.name} 님의 사주 한 줄</p>
-        </Reveal>
-        <Reveal delay={0.3}>
-          <h1 className="font-serif text-[26px] font-light leading-[1.7] break-keep">
-            <span className="text-gold-gradient">“{result.summary}”</span>
-          </h1>
-        </Reveal>
-        <Reveal delay={0.45}>
-          <ul className="flex flex-wrap justify-center gap-2">
-            {result.keywords.map((keyword) => (
-              <li key={keyword} className="rounded-full border border-gold/30 px-4 py-1.5 text-xs text-gold-soft">
-                #{keyword}
-              </li>
-            ))}
-          </ul>
-        </Reveal>
-        <Ornament className="mt-6" />
-      </section>
 
-      <div className="flex flex-col gap-6">
-        <ChapterCard eyebrow="The eight characters" title="나의 사주 핵심">
-          <PillarChart pillars={result.pillars} />
-          <div className="mt-2 rounded-2xl border border-line bg-night/50 p-5">
-            <p className="text-xs tracking-widest text-gold/70">일간 · 나를 상징하는 글자</p>
-            <p className="mt-2 font-serif text-lg">
-              {result.dayMaster.hanja} <span className="text-mist">{result.dayMaster.korean}</span>
-            </p>
-            <p className="mt-2 text-sm leading-relaxed text-mist">{result.dayMaster.description}</p>
-          </div>
-          <div className="mt-2">
-            <p className="mb-4 text-xs tracking-widest text-gold/70">오행의 균형</p>
-            <FiveElementBalance counts={result.fiveElements} />
-          </div>
-        </ChapterCard>
+        <Reveal>
+          <section className="flex flex-col gap-5">
+            <SectionTitle eyebrow="만세력" title="네 여덟 글자" description="네가 사람을 홀리는 건 우연이 아니란다. 태어난 순간, 하늘이 여기 새겨 뒀지." />
+            <ManseryeokTable
+              name={result.name}
+              dayPillarName={result.dayPillarName}
+              birthLabel={result.birthLabel}
+              pillars={result.pillars}
+            />
+          </section>
+        </Reveal>
 
-        <div className="mt-6">
-          <LockedReportPreview checkoutHref={token === "sample" ? undefined : `/checkout/${token}`} />
-        </div>
+        <Reveal>
+          <section className="flex flex-col gap-5">
+            <SectionTitle
+              eyebrow="매력살"
+              title="네 사주에 숨은 매력살"
+              description="도화살, 홍염살, 화개살. 몇 개를 쥐고 태어났는지, 어디에 숨겨 뒀는지가 네 끌림의 결을 정한단다."
+            />
+            <CharmStars />
+            <BlurredText />
+          </section>
+        </Reveal>
+
+        <LockedChapter chapter={chapter(2)} />
+        <LockedChapter chapter={chapter(3)} />
+
+        {!paid && <MidCheckoutPrompt checkoutHref={checkoutHref} />}
+
+        <ReviewCarousel />
+
+        <LockedChapter chapter={chapter(4)} />
+        <LockedChapter chapter={chapter(6)} />
+
+        <section className="flex flex-col gap-4">
+          <SectionTitle eyebrow={`제${chapter(7).chapter}장`} title={chapter(7).title} description={chapter(7).teaser} />
+          <LoveTimelineTable years={result.timelineYears} />
+        </section>
+
+        {!paid && <FinalCheckoutPrompt checkoutHref={checkoutHref} />}
       </div>
-    </PageShell>
-  );
-}
 
-function PendingNotice({ status }: { status: "generating" | "failed" }) {
-  return (
-    <PageShell>
-      <section className="flex flex-1 flex-col items-center justify-center gap-6 py-24 text-center">
-        <p className="font-serif text-lg font-light leading-relaxed">
-          {status === "generating" ? (
-            <>
-              아직 당신의 첫 장을
-              <br />
-              <span className="text-gold-gradient">쓰고 있습니다.</span>
-            </>
-          ) : (
-            <>
-              리포트를 완성하지 못했습니다.
-              <br />
-              <span className="text-mist">잠시 후 다시 시도해주세요.</span>
-            </>
-          )}
-        </p>
-        {status === "generating" ? (
-          <p className="text-sm text-mist">잠시 후 이 페이지를 새로고침해주세요.</p>
-        ) : (
-          <ButtonLink href="/start">다시 입력하기</ButtonLink>
-        )}
-      </section>
+      <StickyCheckoutBar href={sticky.href} label={sticky.label} />
     </PageShell>
   );
 }

@@ -3,6 +3,9 @@ import { jsonError as fail, readJsonBody } from "@/lib/server/http";
 import { PAYMENT_KEY_PATTERN, PaymentError, syncPaymentFromToss } from "@/lib/server/payments";
 import { clientIp, consumeRateLimit } from "@/lib/server/rateLimit";
 
+/** 웹훅으로 결제가 열리면 같은 함수 안에서 리포트 생성(after)이 이어지므로 생성 시간만큼 열어 둔다. */
+export const maxDuration = 300;
+
 const IP_LIMIT = { limit: 300, windowMs: 60 * 60 * 1000 };
 const eventSchema = z.object({
   eventType: z.string(),

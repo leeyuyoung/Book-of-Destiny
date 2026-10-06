@@ -1,51 +1,48 @@
 export type FiveElementKey = "wood" | "fire" | "earth" | "metal" | "water";
 
+export type GlyphView = { hanja: string; korean: string; element: FiveElementKey; tenGod: string };
+
 export type PillarView = {
   label: "시주" | "일주" | "월주" | "년주";
-  stem: { hanja: string; korean: string; element: FiveElementKey; tenGod: string };
-  branch: { hanja: string; korean: string; element: FiveElementKey; tenGod: string };
+  stem: GlyphView;
+  branch: GlyphView & { twelveStage: string };
 };
 
-/** 결제 전 무료 화면에 내려가는 값. 리포트 본문은 포함하지 않는다. */
+export type DohwaView = {
+  score: number;
+  grade: { hanja: string; label: string; line: string };
+  indices: { key: string; label: string; hanja: string; score: number }[];
+  type: { hanja: string; name: string; alias: string; elementHanja: string; headline: string; description: string; vibes: string[] };
+};
+
+/** 결제 전 무료 화면에 내려가는 값. 만세력 계산 결과만 담고 리포트 본문은 담지 않는다. */
 export type FreeResultView = {
   name: string;
-  summary: string;
-  keywords: string[];
+  birthLabel: string;
+  dayPillarName: string;
   pillars: PillarView[];
-  fiveElements: Record<FiveElementKey, number>;
-  dayMaster: { hanja: string; korean: string; description: string };
   birthTimeKnown: boolean;
+  dohwa: DohwaView;
+  /** 연애운 표에 쓰는 앞으로의 연도 */
+  timelineYears: number[];
 };
 
-export type ReportPartView = {
-  part: number;
+export type CharmStarView = { name: string; hanja: string; found: boolean; where: string };
+
+export type ReportChapterView = {
+  chapter: number;
   title: string;
-  summary: string;
+  teaser: string;
   headline: string;
   paragraphs: string[];
 };
 
-/** 결제가 확인된 뒤에만 만들어지는 전체 리포트 */
+/** 결제가 확인되고 리포트가 완성된 뒤에만 만들어진다. */
 export type FullReportView = FreeResultView & {
-  analyzedAt: string;
-  parts: ReportPartView[];
-};
-
-export type BasicResultView = {
-  name: string;
   analyzedAt: string;
   summary: string;
   keywords: string[];
-  pillars: PillarView[];
-  fiveElements: Record<FiveElementKey, number>;
-  dayMaster: { hanja: string; korean: string; description: string };
-  personality: {
-    overview: string;
-    traits: { label: string; body: string }[];
-    strengths: string[];
-    cautions: string[];
-  };
-  money: { overview: string };
-  love: { overview: string };
-  career: { overview: string };
+  stars: CharmStarView[];
+  chapters: ReportChapterView[];
+  loveTimeline: { year: number; mood: string; body: string }[];
 };

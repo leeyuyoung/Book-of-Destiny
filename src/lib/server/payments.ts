@@ -10,7 +10,7 @@ const REQUEST_TIMEOUT_MS = 30_000;
 /** 토스는 결제 인증 후 10분 안에 승인하지 않으면 만료시키므로, 하루 지난 대기 주문은 다시 쓰일 일이 없다. */
 const STALE_ORDER_MS = 24 * 60 * 60 * 1000;
 
-export const ORDER_NAME = "도화사주 상세 인생 리포트";
+export const ORDER_NAME = "도화사주 연애·매력 리포트";
 export const ORDER_ID_PATTERN = /^[A-Za-z0-9_-]{6,64}$/;
 export const PAYMENT_KEY_PATTERN = /^[A-Za-z0-9_-]{1,200}$/;
 
@@ -54,7 +54,7 @@ const lookupPayment = (paymentKey: string) => callToss(`/${encodeURIComponent(pa
 export async function createOrder(token: string, email: string): Promise<OrderRecord> {
   const store = getAnalysisStore();
   const record = await store.get(token);
-  if (!record || record.status !== "ready") throw new PaymentError(404, "결제할 리포트를 찾지 못했습니다.");
+  if (!record) throw new PaymentError(404, "결제할 리포트를 찾지 못했습니다.");
   if (record.paidAt !== null) throw new PaymentError(409, "이미 결제가 완료된 리포트입니다.");
   if (record.email !== email) await store.update(token, { email });
 

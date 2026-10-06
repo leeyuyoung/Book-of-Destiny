@@ -2,9 +2,10 @@ import type { AiReport } from "@/lib/server/ai/reportSchema";
 import type { SajuProfile } from "@/lib/saju";
 import type { RelationshipStatus } from "@/lib/validation/analysisInput";
 
+/** 유료 리포트 생성 상태. 무료 결과는 만세력 계산만으로 만들어 처음부터 ready다. */
 export type AnalysisStatus = "generating" | "ready" | "failed";
 
-/** 분석 1건. 리포트 전문은 결제 확인 전까지 서버 밖으로 나가지 않는다. */
+/** 분석 1건. 리포트는 결제가 확인된 뒤에만 생성한다. */
 export type AnalysisRecord = {
   token: string;
   status: AnalysisStatus;
@@ -41,6 +42,11 @@ export interface AnalysisStore {
   create(record: AnalysisRecord): Promise<void>;
   get(token: string): Promise<AnalysisRecord | null>;
   update(token: string, patch: Partial<Omit<AnalysisRecord, "token" | "createdAt">>): Promise<void>;
+  /**
+   * 결제됐고 리포트가 없는 기록을 'generating'으로 바꾼다. 다른 요청이 이미 생성 중이면 false.
+   * staleBefore 이전부터 generating인 기록은 생성이 중단된 것으로 보고 다시 가져온다.
+   */
+  claimReportGeneration(token: string, staleBefore: number): Promise<boolean>;
   createOrder(order: OrderRecord): Promise<void>;
   getOrder(orderId: string): Promise<OrderRecord | null>;
   updateOrder(orderId: string, patch: OrderPatch): Promise<void>;

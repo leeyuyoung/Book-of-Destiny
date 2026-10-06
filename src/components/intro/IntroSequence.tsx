@@ -4,7 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { HeroineBackdrop } from "@/components/night/HeroineBackdrop";
 import { ButtonLink } from "@/components/ui/Button";
-import { HERO_COPY, INTRO_GREETING, SERVICE } from "@/lib/constants/service";
+import { HERO_COPY, INTRO_GREETING } from "@/lib/constants/service";
 
 const LIGHT_DELAY_MS = 500;
 const RITUAL_HOLD_MS = 6200;
@@ -112,10 +112,7 @@ function FinalReveal({ instant }: { instant: boolean }) {
 
   return (
     <motion.div className="flex w-full max-w-sm flex-col items-center text-center" onClick={(event) => event.stopPropagation()}>
-      <motion.p {...reveal(0.2)} className="font-serif text-xs tracking-[0.6em] text-gold/90">
-        {SERVICE.tagline}
-      </motion.p>
-      <motion.h1 {...reveal(0.5)} className="mt-3 font-brush text-[clamp(2.4rem,11vw,3.4rem)] leading-[1.2] tracking-[0.06em] break-keep">
+      <motion.h1 {...reveal(0.5)} className="font-brush text-[clamp(2.4rem,11vw,3.4rem)] leading-[1.2] tracking-[0.06em] break-keep">
         <span className="text-gold-gradient">
           {HERO_COPY.headline[0]}
           <br />

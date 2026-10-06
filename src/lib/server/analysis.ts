@@ -5,27 +5,30 @@ import { after } from "next/server";
 import { buildSajuProfile, calculateSaju } from "@/lib/saju";
 import type { AnalysisInput } from "@/lib/validation/analysisInput";
 import { AiReportError, generateReport } from "./ai/generateReport";
+import { aiReportSchema, type AiReport } from "./ai/reportSchema";
 import { sendReportEmail } from "./email/sendReportEmail";
 import { getAnalysisStore, type AnalysisRecord } from "./store";
 
-/** 동시에 생성 중인 리포트 수 상한. 요청 폭주 시 AI 비용이 한꺼번에 커지는 것을 막는다. */
-export const MAX_CONCURRENT_GENERATIONS = 10;
-
-const globalForGeneration = globalThis as typeof globalThis & { __dohwaInFlight?: { count: number } };
-const inFlight = (globalForGeneration.__dohwaInFlight ??= { count: 0 });
-
-export const generationCapacityAvailable = () => inFlight.count < MAX_CONCURRENT_GENERATIONS;
+/** 이 시간보다 오래 generating이면 생성이 중단된 것으로 보고 다시 시작할 수 있다. 생성 제한 시간(300초)보다 길어야 한다. */
+const STALE_GENERATION_MS = 10 * 60 * 1000;
 
 export const TOKEN_PATTERN = /^[A-Za-z0-9_-]{22}$/;
 const newToken = () => randomBytes(16).toString("base64url");
 
-/** 만세력 계산까지 마치고 '생성 중' 기록을 만든다. 계산 오류는 그대로 던진다(SajuCalculationError). */
+/** 저장된 리포트가 지금 형식에 맞을 때만 돌려준다. 예전 형식(11장 인생 리포트)이면 null. */
+export function storedReport(record: AnalysisRecord): AiReport | null {
+  if (!record.report) return null;
+  const parsed = aiReportSchema.safeParse(record.report);
+  return parsed.success ? parsed.data : null;
+}
+
+/** 만세력 계산만으로 무료 결과를 만든다. AI는 결제 후에만 호출한다. 계산 오류는 그대로 던진다(SajuCalculationError). */
 export async function createAnalysis(input: AnalysisInput): Promise<AnalysisRecord> {
   const profile = buildSajuProfile(calculateSaju({ birth: input.birth, gender: input.gender }));
   const now = Date.now();
   const record: AnalysisRecord = {
     token: newToken(),
-    status: "generating",
+    status: "ready",
     createdAt: now,
     updatedAt: now,
     name: input.name,
@@ -40,15 +43,16 @@ export async function createAnalysis(input: AnalysisInput): Promise<AnalysisReco
   return record;
 }
 
-/** 결제가 확인된 분석의 전체 리포트를 연다. 결제 승인 검증을 마친 서버 코드에서만 호출한다. */
+/** 결제가 확인된 분석을 열고 리포트 생성을 시작한다. 결제 승인 검증을 마친 서버 코드에서만 호출한다. */
 export async function markAnalysisPaid(token: string): Promise<boolean> {
   const store = getAnalysisStore();
   const record = await store.get(token);
-  if (!record || record.status !== "ready") return false;
+  if (!record) return false;
   if (record.paidAt === null) {
     await store.update(token, { paidAt: Date.now() });
-    after(() => sendReportEmail(record));
+    if (storedReport(record)) after(() => sendReportEmail(record));
   }
+  await startReportGeneration(token);
   return true;
 }
 
@@ -57,24 +61,38 @@ export async function revokeAnalysisPaid(token: string): Promise<void> {
   await getAnalysisStore().update(token, { paidAt: null });
 }
 
-/** 전체 리포트를 한 번 생성해 저장한다. 실패해도 예외를 밖으로 던지지 않고 상태만 바꾼다. */
-export async function runReportGeneration(record: AnalysisRecord): Promise<void> {
+/**
+ * 결제된 분석의 리포트 생성을 백그라운드로 시작한다. 이미 완성됐거나 다른 요청이 생성 중이면 아무것도 하지 않는다.
+ * after()를 쓰므로 요청을 처리하는 중에만 호출한다.
+ */
+export async function startReportGeneration(token: string): Promise<void> {
   const store = getAnalysisStore();
-  inFlight.count++;
+  const record = await store.get(token);
+  if (!record || record.paidAt === null || storedReport(record)) return;
+  if (record.report) await store.update(token, { report: null });
+  const claimed = await store.claimReportGeneration(token, Date.now() - STALE_GENERATION_MS);
+  if (claimed) after(() => runReportGeneration(token));
+}
+
+/** 리포트를 한 번 생성해 저장하고 메일을 보낸다. 실패해도 예외를 밖으로 던지지 않고 상태만 바꾼다. */
+async function runReportGeneration(token: string): Promise<void> {
+  const store = getAnalysisStore();
   try {
+    const record = await store.get(token);
+    if (!record) return;
     const report = await generateReport(record.profile, {
       relationshipStatus: record.relationshipStatus,
       concern: record.concern,
     });
-    await store.update(record.token, { status: "ready", report });
+    await store.update(token, { status: "ready", report });
+    const latest = await store.get(token);
+    if (latest?.paidAt) await sendReportEmail(latest);
   } catch (error) {
     // 사용자 입력이 섞이지 않도록 오류 코드와 메시지만 남긴다.
     const detail = error instanceof AiReportError ? error.message : String(error);
-    console.error(`[analysis] ${record.token.slice(0, 6)}… report generation failed: ${detail}`);
+    console.error(`[analysis] ${token.slice(0, 6)}… report generation failed: ${detail}`);
     await store
-      .update(record.token, { status: "failed" })
+      .update(token, { status: "failed" })
       .catch((storeError) => console.error(`[analysis] could not mark failed: ${String(storeError)}`));
-  } finally {
-    inFlight.count--;
   }
 }

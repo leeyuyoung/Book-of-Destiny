@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { LogoMark } from "@/components/ui/LogoMark";
@@ -14,11 +15,14 @@ import {
 import { ANALYSIS_MESSAGES } from "@/lib/constants/service";
 import { analysisInputSchema } from "@/lib/validation/analysisInput";
 
-const MESSAGE_INTERVAL_MS = 2600;
+const MESSAGE_INTERVAL_MS = 1600;
+/** 계산은 금방 끝나지만, 의식처럼 보이도록 문구가 모두 지나갈 때까지는 보여준다. */
+const MIN_RITUAL_MS = MESSAGE_INTERVAL_MS * ANALYSIS_MESSAGES.length;
+const REDIRECT_DELAY_MS = 1400;
 const POLL_INTERVAL_MS = 2000;
-const GIVE_UP_AFTER_MS = 6 * 60 * 1000;
+const GIVE_UP_AFTER_MS = 60 * 1000;
 /** 진행 원이 대략 이 시간에 63%쯤 차도록 한다. 실제 진행률이 아니라 기다림을 보여주는 장치다. */
-const PROGRESS_TIME_CONSTANT_MS = 25_000;
+const PROGRESS_TIME_CONSTANT_MS = 2500;
 const MAX_PENDING_PROGRESS = 0.95;
 
 type Phase =
@@ -40,7 +44,7 @@ async function submitPending(): Promise<{ token: string } | { phase: Phase }> {
       body: JSON.stringify(pending.data),
     });
     const data = (await response.json().catch(() => ({}))) as { token?: string; message?: string };
-    if (response.status === 202 && data.token) return { token: data.token };
+    if (response.ok && data.token) return { token: data.token };
     return {
       phase: {
         kind: "error",
@@ -99,6 +103,7 @@ async function runAnalysis(isActive: () => boolean, startedAt: number): Promise<
 }
 
 export function AnalyzingExperience() {
+  const router = useRouter();
   const [phase, setPhase] = useState<Phase>({ kind: "working" });
   const [messageIndex, setMessageIndex] = useState(0);
   const [elapsedMs, setElapsedMs] = useState(0);
@@ -112,10 +117,19 @@ export function AnalyzingExperience() {
     setElapsedMs(0);
     setMessageIndex(0);
     setPhase({ kind: "working" });
-    void runAnalysis(() => activeRef.current, startedAt).then((next) => {
-      if (next && activeRef.current) setPhase(next);
+    void runAnalysis(() => activeRef.current, startedAt).then(async (next) => {
+      if (!next || !activeRef.current) return;
+      if (next.kind === "ready") {
+        await wait(Math.max(0, MIN_RITUAL_MS - (Date.now() - startedAt)));
+        if (!activeRef.current) return;
+        setPhase(next);
+        await wait(REDIRECT_DELAY_MS);
+        if (activeRef.current) router.replace(`/result/${next.token}`);
+        return;
+      }
+      setPhase(next);
     });
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     activeRef.current = true;

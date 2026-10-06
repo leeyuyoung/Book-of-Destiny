@@ -160,6 +160,23 @@ export class SupabaseAnalysisStore implements AnalysisStore {
     });
   }
 
+  async claimReportGeneration(token: string, staleBefore: number) {
+    const filters = [
+      `token=eq.${encodeURIComponent(token)}`,
+      "paid_at=not.is.null",
+      "report=is.null",
+      `or=${encodeURIComponent(`(status.neq.generating,updated_at.lt."${toIso(staleBefore)}")`)}`,
+      "select=token",
+    ].join("&");
+    const response = await this.request(`${TABLE}?${filters}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status: "generating", updated_at: toIso(Date.now()) }),
+      prefer: "return=representation",
+    });
+    const rows = (await response.json()) as { token: string }[];
+    return rows.length > 0;
+  }
+
   async createOrder(order: OrderRecord) {
     await this.request(ORDER_TABLE, { method: "POST", body: JSON.stringify(toOrderRow(order)), prefer: "return=minimal" });
   }

@@ -30,7 +30,7 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   title: {
-    default: `${SERVICE.tagline} | ${SERVICE.name}`,
+    default: `숨겨진 도화력 분석 | ${SERVICE.name}`,
     template: `%s | ${SERVICE.name}`,
   },
   description: SERVICE.description,

@@ -83,13 +83,16 @@ async function requestOnce(input: string): Promise<AiReport> {
   return parsed.data;
 }
 
-/** 계산된 사주로 11-PART 전체 리포트를 한 번에 생성한다. 형식이 어긋나거나 일시 오류면 한 번 더 시도한다. */
+/** 계산된 사주로 연애 리포트 전체를 한 번에 생성한다. 형식이 어긋나거나 일시 오류면 한 번 더 시도한다. */
 export async function generateReport(profile: SajuProfile, context: ReportContext): Promise<AiReport> {
   const input = buildReportInput(profile, context);
   let lastError: unknown;
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     try {
-      return await requestOnce(input);
+      const report = await requestOnce(input);
+      // 연도는 모델이 정하지 않는다. 세운 목록의 연도로 맞춘다.
+      const years = profile.yearlyFortunes.map((fortune) => fortune.year);
+      return { ...report, loveTimeline: report.loveTimeline.map((item, index) => ({ ...item, year: years[index] })) };
     } catch (error) {
       lastError = error;
       const retryable = error instanceof AiReportError && (error.code === "INVALID_OUTPUT" || error.code === "UPSTREAM");

@@ -36,6 +36,14 @@ export class MemoryAnalysisStore implements AnalysisStore {
     this.records.set(token, { ...record, ...structuredClone(patch), updatedAt: Date.now() });
   }
 
+  async claimReportGeneration(token: string, staleBefore: number) {
+    const record = this.records.get(token);
+    if (!record || record.paidAt === null || record.report !== null) return false;
+    if (record.status === "generating" && record.updatedAt >= staleBefore) return false;
+    this.records.set(token, { ...record, status: "generating", updatedAt: Date.now() });
+    return true;
+  }
+
   async createOrder(order: OrderRecord) {
     if (this.orders.has(order.orderId)) throw new Error("duplicate orderId");
     this.orders.set(order.orderId, { ...order });

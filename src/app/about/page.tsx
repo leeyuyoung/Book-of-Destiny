@@ -3,7 +3,8 @@ import { PageShell } from "@/components/layout/PageShell";
 import { ButtonLink } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { Ornament, SectionHeading } from "@/components/ui/SectionHeading";
-import { DETAILED_REPORT_PRICE, REPORT_PARTS, SERVICE, formatPrice } from "@/lib/constants/service";
+import { REPORT_CHAPTERS } from "@/lib/constants/result";
+import { DETAILED_REPORT_PRICE, SERVICE, formatPrice } from "@/lib/constants/service";
 
 export const metadata: Metadata = {
   title: "서비스 소개",
@@ -28,7 +29,7 @@ const WRITING_PROCESS = [
   {
     hanja: "書",
     title: "당신의 이야기로 엮습니다",
-    body: "계산된 구조와 지금의 삶, 당신이 적어준 고민을 연결해 한 사람만을 위한 인생 리포트를 씁니다.",
+    body: "계산된 구조와 지금의 연애, 당신이 적어준 고민을 연결해 한 사람만을 위한 연애·매력 리포트를 씁니다.",
   },
 ] as const;
 
@@ -107,20 +108,18 @@ export default function AboutPage() {
           <SectionHeading
             eyebrow="Table of contents"
             title="당신의 책에 담길 이야기"
-            description="상세 리포트는 열한 개의 장으로 구성됩니다."
+            description={`연애·매력 리포트는 ${REPORT_CHAPTERS.length}개의 장으로 구성됩니다.`}
           />
         </Reveal>
         <Reveal delay={0.1}>
           <div className="glass-card mt-12 rounded-2xl px-6 py-4">
             <ul className="divide-y divide-line">
-              {REPORT_PARTS.map((part) => (
-                <li key={part.part} className="flex items-baseline gap-4 py-4">
-                  <span className="w-14 shrink-0 font-display text-xs tracking-[0.2em] text-gold/70">
-                    PART {part.part}
-                  </span>
+              {REPORT_CHAPTERS.map((chapter) => (
+                <li key={chapter.chapter} className="flex items-baseline gap-4 py-4">
+                  <span className="w-14 shrink-0 text-xs text-cinnabar/80">제{chapter.chapter}장</span>
                   <div className="flex flex-col gap-1">
-                    <span className="font-serif text-[15px] text-paper">{part.title}</span>
-                    <span className="text-xs leading-relaxed text-mist-dim">{part.summary}</span>
+                    <span className="font-serif text-[15px] text-paper">{chapter.title}</span>
+                    <span className="text-xs leading-relaxed text-mist-dim">{chapter.teaser}</span>
                   </div>
                 </li>
               ))}
@@ -157,7 +156,7 @@ export default function AboutPage() {
                 <span className="font-serif text-gold-soft">무료</span>
               </div>
               <p className="mt-3 text-sm leading-relaxed text-mist">
-                사주 한 줄 요약, 여덟 글자와 오행의 균형, 당신을 설명하는 핵심 키워드
+                만세력 여덟 글자, 도화 지수와 다섯 가지 매력 지표, 나의 도화 유형
               </p>
             </div>
           </Reveal>
@@ -165,12 +164,12 @@ export default function AboutPage() {
             <div className="glass-card relative overflow-hidden rounded-2xl border-gold/40 p-6">
               <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gold/10 blur-2xl" />
               <div className="relative flex items-baseline justify-between">
-                <h3 className="font-serif text-lg">상세 인생 리포트</h3>
+                <h3 className="font-serif text-lg">연애·매력 리포트</h3>
                 <span className="font-serif text-gold-soft">{formatPrice(DETAILED_REPORT_PRICE)}</span>
               </div>
               <p className="relative mt-3 text-sm leading-relaxed text-mist">
-                열한 개의 장으로 구성된 장문의 개인 맞춤 리포트. 대운별 흐름과 지금의 고민에 대한 분석까지
-                담아 이메일로도 보내드립니다.
+                매력살, 플러팅, 끌려오는 사람, 연애 패턴, 궁합, 앞으로 3년 연애운과 지금의 고민에 대한 답까지
+                담은 개인 맞춤 리포트. 결제 후 1~2분 안에 완성되어 이메일로도 보내드립니다.
               </p>
             </div>
           </Reveal>

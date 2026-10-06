@@ -1,14 +1,12 @@
-import { after } from "next/server";
 import { SajuCalculationError } from "@/lib/saju";
-import { createAnalysis, generationCapacityAvailable, runReportGeneration } from "@/lib/server/analysis";
+import { createAnalysis } from "@/lib/server/analysis";
 import { isSameOrigin, jsonError as fail, readJsonBody } from "@/lib/server/http";
 import { clientIp, consumeRateLimit } from "@/lib/server/rateLimit";
 import { analysisInputSchema } from "@/lib/validation/analysisInput";
 
-export const maxDuration = 300;
+const IP_LIMIT = { limit: 20, windowMs: 60 * 60 * 1000 };
 
-const IP_LIMIT = { limit: 5, windowMs: 60 * 60 * 1000 };
-
+/** 만세력으로 무료 결과를 계산해 저장한다. AI는 호출하지 않는다. */
 export async function POST(request: Request) {
   if (!isSameOrigin(request)) return fail(403, "허용되지 않은 요청입니다.");
 
@@ -21,13 +19,10 @@ export async function POST(request: Request) {
   if (retryAfter !== null) {
     return fail(429, "요청이 너무 많습니다. 잠시 후 다시 시도해주세요.", { "Retry-After": String(retryAfter) });
   }
-  if (!generationCapacityAvailable()) {
-    return fail(503, "지금 분석 요청이 많습니다. 잠시 후 다시 시도해주세요.", { "Retry-After": "30" });
-  }
 
-  let record;
   try {
-    record = await createAnalysis(input);
+    const record = await createAnalysis(input);
+    return Response.json({ token: record.token }, { status: 201, headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     if (error instanceof SajuCalculationError) {
       if (!error.isUserError) console.error(`[analysis] saju ${error.code}`, error.detail);
@@ -36,7 +31,4 @@ export async function POST(request: Request) {
     console.error("[analysis] unexpected", error);
     return fail(500, "분석을 시작하지 못했습니다. 잠시 후 다시 시도해주세요.");
   }
-
-  after(() => runReportGeneration(record));
-  return Response.json({ token: record.token }, { status: 202, headers: { "Cache-Control": "no-store" } });
 }

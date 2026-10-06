@@ -3,6 +3,9 @@ import { isSameOrigin, jsonError as fail, readJsonBody } from "@/lib/server/http
 import { ORDER_ID_PATTERN, PAYMENT_KEY_PATTERN, PaymentError, confirmPayment } from "@/lib/server/payments";
 import { clientIp, consumeRateLimit } from "@/lib/server/rateLimit";
 
+/** 승인 직후 같은 함수 안에서 리포트 생성(after)이 이어지므로 생성 시간만큼 열어 둔다. */
+export const maxDuration = 300;
+
 const IP_LIMIT = { limit: 30, windowMs: 60 * 60 * 1000 };
 const bodySchema = z.object({
   paymentKey: z.string().regex(PAYMENT_KEY_PATTERN),
