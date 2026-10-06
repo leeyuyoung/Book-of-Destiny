@@ -69,7 +69,7 @@ export default function AboutPage() {
         </Reveal>
         <Reveal delay={0.4}>
           <p className="max-w-sm text-[15px] leading-[1.9] text-mist">
-            팔자서재는 태어난 순간의 여덟 글자와 지금 당신이 서 있는 자리, 마음속의 고민을 함께 읽어 오직
+            도화사주는 태어난 순간의 여덟 글자와 지금 당신이 서 있는 자리, 마음속의 고민을 함께 읽어 오직
             한 사람을 위한 인생의 기록을 씁니다.
           </p>
         </Reveal>
@@ -131,7 +131,7 @@ export default function AboutPage() {
 
       <section className="py-16">
         <Reveal>
-          <SectionHeading eyebrow="Our principles" title="팔자서재가 지키는 것" />
+          <SectionHeading eyebrow="Our principles" title="도화사주가 지키는 것" />
         </Reveal>
         <div className="mt-12 grid gap-4 sm:grid-cols-2">
           {PRINCIPLES.map((principle, index) => (

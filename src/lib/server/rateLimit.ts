@@ -2,8 +2,8 @@ import "server-only";
 
 type Window = { limit: number; windowMs: number };
 
-const globalForLimiter = globalThis as typeof globalThis & { __paljaRateLimit?: Map<string, number[]> };
-const hits = (globalForLimiter.__paljaRateLimit ??= new Map<string, number[]>());
+const globalForLimiter = globalThis as typeof globalThis & { __dohwaRateLimit?: Map<string, number[]> };
+const hits = (globalForLimiter.__dohwaRateLimit ??= new Map<string, number[]>());
 
 /**
  * 키별 고정 시간창 안의 요청 횟수를 센다. 허용되면 1회를 기록하고 null, 초과면 다시 시도까지 남은 초를 돌려준다.

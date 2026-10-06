@@ -11,8 +11,8 @@ import { getAnalysisStore, type AnalysisRecord } from "./store";
 /** 동시에 생성 중인 리포트 수 상한. 요청 폭주 시 AI 비용이 한꺼번에 커지는 것을 막는다. */
 export const MAX_CONCURRENT_GENERATIONS = 10;
 
-const globalForGeneration = globalThis as typeof globalThis & { __paljaInFlight?: { count: number } };
-const inFlight = (globalForGeneration.__paljaInFlight ??= { count: 0 });
+const globalForGeneration = globalThis as typeof globalThis & { __dohwaInFlight?: { count: number } };
+const inFlight = (globalForGeneration.__dohwaInFlight ??= { count: 0 });
 
 export const generationCapacityAvailable = () => inFlight.count < MAX_CONCURRENT_GENERATIONS;
 

@@ -5,9 +5,9 @@ import {
 } from "@/lib/validation/analysisInput";
 
 // sessionStorage는 탭을 닫으면 지워지므로, 개인정보가 기기에 오래 남지 않는다.
-const DRAFT_KEY = "palja:input-draft:v1";
-const PENDING_KEY = "palja:pending-analysis:v1";
-const TOKEN_KEY = "palja:analysis-token:v1";
+const DRAFT_KEY = "dohwa:input-draft:v1";
+const PENDING_KEY = "dohwa:pending-analysis:v1";
+const TOKEN_KEY = "dohwa:analysis-token:v1";
 
 type Draft = { values: AnalysisFormValues; stepIndex: number };
 

@@ -1,7 +1,7 @@
 export const SERVICE = {
-  name: "팔자서재",
+  name: "도화사주",
   tagline: "운명의 책",
-  englishName: "PALJA SEOJAE",
+  englishName: "DOHWA SAJU",
   englishTagline: "The Book of Your Fate",
   description:
     "태어난 순간의 여덟 글자와 지금의 고민을 엮어, 오직 한 사람을 위한 인생의 기록을 씁니다.",

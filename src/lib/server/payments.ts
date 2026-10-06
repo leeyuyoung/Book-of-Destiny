@@ -10,7 +10,7 @@ const REQUEST_TIMEOUT_MS = 30_000;
 /** 토스는 결제 인증 후 10분 안에 승인하지 않으면 만료시키므로, 하루 지난 대기 주문은 다시 쓰일 일이 없다. */
 const STALE_ORDER_MS = 24 * 60 * 60 * 1000;
 
-export const ORDER_NAME = "팔자서재 상세 인생 리포트";
+export const ORDER_NAME = "도화사주 상세 인생 리포트";
 export const ORDER_ID_PATTERN = /^[A-Za-z0-9_-]{6,64}$/;
 export const PAYMENT_KEY_PATTERN = /^[A-Za-z0-9_-]{1,200}$/;
 
@@ -63,7 +63,7 @@ export async function createOrder(token: string): Promise<OrderRecord> {
   });
 
   const order: OrderRecord = {
-    orderId: `palja_${randomBytes(16).toString("base64url")}`,
+    orderId: `dohwa_${randomBytes(16).toString("base64url")}`,
     token,
     amount: DETAILED_REPORT_PRICE,
     status: "pending",
