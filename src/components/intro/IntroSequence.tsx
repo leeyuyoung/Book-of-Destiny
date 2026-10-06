@@ -16,7 +16,6 @@ const BEATS = [
   { key: "stop", scene: "caught" },
   { key: "tease", scene: "caught" },
   { key: "secret", scene: "caught" },
-  { key: "reveal", scene: "petal" },
   { key: "final", scene: "offer" },
 ] as const satisfies readonly { key: string; scene: HeroineScene }[];
 type Beat = (typeof BEATS)[number]["key"];
@@ -37,8 +36,8 @@ const typedEnd = (lines: readonly string[], startAt = 0) =>
   startAt + lines.reduce((count, line) => count + Array.from(line).length, 0) * TYPE_STEP_S;
 
 const TEASE_AT = typedEnd([INTRO_SCRIPT.teaseLead]) + TYPE_PAUSE_S;
-const REVEAL_AT = typedEnd(INTRO_SCRIPT.revealLead) + TYPE_PAUSE_S;
-const INVITE_AT = 0.6;
+const LEAD_AT = 0.6;
+const INVITE_AT = typedEnd(HERO_COPY.lead, LEAD_AT) + TYPE_PAUSE_S;
 const CTA_AT = typedEnd([HERO_COPY.invite], INVITE_AT) + 0.4;
 
 /** 컷마다 자막을 다 친 시각. 안내 문구는 이 뒤에 띄운다. */
@@ -49,7 +48,6 @@ const COPY_END_S: Record<Beat, number> = {
   stop: typedEnd([INTRO_SCRIPT.stop]),
   tease: typedEnd(INTRO_SCRIPT.tease, TEASE_AT),
   secret: typedEnd(INTRO_SCRIPT.secret),
-  reveal: typedEnd([INTRO_SCRIPT.reveal], REVEAL_AT),
   final: CTA_AT,
 };
 
@@ -151,17 +149,6 @@ function BeatCopy({ beat, instant }: { beat: Beat; instant: boolean }) {
         <motion.h2 exit={mistExit} className="text-center font-brush text-[clamp(1.5rem,7.6vw,2.5rem)] leading-[1.25] tracking-[0.04em] break-keep">
           <Typed lines={INTRO_SCRIPT.secret} charClassName="text-gold-gradient" />
         </motion.h2>
-      );
-    case "reveal":
-      return (
-        <motion.div className="flex flex-col items-center gap-3 text-center" exit={mistExit}>
-          <p className="font-serif text-[17px] font-light leading-relaxed tracking-[0.06em] break-keep text-paper/90">
-            <Typed lines={INTRO_SCRIPT.revealLead} />
-          </p>
-          <p className={`text-[clamp(1.5rem,7vw,2.2rem)] ${GLOW_CLASS}`}>
-            <Typed lines={[INTRO_SCRIPT.reveal]} startAt={REVEAL_AT} />
-          </p>
-        </motion.div>
       );
     case "final":
       return <FinalReveal instant={instant} />;
@@ -266,7 +253,10 @@ function FinalReveal({ instant }: { instant: boolean }) {
 
   return (
     <motion.div className="flex w-full max-w-md flex-col items-center text-center" onClick={(event) => event.stopPropagation()}>
-      <h1 className="font-brush text-[clamp(1.9rem,9.5vw,2.75rem)] leading-[1.25] tracking-[0.06em] break-keep">
+      <p className="mb-3 font-serif text-[17px] font-medium leading-relaxed tracking-[0.06em] break-keep text-paper [text-shadow:0_1px_10px_rgba(10,6,20,0.9)]">
+        <Typed lines={HERO_COPY.lead} startAt={LEAD_AT} instant={instant} />
+      </p>
+      <h1 className="font-brush text-[clamp(1.7rem,8.2vw,2.75rem)] leading-[1.25] tracking-[0.06em] break-keep">
         <Typed lines={[HERO_COPY.invite]} startAt={INVITE_AT} charClassName="text-gold-gradient" instant={instant} />
       </h1>
 

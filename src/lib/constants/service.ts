@@ -16,13 +16,12 @@ export const INTRO_SCRIPT = {
   teaseLead: "“너…”",
   tease: ["“사람 좀", "홀리고 다녔겠구나.”"],
   secret: ["남을 미치게 만드는 색기는", "타고나는 것이지."],
-  revealLead: ["“스치기만 해도 반응하게 만드는", "네 사주의 비밀,”"],
-  reveal: "“도화선녀가 알려주마.”",
 } as const;
 
 /** 인트로 마지막 장면 */
 export const HERO_COPY = {
-  invite: "“네 도화를 피워보자꾸나.”",
+  lead: ["“스치기만 해도 반응하게 만드는", "네 사주의 비밀,”"],
+  invite: "“도화선녀가 알려주마.”",
   cta: "숨겨진 도화력 확인하기",
 } as const;
 
