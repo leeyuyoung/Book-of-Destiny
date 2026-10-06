@@ -27,6 +27,15 @@ export function Field({ label, htmlFor, hint, error, errorId, children }: FieldP
   );
 }
 
+export function FieldError({ message, id }: { message?: string; id?: string }) {
+  if (!message) return null;
+  return (
+    <p id={id} role="alert" className="text-xs leading-relaxed text-fire">
+      {message}
+    </p>
+  );
+}
+
 export const INPUT_BASE =
   "h-14 w-full rounded-xl border bg-night/70 px-4 text-base text-paper placeholder:text-mist-dim/70 transition-colors duration-300 focus:border-gold/70 focus:outline-none focus:ring-1 focus:ring-gold/30 disabled:opacity-40";
 

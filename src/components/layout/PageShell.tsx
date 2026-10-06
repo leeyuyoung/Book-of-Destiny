@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ShrineBackground } from "@/components/shrine/ShrineBackground";
+import { NightGardenBackground } from "@/components/night/NightGardenBackground";
 import { LogoMark } from "@/components/ui/LogoMark";
 import { SERVICE } from "@/lib/constants/service";
 
@@ -15,7 +15,7 @@ type PageShellProps = {
 export function PageShell({ children, showHeader = true, showFooter = true, intensity = "soft" }: PageShellProps) {
   return (
     <div className="relative isolate flex min-h-dvh flex-col">
-      <ShrineBackground intensity={intensity} />
+      <NightGardenBackground intensity={intensity} />
       {showHeader && (
         <header className="sticky top-0 z-30 border-b border-line/50 bg-ink/60 backdrop-blur-md">
           <div className="mx-auto flex h-14 max-w-xl items-center justify-between px-5">

@@ -13,9 +13,8 @@ const profile = buildSajuProfile(
 async function main() {
   const startedAt = Date.now();
   const report = await generateReport(profile, {
-    occupationStatus: "employee",
-    occupation: "IT 회사 마케팅 5년차",
-    concern: "지금 회사를 계속 다녀야 할지, 이직하거나 내 일을 시작해야 할지 고민입니다. 요즘 일에 의욕이 많이 떨어졌어요.",
+    relationshipStatus: "some",
+    concern: "썸 타는 사람이 있는데 연락이 뜸해졌어요. 제가 먼저 다가가도 될지 모르겠어요.",
   });
   const seconds = ((Date.now() - startedAt) / 1000).toFixed(1);
   const characters = report.parts.reduce((sum, part) => sum + part.paragraphs.join("").length, 0);

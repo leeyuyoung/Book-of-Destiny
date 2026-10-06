@@ -1,12 +1,13 @@
 import {
   EMPTY_FORM_VALUES,
+  STEP_SCHEMAS,
   type AnalysisFormValues,
   type AnalysisInput,
 } from "@/lib/validation/analysisInput";
 
 // sessionStorage는 탭을 닫으면 지워지므로, 개인정보가 기기에 오래 남지 않는다.
-const DRAFT_KEY = "dohwa:input-draft:v1";
-const PENDING_KEY = "dohwa:pending-analysis:v1";
+const DRAFT_KEY = "dohwa:input-draft:v2";
+const PENDING_KEY = "dohwa:pending-analysis:v2";
 const TOKEN_KEY = "dohwa:analysis-token:v1";
 
 type Draft = { values: AnalysisFormValues; stepIndex: number };
@@ -42,7 +43,9 @@ export function loadDraft(): Draft {
   }
 
   const stepIndex =
-    typeof stored?.stepIndex === "number" && stored.stepIndex >= 0 && stored.stepIndex <= 3 ? stored.stepIndex : 0;
+    typeof stored?.stepIndex === "number" && stored.stepIndex >= 0 && stored.stepIndex < STEP_SCHEMAS.length
+      ? stored.stepIndex
+      : 0;
   return { values, stepIndex };
 }
 

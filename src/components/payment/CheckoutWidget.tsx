@@ -2,14 +2,19 @@
 
 import { ANONYMOUS, loadTossPayments, type TossPaymentsWidgets } from "@tosspayments/tosspayments-sdk";
 import { useEffect, useRef, useState } from "react";
+import { CheckboxField } from "@/components/input/fields/CheckboxField";
+import { Field, INPUT_BASE, inputBorder } from "@/components/input/fields/Field";
 import { Button } from "@/components/ui/Button";
 import { formatPrice } from "@/lib/constants/service";
+import { checkoutContactSchema } from "@/lib/validation/analysisInput";
 
 type CheckoutWidgetProps = {
   clientKey: string;
   token: string;
   amount: number;
 };
+
+type ContactErrors = Partial<Record<"email" | "agreePrivacy" | "agreeAge14", string>>;
 
 type OrderResponse = { orderId?: string; amount?: number; orderName?: string; message?: string };
 
@@ -25,6 +30,10 @@ export function CheckoutWidget({ clientKey, token, amount }: CheckoutWidgetProps
   const [ready, setReady] = useState(false);
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [agreePrivacy, setAgreePrivacy] = useState(false);
+  const [agreeAge14, setAgreeAge14] = useState(false);
+  const [contactErrors, setContactErrors] = useState<ContactErrors>({});
 
   useEffect(() => {
     activeRef.current = true;
@@ -54,13 +63,24 @@ export function CheckoutWidget({ clientKey, token, amount }: CheckoutWidgetProps
   const pay = async () => {
     const widgets = widgetsRef.current;
     if (!widgets || paying) return;
+    const contact = checkoutContactSchema.safeParse({ email, agreePrivacy, agreeAge14 });
+    if (!contact.success) {
+      const errors: ContactErrors = {};
+      for (const issue of contact.error.issues) {
+        const key = issue.path[0] as keyof ContactErrors;
+        errors[key] ??= issue.message;
+      }
+      setContactErrors(errors);
+      return;
+    }
+    setContactErrors({});
     setPaying(true);
     setError(null);
     try {
       const response = await fetch("/api/payments/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
+        body: JSON.stringify({ token, ...contact.data }),
       });
       const order = (await response.json().catch(() => ({}))) as OrderResponse;
       if (!response.ok || !order.orderId || !order.orderName || order.amount !== amount) {
@@ -83,6 +103,50 @@ export function CheckoutWidget({ clientKey, token, amount }: CheckoutWidgetProps
 
   return (
     <div className="flex flex-col gap-5">
+      <div className="glass-card flex flex-col gap-5 rounded-3xl px-6 py-6">
+        <Field
+          label="리포트를 받을 이메일"
+          htmlFor="checkout-email"
+          error={contactErrors.email}
+          errorId="checkout-email-error"
+          hint="결제가 끝나면 전체 리포트 링크를 이 주소로 보내드립니다."
+        >
+          <input
+            id="checkout-email"
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            placeholder="example@email.com"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            aria-invalid={!!contactErrors.email}
+            aria-describedby={contactErrors.email ? "checkout-email-error" : undefined}
+            className={`${INPUT_BASE} ${inputBorder(!!contactErrors.email)}`}
+          />
+        </Field>
+        <div className="flex flex-col gap-3">
+          <CheckboxField
+            id="agree-privacy"
+            checked={agreePrivacy}
+            onChange={setAgreePrivacy}
+            hasError={!!contactErrors.agreePrivacy}
+          >
+            (필수) 개인정보 수집·이용에 동의합니다
+            <span className="mt-1 block text-xs text-mist-dim">
+              수집 항목: 생년월일·출생시간·성별·이름·연애 상태·고민, 이메일 / 목적: 사주 풀이와 리포트 발송
+            </span>
+          </CheckboxField>
+          <CheckboxField id="agree-age14" checked={agreeAge14} onChange={setAgreeAge14} hasError={!!contactErrors.agreeAge14}>
+            (필수) 만 14세 이상입니다
+          </CheckboxField>
+          {(contactErrors.agreePrivacy || contactErrors.agreeAge14) && (
+            <p role="alert" className="text-xs leading-relaxed text-fire">
+              {contactErrors.agreePrivacy ?? contactErrors.agreeAge14}
+            </p>
+          )}
+        </div>
+      </div>
+
       <div className="overflow-hidden rounded-2xl bg-white">
         <div id="toss-payment-method" />
         <div id="toss-payment-agreement" />

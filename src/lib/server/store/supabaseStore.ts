@@ -12,10 +12,9 @@ type Row = {
   created_at: string;
   updated_at: string;
   name: string;
-  email: string;
-  occupation_status: AnalysisRecord["occupationStatus"];
-  occupation: string | null;
-  concern: string;
+  email: string | null;
+  relationship_status: AnalysisRecord["relationshipStatus"];
+  concern: string | null;
   profile: AnalysisRecord["profile"];
   report: AnalysisRecord["report"];
   paid_at: string | null;
@@ -69,8 +68,7 @@ function toRow(record: AnalysisRecord): Row {
     updated_at: toIso(record.updatedAt),
     name: record.name,
     email: record.email,
-    occupation_status: record.occupationStatus,
-    occupation: record.occupation,
+    relationship_status: record.relationshipStatus,
     concern: record.concern,
     profile: record.profile,
     report: record.report,
@@ -86,8 +84,7 @@ function fromRow(row: Row): AnalysisRecord {
     updatedAt: Date.parse(row.updated_at),
     name: row.name,
     email: row.email,
-    occupationStatus: row.occupation_status,
-    occupation: row.occupation,
+    relationshipStatus: row.relationship_status,
     concern: row.concern,
     profile: row.profile,
     report: row.report,
@@ -100,8 +97,7 @@ function patchToRow(patch: Patch): Partial<Row> {
   if (patch.status !== undefined) row.status = patch.status;
   if (patch.name !== undefined) row.name = patch.name;
   if (patch.email !== undefined) row.email = patch.email;
-  if (patch.occupationStatus !== undefined) row.occupation_status = patch.occupationStatus;
-  if (patch.occupation !== undefined) row.occupation = patch.occupation;
+  if (patch.relationshipStatus !== undefined) row.relationship_status = patch.relationshipStatus;
   if (patch.concern !== undefined) row.concern = patch.concern;
   if (patch.profile !== undefined) row.profile = patch.profile;
   if (patch.report !== undefined) row.report = patch.report;

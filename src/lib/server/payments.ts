@@ -51,11 +51,12 @@ async function callToss(path: string, init: RequestInit & { idempotencyKey?: str
 const lookupPayment = (paymentKey: string) => callToss(`/${encodeURIComponent(paymentKey)}`, { method: "GET" });
 
 /** 결제할 수 있는 분석에 대해 주문을 만든다. 금액은 항상 서버의 정가다. */
-export async function createOrder(token: string): Promise<OrderRecord> {
+export async function createOrder(token: string, email: string): Promise<OrderRecord> {
   const store = getAnalysisStore();
   const record = await store.get(token);
   if (!record || record.status !== "ready") throw new PaymentError(404, "결제할 리포트를 찾지 못했습니다.");
   if (record.paidAt !== null) throw new PaymentError(409, "이미 결제가 완료된 리포트입니다.");
+  if (record.email !== email) await store.update(token, { email });
 
   const now = Date.now();
   await store.deleteStalePendingOrders(now - STALE_ORDER_MS).catch((error) => {

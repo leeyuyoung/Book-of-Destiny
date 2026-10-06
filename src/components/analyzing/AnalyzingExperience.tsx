@@ -153,7 +153,7 @@ export function AnalyzingExperience() {
     <div className="flex flex-1 flex-col items-center justify-center gap-14 py-16 text-center">
       <div className="relative flex h-56 w-56 items-center justify-center">
         <svg viewBox="0 0 200 200" className="absolute inset-0 h-full w-full -rotate-90">
-          <circle cx="100" cy="100" r="92" fill="none" stroke="rgb(217 164 65 / 0.14)" strokeWidth="1" />
+          <circle cx="100" cy="100" r="92" fill="none" stroke="rgb(214 176 122 / 0.14)" strokeWidth="1" />
           <motion.circle
             cx="100"
             cy="100"
@@ -168,8 +168,8 @@ export function AnalyzingExperience() {
           />
           <defs>
             <linearGradient id="progress-gold" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#fbe7b0" />
-              <stop offset="100%" stopColor="#c42b1f" />
+              <stop offset="0%" stopColor="#fff3dc" />
+              <stop offset="100%" stopColor="#e8899b" />
             </linearGradient>
           </defs>
         </svg>
@@ -201,11 +201,11 @@ export function AnalyzingExperience() {
               className="flex w-full max-w-xs flex-col items-center gap-8"
             >
               <p className="font-serif text-lg font-light leading-relaxed">
-                당신의 첫 페이지가
+                네 꽃의 첫 잎이
                 <br />
-                <span className="text-gold-gradient">완성되었습니다.</span>
+                <span className="text-gold-gradient">피어났구나.</span>
               </p>
-              <ButtonLink href={`/result/${phase.token}`}>첫 장 읽기</ButtonLink>
+              <ButtonLink href={`/result/${phase.token}`}>내 꽃 보러 가기</ButtonLink>
             </motion.div>
           )}
           {phase.kind === "error" && (
@@ -235,9 +235,9 @@ export function AnalyzingExperience() {
               className="flex w-full max-w-xs flex-col items-center gap-6"
             >
               <p className="font-serif text-base leading-relaxed text-paper">
-                분석할 정보가 없습니다.
+                아직 네 이야기를 듣지 못했구나.
                 <br />
-                <span className="text-mist">처음부터 다시 입력해주세요.</span>
+                <span className="text-mist">처음부터 다시 들려주겠느냐?</span>
               </p>
               <ButtonLink href="/start">정보 입력하기</ButtonLink>
             </motion.div>

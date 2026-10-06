@@ -29,9 +29,8 @@ export async function createAnalysis(input: AnalysisInput): Promise<AnalysisReco
     createdAt: now,
     updatedAt: now,
     name: input.name,
-    email: input.email,
-    occupationStatus: input.occupationStatus,
-    occupation: input.occupation,
+    email: null,
+    relationshipStatus: input.relationshipStatus,
     concern: input.concern,
     profile,
     report: null,
@@ -64,8 +63,7 @@ export async function runReportGeneration(record: AnalysisRecord): Promise<void>
   inFlight.count++;
   try {
     const report = await generateReport(record.profile, {
-      occupationStatus: record.occupationStatus,
-      occupation: record.occupation,
+      relationshipStatus: record.relationshipStatus,
       concern: record.concern,
     });
     await store.update(record.token, { status: "ready", report });

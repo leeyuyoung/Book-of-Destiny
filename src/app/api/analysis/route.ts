@@ -8,7 +8,6 @@ import { analysisInputSchema } from "@/lib/validation/analysisInput";
 export const maxDuration = 300;
 
 const IP_LIMIT = { limit: 5, windowMs: 60 * 60 * 1000 };
-const EMAIL_LIMIT = { limit: 5, windowMs: 24 * 60 * 60 * 1000 };
 
 export async function POST(request: Request) {
   if (!isSameOrigin(request)) return fail(403, "허용되지 않은 요청입니다.");
@@ -18,9 +17,7 @@ export async function POST(request: Request) {
   if (!parsed.success) return fail(400, "입력값을 다시 확인해주세요.");
   const input = parsed.data;
 
-  const retryAfter =
-    consumeRateLimit(`analysis:ip:${clientIp(request)}`, IP_LIMIT) ??
-    consumeRateLimit(`analysis:email:${input.email}`, EMAIL_LIMIT);
+  const retryAfter = consumeRateLimit(`analysis:ip:${clientIp(request)}`, IP_LIMIT);
   if (retryAfter !== null) {
     return fail(429, "요청이 너무 많습니다. 잠시 후 다시 시도해주세요.", { "Retry-After": String(retryAfter) });
   }

@@ -1,18 +1,20 @@
 export const SERVICE = {
   name: "도화사주",
-  tagline: "운명의 책",
+  tagline: "달빛 아래 도화",
   englishName: "DOHWA SAJU",
-  englishTagline: "The Book of Your Fate",
+  englishTagline: "Your Peach Blossom Fate",
   description:
-    "태어난 순간의 여덟 글자와 지금의 고민을 엮어, 오직 한 사람을 위한 인생의 기록을 씁니다.",
+    "태어난 순간의 여덟 글자에 숨은 당신의 매력과 인연의 흐름을, 달빛 아래에서 읽어드립니다.",
 } as const;
 
-export const INTRO_LINES: ReadonlyArray<readonly [string, string]> = [
-  ["당신이 살아온 시간에는", "이유가 있습니다."],
-  ["지금의 고민도,", "당신의 운명 안에 있습니다."],
-  ["오직 한 사람을 위해 쓰인", "인생의 기록."],
-  ["이제, 당신의 다음 장을", "펼칠 시간입니다."],
-];
+/** 도화선녀가 사용자를 처음 맞이하는 대사 (docs/WORLDVIEW.md) */
+export const INTRO_GREETING = ["“왔구나.”", "“네 꽃은 아직", "피지 않았느냐?”"] as const;
+
+export const HERO_COPY = {
+  headline: ["홀리는 사주는", "따로 있다"],
+  description: "자꾸 눈길이 가는 사람이 있지. 그 이유는 태어날 때 이미 정해졌단다.",
+  cta: "내 꽃 보여주기",
+} as const;
 
 export const DETAILED_REPORT_PRICE = 19900;
 
@@ -33,18 +35,20 @@ export const REPORT_PARTS = [
 ] as const;
 
 export const ANALYSIS_MESSAGES = [
-  "태어난 순간의 하늘을 펼치고 있습니다.",
-  "만세력으로 여덟 글자를 세우고 있습니다.",
-  "당신의 오행 균형을 살펴보고 있습니다.",
-  "십신과 지장간의 관계를 읽고 있습니다.",
-  "대운의 큰 흐름을 따라가고 있습니다.",
-  "지금의 고민과 사주의 흐름을 잇고 있습니다.",
-  "당신만을 위한 첫 페이지를 쓰고 있습니다.",
+  "네가 태어난 밤의 하늘을 펼치는 중이란다.",
+  "만세력으로 네 여덟 글자를 세우고 있지.",
+  "네 안의 오행이 어디로 기울었는지 보고 있구나.",
+  "글자와 글자 사이에 숨은 인연을 읽는 중이란다.",
+  "네 꽃이 피고 지는 큰 흐름을 따라가고 있지.",
+  "네 마음의 고민과 사주의 흐름을 잇고 있단다.",
+  "이제 네 꽃의 첫 잎을 쓰고 있으니, 조금만 기다리거라.",
 ] as const;
 
+/** 도화선녀가 하나씩 묻는 입력 질문. 순서는 analysisInput의 STEP_SCHEMAS와 같다. */
 export const INPUT_STEPS = [
-  { step: 1, eyebrow: "STEP 01", title: "당신은 언제 태어났나요?", description: "태어난 순간의 하늘이 이야기의 첫 문장이 됩니다." },
-  { step: 2, eyebrow: "STEP 02", title: "어떤 삶을 살고 있나요?", description: "지금의 자리를 알아야 흐름을 더 정확히 읽을 수 있습니다." },
-  { step: 3, eyebrow: "STEP 03", title: "요즘 가장 고민되는 것은 무엇인가요?", description: "적어주신 고민은 리포트의 마지막 장에서 깊이 다룹니다." },
-  { step: 4, eyebrow: "STEP 04", title: "결과를 받을 이메일을 알려주세요.", description: "상세 사주 리포트를 이메일로 보내드립니다." },
+  { sub: "그날의 기운을 보아야겠구나.", question: "“네가 태어난 날을 알려다오.”" },
+  { sub: "모름을 골라도 되느니라.", question: "“그날 몇 시에 태어났느냐?”" },
+  { sub: "하나만 더 묻자꾸나.", question: "“네 성별은?”" },
+  { sub: "네가 아끼는 별명이어도 좋다.", question: "“내가 너를 뭐라 부르면 좋겠느냐?”" },
+  { sub: "이제 네 마음을 들여다보자꾸나.", question: "“지금 마음에 품은 이가 있느냐?”" },
 ] as const;

@@ -1,6 +1,6 @@
 import type { AiReport } from "@/lib/server/ai/reportSchema";
 import type { SajuProfile } from "@/lib/saju";
-import type { OccupationStatus } from "@/lib/validation/analysisInput";
+import type { RelationshipStatus } from "@/lib/validation/analysisInput";
 
 export type AnalysisStatus = "generating" | "ready" | "failed";
 
@@ -11,11 +11,10 @@ export type AnalysisRecord = {
   createdAt: number;
   updatedAt: number;
   name: string;
-  /** 리포트 링크 발송용. 화면이나 AI 요청에는 쓰지 않는다. */
-  email: string;
-  occupationStatus: OccupationStatus;
-  occupation: string | null;
-  concern: string;
+  /** 리포트 링크 발송용. 결제 직전에 받으며, 화면이나 AI 요청에는 쓰지 않는다. */
+  email: string | null;
+  relationshipStatus: RelationshipStatus;
+  concern: string | null;
   profile: SajuProfile;
   report: AiReport | null;
   paidAt: number | null;

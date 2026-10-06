@@ -19,6 +19,10 @@ export async function sendReportEmail(record: Pick<AnalysisRecord, "token" | "na
     console.error("[email] RESEND_API_KEY, EMAIL_FROM, APP_URL must be set; report email skipped");
     return false;
   }
+  if (!record.email) {
+    console.error(`[email] ${record.token.slice(0, 6)}… has no email; report email skipped`);
+    return false;
+  }
 
   const reportUrl = new URL(`/report/${record.token}`, appUrl).toString();
   const { subject, html, text } = buildReportEmail({ name: record.name, reportUrl });
