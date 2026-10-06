@@ -49,9 +49,9 @@ export function TypeHero({ name, type, eyebrow, hook }: TypeHeroProps) {
             <span className="font-serif text-4xl text-blossom-glow">{type.elementHanja}</span>
           </div>
           <p className="mt-6 text-xs font-medium text-cinnabar">{type.name}의 분위기</p>
-          <ul className="mt-3 flex flex-col gap-2">
+          <ul className="mt-3 grid grid-cols-2 gap-2">
             {type.vibes.map((vibe) => (
-              <li key={vibe} className="flex items-center gap-2.5 text-sm text-paper/90">
+              <li key={vibe} className="flex flex-col gap-2 rounded-xl border border-line/70 bg-ink/50 px-3 py-3 text-[13px] leading-snug text-paper/90 break-keep">
                 <span className="h-1.5 w-1.5 shrink-0 rotate-45 bg-cinnabar" />
                 {vibe}
               </li>

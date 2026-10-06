@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { BLURRED_FILLER, CHARM_STAR_LABELS, REPORT_CHAPTERS } from "@/lib/constants/result";
+import { CHARM_STAR_LABELS, REPORT_CHAPTERS } from "@/lib/constants/result";
 import { DETAILED_REPORT_PRICE, formatPrice } from "@/lib/constants/service";
 import type { CharmStarView } from "@/types/result";
 
@@ -26,39 +26,17 @@ export function CharmStars({ stars }: { stars?: CharmStarView[] }) {
             stars && star.found ? "border-cinnabar/60 bg-crimson/25" : "border-line bg-night/70"
           }`}
         >
-          <span className="font-serif text-lg text-paper">{stars ? (star.found ? "있음" : "없음") : "???"}</span>
-          <span className="text-xs text-blossom">{star.name}</span>
+          <span
+            aria-hidden
+            className="flex h-14 w-14 items-center justify-center rounded-full border border-cinnabar/40 bg-crimson-deep/50 font-serif text-[17px] tracking-tight text-blossom [writing-mode:vertical-rl]"
+          >
+            {star.hanja}
+          </span>
+          <span className="text-sm text-paper">{star.name}</span>
+          <span className="font-serif text-xs text-mist">{stars ? (star.found ? "있음" : "없음") : "???"}</span>
           {stars && star.found && <span className="text-[10px] text-mist">{star.where}</span>}
         </div>
       ))}
-    </div>
-  );
-}
-
-/** 잠긴 장. 실제 리포트 대신 자리 채움 글을 흐리게 보여준다. */
-export function LockedChapter({ chapter }: { chapter: (typeof REPORT_CHAPTERS)[number] }) {
-  return (
-    <article className="flex flex-col gap-4">
-      <SectionTitle eyebrow={`제${chapter.chapter}장`} title={chapter.title} description={chapter.teaser} />
-      <BlurredText />
-    </article>
-  );
-}
-
-export function BlurredText({ lines = 1 }: { lines?: number }) {
-  return (
-    <div aria-hidden className="relative select-none">
-      {Array.from({ length: lines }, (_, index) => (
-        <p key={index} className="text-[15px] leading-[1.9] text-paper/80 blur-[5px]">
-          {BLURRED_FILLER}
-        </p>
-      ))}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="flex items-center gap-1.5 rounded-full border border-cinnabar/30 bg-ink/90 px-3 py-1.5 text-xs text-paper/90 shadow-[0_0_24px_rgb(7_6_14_/_0.9)]">
-          <LockIcon />
-          펼치면 전부 알려주마
-        </span>
-      </div>
     </div>
   );
 }
@@ -121,17 +99,19 @@ export function FinalCheckoutPrompt({ checkoutHref }: CheckoutProps) {
         </p>
         <p className="text-sm text-mist">어떻게 꺼내고, 누구에게 쓰고, 언제 터뜨릴지. 네 사주로만 쓰는 연애·매력 리포트 전 {REPORT_CHAPTERS.length}장</p>
       </div>
-      <ol className="flex flex-col gap-2">
-        {REPORT_CHAPTERS.map((chapter) => (
-          <li key={chapter.chapter} className="flex items-center gap-3 rounded-xl border border-line/70 bg-ink/50 px-4 py-3">
-            <LockIcon />
-            <span className="w-9 shrink-0 text-[11px] text-cinnabar">제{chapter.chapter}장</span>
-            <span className="font-serif text-sm text-paper/90">{chapter.title}</span>
+      <ul className="grid grid-cols-3 gap-2 text-center">
+        {[
+          { value: `${REPORT_CHAPTERS.length}장`, label: "연애·매력 리포트" },
+          { value: "1~2분", label: "완성까지" },
+          { value: "이메일", label: "함께 보내 드려요" },
+        ].map((item) => (
+          <li key={item.label} className="flex flex-col gap-1 rounded-xl border border-line/70 bg-ink/50 px-2 py-3">
+            <span className="font-serif text-lg text-blossom">{item.value}</span>
+            <span className="text-[11px] text-mist">{item.label}</span>
           </li>
         ))}
-      </ol>
+      </ul>
       <CheckoutLink href={checkoutHref} />
-      <p className="text-center text-[11px] leading-relaxed text-mist-dim">결제하면 1~2분 안에 리포트가 완성되고, 이메일로도 보내드려요.</p>
     </section>
   );
 }
@@ -161,7 +141,7 @@ export function StickyCheckoutBar({ href, label }: { href: string; label: string
   );
 }
 
-function LockIcon() {
+export function LockIcon() {
   return (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden className="shrink-0 text-cinnabar">
       <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.8" />

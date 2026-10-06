@@ -1,18 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageShell } from "@/components/layout/PageShell";
-import { DohwaScoreCard } from "@/components/result/DohwaScoreCard";
+import { DohwaLetter, DohwaRadarCard, LockedChapterGrid, LoveTimelineStrip } from "@/components/result/FreeResultParts";
 import { ManseryeokTable } from "@/components/result/ManseryeokTable";
-import {
-  BlurredText,
-  CharmStars,
-  FinalCheckoutPrompt,
-  LockedChapter,
-  LoveTimelineTable,
-  MidCheckoutPrompt,
-  SectionTitle,
-  StickyCheckoutBar,
-} from "@/components/result/ResultParts";
+import { CharmStars, FinalCheckoutPrompt, MidCheckoutPrompt, SectionTitle, StickyCheckoutBar } from "@/components/result/ResultParts";
 import { ReviewCarousel } from "@/components/result/ReviewCarousel";
 import { TypeHero } from "@/components/result/TypeHero";
 import { Reveal } from "@/components/ui/Reveal";
@@ -59,7 +50,7 @@ export default async function ResultPage({ params }: PageProps<"/result/[token]"
         hook="근데 이게 전부가 아니란다. 넌 아직 가진 걸 반도 안 꺼냈어. 그걸 깨우는 법, 내가 알려 주마."
       />
 
-      <div className="mt-12 flex flex-col gap-14 pb-28">
+      <div className="mt-12 flex flex-col gap-12 pb-28">
         <Reveal>
           <section className="flex flex-col gap-5">
             <SectionTitle
@@ -72,7 +63,7 @@ export default async function ResultPage({ params }: PageProps<"/result/[token]"
                 </>
               }
             />
-            <DohwaScoreCard dohwa={result.dohwa} />
+            <DohwaRadarCard dohwa={result.dohwa} />
           </section>
         </Reveal>
 
@@ -88,37 +79,43 @@ export default async function ResultPage({ params }: PageProps<"/result/[token]"
           </section>
         </Reveal>
 
-        <LockedChapter chapter={chapterOf("firstImpression")} />
-        <LockedChapter chapter={chapterOf("looks")} />
-
         <Reveal>
           <section className="flex flex-col gap-5">
             <SectionTitle
               eyebrow={`제${starTypes.chapter}장`}
               title={starTypes.title}
-              description="도화살, 홍염살, 화개살. 몇 개를 쥐고 태어났는지, 어디에 숨겨 뒀는지, 언제 깨어나는지가 네 색기의 결을 정한단다."
+              description="몇 개를 쥐고 태어났는지, 어디에 숨겨 뒀는지가 네 색기의 결을 정한단다."
             />
             <CharmStars />
-            <BlurredText />
           </section>
         </Reveal>
 
-        <LockedChapter chapter={chapterOf("flirt")} />
+        <Reveal>
+          <section className="flex flex-col gap-5">
+            <SectionTitle
+              eyebrow="펼치면 보이는 이야기"
+              title={
+                <>
+                  네 꽃에 숨은
+                  <br />
+                  <span className="text-blossom-glow">아홉 갈래 이야기</span>
+                </>
+              }
+            />
+            {!paid && <DohwaLetter name={result.name} href={checkoutHref} />}
+            <LockedChapterGrid href={paid ? sticky.href : checkoutHref} unlocked={paid} />
+            {!paid && <MidCheckoutPrompt checkoutHref={checkoutHref} />}
+          </section>
+        </Reveal>
 
-        {!paid && <MidCheckoutPrompt checkoutHref={checkoutHref} />}
+        <Reveal>
+          <section className="flex flex-col gap-5">
+            <SectionTitle eyebrow={`제${timeline.chapter}장`} title={timeline.title} description={timeline.teaser} />
+            <LoveTimelineStrip years={result.timelineYears} />
+          </section>
+        </Reveal>
 
         <ReviewCarousel />
-
-        <LockedChapter chapter={chapterOf("language")} />
-        <LockedChapter chapter={chapterOf("styling")} />
-        <LockedChapter chapter={chapterOf("admirers")} />
-        <LockedChapter chapter={chapterOf("inLove")} />
-        <LockedChapter chapter={chapterOf("match")} />
-
-        <section className="flex flex-col gap-4">
-          <SectionTitle eyebrow={`제${timeline.chapter}장`} title={timeline.title} description={timeline.teaser} />
-          <LoveTimelineTable years={result.timelineYears} />
-        </section>
 
         {!paid && <FinalCheckoutPrompt checkoutHref={checkoutHref} />}
       </div>

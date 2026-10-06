@@ -32,6 +32,7 @@
   --font-display: var(--font-cormorant), var(--font-noto-serif-kr), serif;
   --font-brush: var(--font-classic-kr), var(--font-noto-serif-kr), serif;
   --font-eerie: var(--font-classic-kr), var(--font-noto-serif-kr), serif;
+  --font-hand: var(--font-handwriting), var(--font-noto-serif-kr), serif;
 
   --animate-spin-celestial: spin 240s linear infinite;
   --animate-breathe: breathe 6s ease-in-out infinite;
