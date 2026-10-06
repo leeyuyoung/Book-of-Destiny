@@ -2,11 +2,9 @@ import "server-only";
 
 import { CHARM_INDICES, DOHWA_TYPES, LOVE_TIMELINE_YEARS, REPORT_CHAPTERS, gradeOf } from "@/lib/constants/result";
 import { buildSajuProfile, calculateSaju, readDohwa, type SajuProfile } from "@/lib/saju";
-import type { CharmStarView, DohwaView, FreeResultView, FullReportView, PillarView } from "@/types/result";
+import type { CharmStarView, CurrentLuckView, DohwaView, FreeResultView, FullReportView, PillarView } from "@/types/result";
 import { storedReport } from "./analysis";
 import type { AnalysisRecord } from "./store";
-
-const POSITION_LABEL = { year: "년지", month: "월지", day: "일지", hour: "시지" } as const;
 
 function pillarViews(profile: SajuProfile): PillarView[] {
   return [...profile.pillars].reverse().map((pillar) => ({
@@ -52,6 +50,19 @@ function freeView(name: string, profile: SajuProfile): FreeResultView {
   };
 }
 
+function currentLuckView(profile: SajuProfile): CurrentLuckView | null {
+  const period = profile.luck.periods.find((item) => item.isCurrent);
+  if (!period) return null;
+  return {
+    startAge: period.startAge,
+    endAge: period.startAge + 9,
+    stemElement: period.stem.element,
+    branchElement: period.branch.element,
+    stemTenGod: period.stem.tenGod,
+    twelveStage: period.branch.twelveStage,
+  };
+}
+
 const formatKoreanDate = (time: number) =>
   new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", year: "numeric", month: "long", day: "numeric" }).format(time);
 
@@ -62,11 +73,13 @@ export const toFreeResultView = (record: AnalysisRecord): FreeResultView => free
 export function toFullReportView(record: AnalysisRecord): FullReportView | null {
   const report = storedReport(record);
   if (record.paidAt === null || !report) return null;
-  const stars: CharmStarView[] = readDohwa(record.profile).stars.map((star) => ({
+  const { profile } = record;
+  const stars: CharmStarView[] = readDohwa(profile).stars.map((star) => ({
+    key: star.key,
     name: star.name,
     hanja: star.hanja,
     found: star.positions.length > 0,
-    where: star.positions.map((position) => POSITION_LABEL[position]).join(" · "),
+    positions: star.positions,
   }));
   return {
     ...toFreeResultView(record),
@@ -74,8 +87,15 @@ export function toFullReportView(record: AnalysisRecord): FullReportView | null 
     summary: report.summary,
     keywords: report.keywords,
     stars,
+    fiveElements: {
+      counts: profile.fiveElements.counts,
+      dominant: profile.fiveElements.dominant,
+      missing: profile.fiveElements.missing,
+    },
+    currentLuck: currentLuckView(profile),
     chapters: REPORT_CHAPTERS.map((meta, index) => ({
       chapter: meta.chapter,
+      key: meta.key,
       title: meta.title,
       teaser: meta.teaser,
       headline: report.chapters[index].headline,

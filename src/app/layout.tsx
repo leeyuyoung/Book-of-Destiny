@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Noto_Sans_KR, Noto_Serif_KR, Poor_Story, Song_Myung } from "next/font/google";
+import { Cormorant_Garamond, Noto_Sans_KR, Noto_Serif_KR, Song_Myung } from "next/font/google";
+import localFont from "next/font/local";
 import { SERVICE } from "@/lib/constants/service";
 import "./globals.css";
 
@@ -22,9 +23,10 @@ const classicKr = Song_Myung({
   weight: "400",
 });
 
-const handwriting = Poor_Story({
+/** 클로바 나눔손글씨 성실체(OFL, 라이선스는 fonts/OFL.txt). 예약 글꼴명 조항 때문에 글자를 덜어 내지 않고 원본 그대로 쓴다. */
+const handwriting = localFont({
+  src: "./fonts/NanumSeongSirCe.woff2",
   variable: "--font-handwriting",
-  weight: "400",
   preload: false,
 });
 

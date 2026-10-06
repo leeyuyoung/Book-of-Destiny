@@ -69,7 +69,7 @@ export default async function ResultPage({ params }: PageProps<"/result/[token]"
 
         <Reveal>
           <section className="flex flex-col gap-5">
-            <SectionTitle eyebrow="만세력" title="네 여덟 글자" description="네가 사람을 홀리는 건 우연이 아니란다. 태어난 순간, 하늘이 여기 새겨 뒀지." />
+            <SectionTitle eyebrow="타고난 글자" title="네가 태어난 순간의 하늘" description="네가 사람을 홀리는 건 우연이 아니란다. 태어난 순간, 하늘이 여기 새겨 뒀지." />
             <ManseryeokTable
               name={result.name}
               dayPillarName={result.dayPillarName}

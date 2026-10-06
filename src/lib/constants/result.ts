@@ -1,7 +1,7 @@
 import type { CharmIndexKey, CharmStarKey } from "@/lib/saju/dohwa";
 import type { FiveElementKey } from "@/lib/saju/profileTypes";
 
-/** 일간 오행으로 정해지는 도화 유형. 무료 화면에 그대로 보여준다. */
+/** 일간 오행으로 정해지는 도화 유형. 무료 화면에 그대로 보여준다. 한자는 장식으로만 쓴다. */
 export const DOHWA_TYPES: Record<
   FiveElementKey,
   { hanja: string; name: string; alias: string; elementHanja: string; headline: string; description: string; vibes: string[] }
@@ -55,10 +55,10 @@ export const DOHWA_TYPES: Record<
 
 /** 도화 지수 구간. 높은 점수부터 순서대로 확인한다. */
 export const DOHWA_GRADES = [
-  { min: 92, hanja: "滿開", label: "만개", line: "이미 흘러넘치는 도화로구나. 그런데 그 힘, 제대로 쓸 줄은 아직 모르지?" },
-  { min: 88, hanja: "開花", label: "개화", line: "꽃이 한창 차오르는 중이란다. 제대로 피우는 순간, 시선은 전부 네 거야." },
-  { min: 85, hanja: "半開", label: "반개", line: "반만 피었는데도 이 정도란다. 나머지 반을 꺼내는 순간, 판이 뒤집혀." },
-  { min: 0, hanja: "含苞", label: "함포", line: "꽁꽁 숨겨 둔 향기가 가득하구나. 터지는 날, 다들 몰라봤던 걸 후회할 거야." },
+  { min: 92, hanja: "滿開", label: "활짝 핀 꽃", line: "이미 흘러넘치는 도화로구나. 그런데 그 힘, 제대로 쓸 줄은 아직 모르지?" },
+  { min: 88, hanja: "開花", label: "피어나는 꽃", line: "꽃이 한창 차오르는 중이란다. 제대로 피우는 순간, 시선은 전부 네 거야." },
+  { min: 85, hanja: "半開", label: "반쯤 핀 꽃", line: "반만 피었는데도 이 정도란다. 나머지 반을 꺼내는 순간, 판이 뒤집혀." },
+  { min: 0, hanja: "含苞", label: "꽃봉오리", line: "꽁꽁 숨겨 둔 향기가 가득하구나. 터지는 날, 다들 몰라봤던 걸 후회할 거야." },
 ] as const;
 
 export const gradeOf = (score: number) => DOHWA_GRADES.find((grade) => score >= grade.min)!;
@@ -71,10 +71,11 @@ export const CHARM_INDICES: { key: CharmIndexKey; label: string; hanja: string }
   { key: "mystery", label: "신비력", hanja: "秘" },
 ];
 
-export const CHARM_STAR_LABELS: Record<CharmStarKey, { name: string; hanja: string }> = {
-  dohwa: { name: "도화살", hanja: "桃花" },
-  hongyeom: { name: "홍염살", hanja: "紅艶" },
-  hwagae: { name: "화개살", hanja: "華蓋" },
+/** meaning은 살 이름을 모르는 사람도 바로 알아듣는 한 줄 풀이 */
+export const CHARM_STAR_LABELS: Record<CharmStarKey, { name: string; hanja: string; meaning: string }> = {
+  dohwa: { name: "도화살", hanja: "桃花", meaning: "사람을 끌어당기는 꽃향기" },
+  hongyeom: { name: "홍염살", hanja: "紅艶", meaning: "눈을 못 떼게 하는 뜨거운 색기" },
+  hwagae: { name: "화개살", hanja: "華蓋", meaning: "고독해서 더 빛나는 예술가의 아우라" },
 };
 
 /**
@@ -152,7 +153,8 @@ const CHAPTERS = [
     key: "timeline",
     title: "인연이 감겨드는 때",
     teaser: "앞으로 3년, 네 도화가 폭발하고 인연이 쏟아지는 때",
-    guide: "세운 목록의 앞 3년을 따라 연애운의 흐름과 인연이 들어오는 시기",
+    guide:
+      "앞으로 3년 연애운의 큰 흐름만 짧게(문단 2개, 문단마다 2~3문장). 해마다의 이야기는 loveTimeline에 쓰므로 여기서 연도별로 풀어 쓰지 않는다",
   },
   {
     key: "heart",

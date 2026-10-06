@@ -1,7 +1,9 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { CHARM_STAR_LABELS, REPORT_CHAPTERS } from "@/lib/constants/result";
+import { POSITION_LABELS } from "@/lib/constants/sajuLabels";
 import { DETAILED_REPORT_PRICE, formatPrice } from "@/lib/constants/service";
+import type { CharmStarKey } from "@/lib/saju/dohwa";
 import type { CharmStarView } from "@/types/result";
 
 export function SectionTitle({ eyebrow, title, description }: { eyebrow?: string; title: ReactNode; description?: string }) {
@@ -14,60 +16,67 @@ export function SectionTitle({ eyebrow, title, description }: { eyebrow?: string
   );
 }
 
-/** 결제 전에는 이름만 보이고, 결제 후에는 실제로 있는지와 자리를 보여준다. */
+/** 결제 전에는 이름과 뜻만 보이고, 결제 후에는 실제로 있는지와 자리를 보여준다. */
 export function CharmStars({ stars }: { stars?: CharmStarView[] }) {
-  const items = stars ?? Object.values(CHARM_STAR_LABELS).map((label) => ({ ...label, found: false, where: "" }));
+  const items = (Object.keys(CHARM_STAR_LABELS) as CharmStarKey[]).map((key) => ({
+    ...CHARM_STAR_LABELS[key],
+    found: stars?.find((star) => star.key === key),
+  }));
   return (
     <div className="grid grid-cols-3 gap-2">
-      {items.map((star) => (
-        <div
-          key={star.name}
-          className={`flex flex-col items-center gap-1.5 rounded-2xl border px-2 py-4 text-center ${
-            stars && star.found ? "border-cinnabar/60 bg-crimson/25" : "border-line bg-night/70"
-          }`}
-        >
-          <span
-            aria-hidden
-            className="flex h-14 w-14 items-center justify-center rounded-full border border-cinnabar/40 bg-crimson-deep/50 font-serif text-[17px] tracking-tight text-blossom [writing-mode:vertical-rl]"
-          >
-            {star.hanja}
-          </span>
-          <span className="text-sm text-paper">{star.name}</span>
-          <span className="font-serif text-xs text-mist">{stars ? (star.found ? "있음" : "없음") : "???"}</span>
-          {stars && star.found && <span className="text-[10px] text-mist">{star.where}</span>}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/** 연애운 표. timeline이 없으면 연도만 보이고 내용은 흐리게 가린다. */
-export function LoveTimelineTable({ years, timeline }: { years: number[]; timeline?: { year: number; mood: string; body: string }[] }) {
-  return (
-    <div className="overflow-hidden rounded-2xl border border-line">
-      <div className="grid grid-cols-[4.5rem_1fr] bg-white/5 px-4 py-2.5 text-xs text-mist">
-        <span>시기</span>
-        <span>연애운</span>
-      </div>
-      {years.map((year, index) => {
-        const item = timeline?.[index];
+      {items.map((star) => {
+        const has = Boolean(star.found?.found);
         return (
-          <div key={year} className="grid grid-cols-[4.5rem_1fr] gap-y-1 border-t border-line/60 px-4 py-4">
-            <span className="font-serif text-sm text-cinnabar">{year}년</span>
-            {item ? (
-              <div className="flex flex-col gap-1">
-                <span className="font-serif text-[15px] text-paper">{item.mood}</span>
-                <span className="text-sm leading-relaxed text-mist">{item.body}</span>
-              </div>
-            ) : (
-              <span aria-hidden className="select-none text-sm text-paper/80 blur-[5px]">
-                네 꽃이 가장 짙게 피는 순간과 그 사람을 붙잡는 법
+          <div
+            key={star.name}
+            className={`relative flex flex-col items-center gap-1.5 overflow-hidden rounded-2xl border px-2 py-4 text-center ${
+              stars && has ? "border-cinnabar/60 bg-crimson/25" : "border-line bg-night/70"
+            }`}
+          >
+            <span
+              aria-hidden
+              className="flex h-14 w-14 items-center justify-center rounded-full border border-cinnabar/40 bg-crimson-deep/50 font-serif text-[17px] tracking-tight text-blossom [writing-mode:vertical-rl]"
+            >
+              {star.hanja}
+            </span>
+            <span className="text-sm text-paper">{star.name}</span>
+            <span className="text-[11px] leading-snug text-mist break-keep">{star.meaning}</span>
+            {stars ? (
+              <span className={`mt-1 rounded-full px-2 py-0.5 text-[11px] ${has ? "bg-cinnabar/25 text-blossom" : "bg-white/5 text-mist-dim"}`}>
+                {has ? "품고 있어" : "지금은 잠들어 있어"}
               </span>
+            ) : (
+              <span className="mt-1 text-xs text-mist">???</span>
+            )}
+            {stars && has && star.found && (
+              <span className="text-[10px] text-mist">{star.found.positions.map((position) => POSITION_LABELS[position]).join(" · ")}</span>
             )}
           </div>
         );
       })}
     </div>
+  );
+}
+
+/** 해마다 연도, 그해를 한마디로 담은 제목, 짧은 설명을 세로 타임라인으로 잇는다. */
+export function LoveTimeline({ timeline }: { timeline: { year: number; mood: string; body: string }[] }) {
+  return (
+    <ol className="relative flex flex-col gap-4 pl-9">
+      <span aria-hidden className="absolute bottom-6 left-[8px] top-6 w-px bg-gradient-to-b from-cinnabar/70 via-cinnabar/40 to-transparent" />
+      {timeline.map((item) => (
+        <li key={item.year} className="relative">
+          <span
+            aria-hidden
+            className="absolute -left-[33px] top-5 h-3 w-3 rotate-45 border border-cinnabar bg-crimson-deep shadow-[0_0_10px_rgb(232_137_155_/_0.6)]"
+          />
+          <div className="rounded-2xl border border-line bg-night/70 px-5 py-4">
+            <p className="font-serif text-2xl leading-none text-blossom-glow">{item.year}</p>
+            <p className="mt-2 font-serif text-[17px] text-paper">{item.mood}</p>
+            <p className="mt-2 text-sm leading-relaxed text-mist">{item.body}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
   );
 }
 

@@ -36,7 +36,7 @@ export function DohwaRadarCard({ dohwa }: { dohwa: DohwaView }) {
             <span className="ml-1 text-lg text-mist">점</span>
           </p>
         </div>
-        <span className="flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-full border border-cinnabar/50 bg-crimson/30">
+        <span className="flex h-[72px] w-[72px] shrink-0 flex-col items-center justify-center rounded-full border border-cinnabar/50 bg-crimson/30">
           <span className="font-serif text-base leading-none text-blossom">{dohwa.grade.hanja}</span>
           <span className="mt-1 text-[10px] text-paper/80">{dohwa.grade.label}</span>
         </span>
@@ -80,7 +80,7 @@ export function DohwaRadarCard({ dohwa }: { dohwa: DohwaView }) {
           return (
             <text key={index.key} x={x} y={y} textAnchor="middle" dominantBaseline="middle">
               <tspan x={x} dy="-0.5em" className="font-serif" fontSize="13" fill={isTop ? "var(--color-blossom)" : "var(--color-paper)"}>
-                {index.hanja} {index.label}
+                {index.label}
               </tspan>
               <tspan x={x} dy="1.25em" className="font-serif" fontSize="15" fill={isTop ? "var(--color-blossom)" : "var(--color-gold-soft)"}>
                 {index.score}
@@ -178,7 +178,7 @@ export function DohwaLetter({ name, href }: { name: string; href: string }) {
         >
           <p className="relative font-hand text-[18px] leading-none text-[#6e1f36]">{name}에게</p>
 
-          <div className="relative mt-5 flex flex-col gap-4 font-hand text-[15px] leading-[1.95] break-keep [text-shadow:0_0_0.6px_rgb(30_25_21_/_0.5)]">
+          <div className="relative mt-5 flex flex-col gap-4 font-hand text-[16px] leading-[1.9] break-keep [text-shadow:0_0_0.6px_rgb(30_25_21_/_0.5)]">
             <LetterLine chapter="firstImpression">
               너를 처음 본 이들은 다들 네가 <PetalVeil em={4.2} seed={0} /> 같다고 하지.
             </LetterLine>
