@@ -24,9 +24,12 @@ export function HeroineBackdrop({
   scenes = ["final"],
   approach = false,
   lowVeil = false,
+  fadeMs = 1600,
 }: {
   lit?: boolean;
   scene?: HeroineScene;
+  /** 그림이 겹쳐 바뀌는 시간(ms) */
+  fadeMs?: number;
   /** 미리 깔아 둘 그림. 쓰지 않는 그림은 불러오지 않는다. */
   scenes?: HeroineScene[];
   /** 그림 속 인물이 다가오듯 천천히 확대한다. */
@@ -44,7 +47,7 @@ export function HeroineBackdrop({
             style={{
               opacity: key === scene ? 1 : 0,
               transform: approach && key === scene ? "scale(1.3)" : "scale(1)",
-              transition: "opacity 1600ms ease-out, transform 3600ms cubic-bezier(0.22, 0.61, 0.36, 1)",
+              transition: `opacity ${fadeMs}ms ease-out, transform 3600ms cubic-bezier(0.22, 0.61, 0.36, 1)`,
             }}
           >
             <Image

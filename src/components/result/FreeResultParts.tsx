@@ -1,8 +1,8 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { PetalVeil } from "@/components/result/LetterPetals";
-import { LockIcon } from "@/components/result/ResultParts";
-import { REPORT_CHAPTERS, type ReportChapterKey } from "@/lib/constants/result";
+import { LockIcon, SectionTitle } from "@/components/result/ResultParts";
+import { BLURRED_FILLER, REPORT_CHAPTERS, type ReportChapterKey } from "@/lib/constants/result";
 import type { DohwaView } from "@/types/result";
 
 const RADAR_SIZE = 300;
@@ -97,44 +97,35 @@ export function DohwaRadarCard({ dohwa }: { dohwa: DohwaView }) {
   );
 }
 
-/** 잠긴 장마다 내건 상징 글자 */
-const CHAPTER_SEALS: Partial<Record<ReportChapterKey, string>> = {
-  firstImpression: "初",
-  looks: "顔",
-  flirt: "媚",
-  language: "言",
-  styling: "粧",
-  admirers: "蝶",
-  inLove: "戀",
-  match: "緣",
-  heart: "心",
-};
+/** 무료 화면에서 따로 보여주지 않는 장 */
+const LOCKED_CHAPTER_KEYS: ReportChapterKey[] = ["firstImpression", "looks", "flirt", "language", "styling", "admirers", "inLove", "match", "heart"];
 
-/** 무료 화면에서 따로 보여주지 않는 장들을 자물쇠 카드로 모아 보여준다. */
-export function LockedChapterGrid({ href, unlocked = false }: { href: string; unlocked?: boolean }) {
-  const chapters = REPORT_CHAPTERS.filter((chapter) => chapter.key in CHAPTER_SEALS);
+/** 잠긴 장들을 제목과 설명, 흐리게 가린 글로 세로로 이어 보여준다. */
+export function LockedChapterList({ href, unlocked = false }: { href: string; unlocked?: boolean }) {
+  const chapters = REPORT_CHAPTERS.filter((chapter) => LOCKED_CHAPTER_KEYS.includes(chapter.key));
 
   return (
-    <ul className="grid grid-cols-2 gap-2.5">
-      {chapters.map((chapter, index) => (
-        <li key={chapter.key} className={chapters.length % 2 === 1 && index === chapters.length - 1 ? "col-span-2" : undefined}>
-          <Link
-            href={href}
-            className="relative flex h-full flex-col gap-2 overflow-hidden rounded-2xl border border-line bg-night/70 px-3.5 pb-3.5 pt-3 transition-colors active:bg-crimson-deep/40"
-          >
-            <span aria-hidden className="pointer-events-none absolute -right-2 -top-3 font-serif text-[64px] leading-none text-cinnabar/10">
-              {CHAPTER_SEALS[chapter.key]}
-            </span>
-            <span className="flex items-center justify-between">
-              <span className="text-[11px] text-cinnabar">제{chapter.chapter}장</span>
-              {!unlocked && <LockIcon />}
-            </span>
-            <span className="font-serif text-[15px] leading-snug text-paper break-keep">{chapter.title}</span>
-            <span className="line-clamp-2 text-[11px] leading-relaxed text-mist break-keep">{chapter.teaser}</span>
-          </Link>
-        </li>
+    <div className="flex flex-col gap-12">
+      {chapters.map((chapter) => (
+        <article key={chapter.key} className="flex flex-col gap-4">
+          <SectionTitle eyebrow={`제${chapter.chapter}장`} title={chapter.title} description={chapter.teaser} />
+          <div className="relative select-none">
+            <p aria-hidden className="text-[15px] leading-[1.9] text-paper/80 blur-[5px]">
+              {BLURRED_FILLER}
+            </p>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Link
+                href={href}
+                className="flex items-center gap-1.5 rounded-full border border-cinnabar/30 bg-ink/90 px-3 py-1.5 text-xs text-paper/90 shadow-[0_0_24px_rgb(7_6_14_/_0.9)]"
+              >
+                {!unlocked && <LockIcon />}
+                {unlocked ? "펼친 꽃에서 읽기" : "펼치면 전부 알려주마"}
+              </Link>
+            </div>
+          </div>
+        </article>
       ))}
-    </ul>
+    </div>
   );
 }
 

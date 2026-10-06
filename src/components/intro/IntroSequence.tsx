@@ -51,6 +51,11 @@ const COPY_END_S: Record<Beat, number> = {
   final: CTA_AT,
 };
 
+/** 자막을 먼저 띄우고, 이만큼(초) 뒤에야 그림을 이 컷의 장면으로 바꾸는 컷. 그 전까지는 앞 컷의 그림을 둔다. */
+const SCENE_DELAY_S: Partial<Record<Beat, number>> = { sensed: COPY_END_S.sensed + 1.5 };
+/** 그림이 겹쳐 바뀌는 시간(ms)을 기본보다 길게 잡는 컷 */
+const SCENE_FADE_MS: Partial<Record<Beat, number>> = { sensed: 3000 };
+
 const EASE = [0.22, 0.61, 0.36, 1] as const;
 const mistExit = {
   opacity: 0,
@@ -75,9 +80,18 @@ export function IntroSequence() {
   const advance = useCallback(() => setIndex((value) => Math.min(value + 1, FINAL_INDEX)), []);
   const skip = useCallback(() => setIndex(FINAL_INDEX), []);
 
+  const sceneDelay = instant ? undefined : SCENE_DELAY_S[current.key];
+  const [sceneReadyFor, setSceneReadyFor] = useState<Beat | null>(null);
+  useEffect(() => {
+    if (sceneDelay === undefined) return;
+    const timer = window.setTimeout(() => setSceneReadyFor(current.key), sceneDelay * 1000);
+    return () => window.clearTimeout(timer);
+  }, [current.key, sceneDelay]);
+  const scene = sceneDelay !== undefined && sceneReadyFor !== current.key ? BEATS[Math.max(0, index - 1)].scene : current.scene;
+
   return (
     <div className="relative isolate flex min-h-dvh w-full flex-col overflow-hidden" onClick={advance}>
-      <HeroineBackdrop lit={instant || lit} scenes={SCENES} scene={current.scene} approach={APPROACH_BEATS.includes(current.key)} lowVeil={isFinal} />
+      <HeroineBackdrop lit={instant || lit} scenes={SCENES} scene={scene} fadeMs={SCENE_FADE_MS[current.key]} approach={APPROACH_BEATS.includes(current.key)} lowVeil={isFinal} />
 
       <AnimatePresence>
         {!isFinal && (

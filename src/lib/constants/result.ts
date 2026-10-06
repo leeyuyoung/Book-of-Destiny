@@ -170,6 +170,10 @@ export const REPORT_CHAPTERS = CHAPTERS.map((chapter, index) => ({ ...chapter, c
 
 export const chapterOf = (key: ReportChapterKey) => REPORT_CHAPTERS.find((chapter) => chapter.key === key)!;
 
+/** 잠긴 장 위에 흐리게 깔리는 자리 채움 글. 실제 리포트 내용이 아니다. */
+export const BLURRED_FILLER =
+  "넌 이미 충분히 사람을 홀리는 아이란다. 처음 너를 본 이들은 이유도 모른 채 시선을 빼앗기고, 가까워질수록 헤어나오지 못하지. 그런데 넌 그 힘의 반도 아직 꺼내지 않았어. 어디서 흘러나오는지, 언제 가장 짙어지는지, 어떻게 써야 상대가 무너지는지 하나하나 알려 주마. 다만 이 이야기는 꽃을 끝까지 펼친 이에게만 들려줄 수 있느니라.";
+
 /** 앞으로 몇 년의 연애운을 표로 보여줄지 */
 export const LOVE_TIMELINE_YEARS = 3;
 

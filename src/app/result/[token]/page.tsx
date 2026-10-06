@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageShell } from "@/components/layout/PageShell";
-import { DohwaLetter, DohwaRadarCard, LockedChapterGrid, LoveTimelineStrip } from "@/components/result/FreeResultParts";
+import { DohwaLetter, DohwaRadarCard, LockedChapterList, LoveTimelineStrip } from "@/components/result/FreeResultParts";
 import { ManseryeokTable } from "@/components/result/ManseryeokTable";
 import { CharmStars, FinalCheckoutPrompt, MidCheckoutPrompt, SectionTitle, StickyCheckoutBar } from "@/components/result/ResultParts";
 import { ReviewCarousel } from "@/components/result/ReviewCarousel";
@@ -103,7 +103,7 @@ export default async function ResultPage({ params }: PageProps<"/result/[token]"
               }
             />
             {!paid && <DohwaLetter name={result.name} href={checkoutHref} />}
-            <LockedChapterGrid href={paid ? sticky.href : checkoutHref} unlocked={paid} />
+            <LockedChapterList href={paid ? sticky.href : checkoutHref} unlocked={paid} />
             {!paid && <MidCheckoutPrompt checkoutHref={checkoutHref} />}
           </section>
         </Reveal>
