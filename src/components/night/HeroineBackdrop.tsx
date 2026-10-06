@@ -7,7 +7,6 @@ const SCENES = {
   noticed: { src: "/images/dohwa-intro-cut02-w.jpg", alt: "남자를 뒤에 두고 고개를 돌려 이쪽을 응시하는 천의 차림의 선녀" },
   caught: { src: "/images/dohwa-intro-cut03-w.jpg", alt: "이쪽을 바라보며 살짝 웃는 천의 차림의 선녀" },
   petal: { src: "/images/dohwa-intro-cut06-w.jpg", alt: "흩날리는 벚꽃잎 하나를 손끝으로 잡은 천의 차림의 선녀" },
-  fairy: { src: "/images/dohwa-intro-cut07-w3.jpg", alt: "흩날리는 벚꽃과 빛나는 천의 속에서 정면을 바라보는 도화선녀" },
   offer: { src: "/images/dohwa-intro-cut08-w.jpg", alt: "달빛 아래 손바닥 위의 벚꽃을 건네는 도화선녀" },
   final: { src: "/images/dohwa-heroine.jpg", alt: "달밤의 복숭아꽃 정원에 선 한복 차림의 여인" },
 } as const;

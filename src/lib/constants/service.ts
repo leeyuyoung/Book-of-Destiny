@@ -3,8 +3,7 @@ export const SERVICE = {
   tagline: "달빛 아래 도화",
   englishName: "DOHWA SAJU",
   englishTagline: "Your Peach Blossom Fate",
-  description:
-    "태어난 순간의 여덟 글자에 숨은 당신의 매력과 인연의 흐름을, 달빛 아래에서 읽어드립니다.",
+  description: "오늘 밤, 너의 도화 기운이 최고조에 달하는 시간이야.",
 } as const;
 
 /** 인트로 대사. 밀회 중이던 도화선녀가 다가온 사용자를 알아채고, 그 사람의 도화를 짚어 준다. */
@@ -17,8 +16,6 @@ export const INTRO_SCRIPT = {
   teaseLead: "“너…”",
   tease: ["“사람 좀", "홀리고 다녔겠구나.”"],
   secret: ["남을 미치게 만드는 색기는", "타고나는 것이지."],
-  glance: "“괜히 눈길이 가는 사람이 있지.”",
-  fate: ["“그 매력은 태어날 때부터", "정해져 있었단다.”"],
   revealLead: ["“스치기만 해도 반응하게 만드는", "네 사주의 비밀,”"],
   reveal: "“도화선녀가 알려주마.”",
 } as const;

@@ -16,8 +16,7 @@ const BEATS = [
   { key: "stop", scene: "caught" },
   { key: "tease", scene: "caught" },
   { key: "secret", scene: "caught" },
-  { key: "fate", scene: "petal" },
-  { key: "reveal", scene: "fairy" },
+  { key: "reveal", scene: "petal" },
   { key: "final", scene: "offer" },
 ] as const satisfies readonly { key: string; scene: HeroineScene }[];
 type Beat = (typeof BEATS)[number]["key"];
@@ -38,7 +37,6 @@ const typedEnd = (lines: readonly string[], startAt = 0) =>
   startAt + lines.reduce((count, line) => count + Array.from(line).length, 0) * TYPE_STEP_S;
 
 const TEASE_AT = typedEnd([INTRO_SCRIPT.teaseLead]) + TYPE_PAUSE_S;
-const FATE_AT = typedEnd([INTRO_SCRIPT.glance]) + TYPE_PAUSE_S;
 const REVEAL_AT = typedEnd(INTRO_SCRIPT.revealLead) + TYPE_PAUSE_S;
 const INVITE_AT = 0.6;
 const CTA_AT = typedEnd([HERO_COPY.invite], INVITE_AT) + 0.4;
@@ -51,7 +49,6 @@ const COPY_END_S: Record<Beat, number> = {
   stop: typedEnd([INTRO_SCRIPT.stop]),
   tease: typedEnd(INTRO_SCRIPT.tease, TEASE_AT),
   secret: typedEnd(INTRO_SCRIPT.secret),
-  fate: typedEnd(INTRO_SCRIPT.fate, FATE_AT),
   reveal: typedEnd([INTRO_SCRIPT.reveal], REVEAL_AT),
   final: CTA_AT,
 };
@@ -154,17 +151,6 @@ function BeatCopy({ beat, instant }: { beat: Beat; instant: boolean }) {
         <motion.h2 exit={mistExit} className="text-center font-brush text-[clamp(1.5rem,7.6vw,2.5rem)] leading-[1.25] tracking-[0.04em] break-keep">
           <Typed lines={INTRO_SCRIPT.secret} charClassName="text-gold-gradient" />
         </motion.h2>
-      );
-    case "fate":
-      return (
-        <motion.div className="flex flex-col items-center gap-[1lh] text-center font-serif text-[17px] font-light leading-relaxed tracking-[0.04em] break-keep text-paper" exit={mistExit}>
-          <p>
-            <Typed lines={[INTRO_SCRIPT.glance]} />
-          </p>
-          <p>
-            <Typed lines={INTRO_SCRIPT.fate} startAt={FATE_AT} />
-          </p>
-        </motion.div>
       );
     case "reveal":
       return (

@@ -34,6 +34,13 @@ export const metadata: Metadata = {
     template: `%s | ${SERVICE.name}`,
   },
   description: SERVICE.description,
+  openGraph: {
+    title: `숨겨진 도화력 분석 | ${SERVICE.name}`,
+    description: SERVICE.description,
+    siteName: SERVICE.name,
+    locale: "ko_KR",
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {
