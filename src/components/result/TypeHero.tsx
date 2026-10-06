@@ -1,7 +1,7 @@
 import Image from "next/image";
 import type { DohwaView } from "@/types/result";
 
-type TypeHeroProps = { name: string; type: DohwaView["type"]; eyebrow: string; hook?: string };
+type TypeHeroProps = { name: string; type: DohwaView["type"]; eyebrow?: string; hook?: string };
 
 export function TypeHero({ name, type, eyebrow, hook }: TypeHeroProps) {
   return (
@@ -21,9 +21,11 @@ export function TypeHero({ name, type, eyebrow, hook }: TypeHeroProps) {
           className="absolute inset-0"
           style={{ background: "linear-gradient(180deg, rgb(7 6 14 / 0.55) 0%, transparent 28%, transparent 48%, rgb(7 6 14 / 0.92) 88%, var(--color-ink) 100%)" }}
         />
-        <div className="absolute inset-x-0 top-0 flex flex-col items-start gap-3 px-6 pt-6">
-          <span className="rounded-full border border-white/15 bg-ink/50 px-3 py-1 text-xs text-paper/90 backdrop-blur-sm">{eyebrow}</span>
-        </div>
+        {eyebrow && (
+          <div className="absolute inset-x-0 top-0 flex flex-col items-start gap-3 px-6 pt-6">
+            <span className="rounded-full border border-white/15 bg-ink/50 px-3 py-1 text-xs text-paper/90 backdrop-blur-sm">{eyebrow}</span>
+          </div>
+        )}
         <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 px-6 pb-4">
           <p className="font-serif text-base text-paper/90">{name}, 넌 보아하니</p>
           <h1 className="font-eerie text-[clamp(2.2rem,10vw,3rem)] leading-tight text-paper [text-shadow:0_0_24px_rgb(232_137_155_/_0.55)]">

@@ -53,7 +53,9 @@ export default async function ResultPage({ params }: PageProps<"/result/[token]"
 
   return (
     <PageShell>
-      <TypeHero name={result.name} type={result.dohwa.type} eyebrow="제1장 · 네 꽃의 이름"
+      <TypeHero
+        name={result.name}
+        type={result.dohwa.type}
         hook="근데 이게 전부가 아니란다. 넌 아직 가진 걸 반도 안 꺼냈어. 그걸 깨우는 법, 내가 알려 주마."
       />
 
