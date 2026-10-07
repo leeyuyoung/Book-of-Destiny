@@ -52,9 +52,9 @@ const COPY_END_S: Record<Beat, number> = {
 };
 
 /** 자막을 먼저 띄우고, 이만큼(초) 뒤에야 그림을 이 컷의 장면으로 바꾸는 컷. 그 전까지는 앞 컷의 그림을 둔다. */
-const SCENE_DELAY_S: Partial<Record<Beat, number>> = { sensed: COPY_END_S.sensed + 1.5 };
+const SCENE_DELAY_S: Partial<Record<Beat, number>> = { sensed: COPY_END_S.sensed + 0.5 };
 /** 그림이 겹쳐 바뀌는 시간(ms)을 기본보다 길게 잡는 컷 */
-const SCENE_FADE_MS: Partial<Record<Beat, number>> = { sensed: 3000 };
+const SCENE_FADE_MS: Partial<Record<Beat, number>> = { sensed: 2000 };
 
 const EASE = [0.22, 0.61, 0.36, 1] as const;
 const mistExit = {
