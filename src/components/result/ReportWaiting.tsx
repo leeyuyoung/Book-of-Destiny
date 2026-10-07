@@ -4,12 +4,15 @@ import { AnimatePresence, motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { LogoMark } from "@/components/ui/LogoMark";
+import { BloomingBlossom } from "@/components/ui/BloomingBlossom";
 import { REPORT_WRITING_MESSAGES } from "@/lib/constants/service";
 
 const POLL_INTERVAL_MS = 3000;
 const MESSAGE_INTERVAL_MS = 4000;
 const GIVE_UP_AFTER_MS = 6 * 60 * 1000;
+/** 리포트는 보통 1~2분 걸리니, 그동안 꽃이 천천히 거의 다 피도록 한다. 실제 진행률은 아니다. */
+const BLOOM_TIME_CONSTANT_MS = 45 * 1000;
+const MAX_PENDING_BLOOM = 0.95;
 
 type Phase = "writing" | "failed";
 
@@ -19,6 +22,19 @@ export function ReportWaiting({ token, failed }: { token: string; failed: boolea
   const [phase, setPhase] = useState<Phase>(failed ? "failed" : "writing");
   const [messageIndex, setMessageIndex] = useState(0);
   const [retryError, setRetryError] = useState<string | null>(null);
+  const [elapsedMs, setElapsedMs] = useState(0);
+
+  useEffect(() => {
+    if (phase !== "writing") return;
+    const startedAt = Date.now();
+    const timer = window.setInterval(() => setElapsedMs(Date.now() - startedAt), 1000);
+    return () => {
+      window.clearInterval(timer);
+      setElapsedMs(0);
+    };
+  }, [phase]);
+
+  const bloom = Math.min(1 - Math.exp(-elapsedMs / BLOOM_TIME_CONSTANT_MS), MAX_PENDING_BLOOM);
 
   useEffect(() => {
     if (phase !== "writing") return;
@@ -84,7 +100,7 @@ export function ReportWaiting({ token, failed }: { token: string; failed: boolea
       <div className="relative flex h-40 w-40 items-center justify-center">
         <div className="absolute inset-0 rounded-full border border-line animate-spin-celestial" />
         <div className="absolute inset-0 rounded-full bg-cinnabar/10 blur-2xl animate-breathe" />
-        <LogoMark size={64} className="relative animate-breathe" />
+        <BloomingBlossom bloom={bloom} size={128} />
       </div>
 
       <AnimatePresence mode="wait">

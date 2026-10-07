@@ -2,8 +2,6 @@
 
 import { useRef, useState } from "react";
 import { REVIEWS, REVIEWS_INCLUDE_SAMPLES, REVIEW_AVERAGE } from "@/lib/constants/result";
-import { SERVICE } from "@/lib/constants/service";
-
 export function ReviewCarousel() {
   const listRef = useRef<HTMLUListElement>(null);
   const [active, setActive] = useState(0);

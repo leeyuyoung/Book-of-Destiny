@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, ButtonLink } from "@/components/ui/Button";
-import { LogoMark } from "@/components/ui/LogoMark";
+import { BloomingBlossom } from "@/components/ui/BloomingBlossom";
 import {
   clearAnalysisToken,
   clearPendingAnalysis,
@@ -15,7 +15,7 @@ import {
 import { ANALYSIS_MESSAGES } from "@/lib/constants/service";
 import { analysisInputSchema } from "@/lib/validation/analysisInput";
 
-const MESSAGE_INTERVAL_MS = 1600;
+const MESSAGE_INTERVAL_MS = 2000;
 /** 계산은 금방 끝나지만, 의식처럼 보이도록 문구가 모두 지나갈 때까지는 보여준다. */
 const MIN_RITUAL_MS = MESSAGE_INTERVAL_MS * ANALYSIS_MESSAGES.length;
 const REDIRECT_DELAY_MS = 1400;
@@ -189,7 +189,7 @@ export function AnalyzingExperience() {
         </svg>
         <div className="absolute inset-6 rounded-full border border-line animate-spin-celestial" />
         <div className="absolute inset-0 rounded-full bg-gold/5 blur-2xl animate-breathe" />
-        <LogoMark size={72} className="relative animate-breathe" />
+        <BloomingBlossom bloom={progress} size={140} />
       </div>
 
       <div className="flex min-h-24 flex-col items-center justify-center px-4">

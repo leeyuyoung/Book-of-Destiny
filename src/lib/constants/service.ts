@@ -30,10 +30,9 @@ export const DETAILED_REPORT_PRICE = 19900;
 export const formatPrice = (won: number) => `${won.toLocaleString("ko-KR")}원`;
 
 export const ANALYSIS_MESSAGES = [
-  "네가 태어난 밤의 하늘을 펼치는 중이란다.",
-  "만세력으로 네 여덟 글자를 세우고 있지.",
-  "글자 사이에 숨은 도화의 기운을 찾고 있구나.",
-  "네 꽃이 얼마나 피었는지 재어 보는 중이니, 조금만 기다리거라.",
+  "네 꽃을 끝까지 펼치는 중이란다.",
+  "숨은 도화의 기운을 찾고 있구나.",
+  "네게 감겨들 인연의 때를 헤아리는 중이구나.",
 ] as const;
 
 /** 결제 후 리포트를 쓰는 동안 보여주는 문구 */
