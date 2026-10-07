@@ -41,6 +41,8 @@ export type CharmStar = {
   positions: PillarPosition[];
   /** 이 살을 이루는 지지. 대운·세운에서 이 글자가 들어오면 살이 깨어난다. */
   triggers: EarthlyBranch[];
+  /** 원국에 있으면 80~99, 없으면 잠재력으로 70~79 */
+  score: number;
 };
 
 export type CharmIndexKey = "allure" | "sensual" | "mystery" | "flirt" | "popularity";
@@ -88,9 +90,28 @@ function triadStarPositions(profile: SajuProfile, pick: (group: TriadGroup) => E
   return profile.pillars.map((pillar) => pillar.position).filter((position) => found.has(position));
 }
 
+/** 살이 놓인 자리마다 더하는 점수. 나 자신과 가장 가까운 일지가 가장 짙다. */
+const STAR_POSITION_WEIGHT: Record<PillarPosition, number> = { day: 6, month: 4, hour: 3, year: 2 };
+
+/**
+ * 매력살 점수. 원국에 있으면 자리와 개수로 80~99점,
+ * 없으면 70점에서 시작해 앞으로 10년 세운과 남은 대운에 살을 깨우는 글자가 들어오는 만큼 79점까지 올린다.
+ */
+function starScore(profile: SajuProfile, positions: PillarPosition[], triggers: EarthlyBranch[]): number {
+  if (positions.length > 0) {
+    const weight = positions.reduce((sum, position) => sum + STAR_POSITION_WEIGHT[position], 0);
+    return Math.min(99, 82 + weight + (positions.length - 1) * 4);
+  }
+  const years = profile.yearlyFortunes.filter((fortune) => triggers.includes(fortune.branch.korean)).length;
+  const periods = profile.luck.periods.filter(
+    (period) => period.startYear + 9 >= profile.referenceDate.year && triggers.includes(period.branch.korean),
+  ).length;
+  return 70 + Math.min(9, years * 2 + periods * 3);
+}
+
 export function readDohwa(profile: SajuProfile): DohwaReading {
   const hongyeomTarget = HONGYEOM[profile.dayMaster.korean];
-  const stars: CharmStar[] = [
+  const starBases: Omit<CharmStar, "score">[] = [
     {
       key: "dohwa",
       name: "도화살",
@@ -113,6 +134,7 @@ export function readDohwa(profile: SajuProfile): DohwaReading {
       triggers: triadStarTriggers(profile, (group) => group.hwagae),
     },
   ];
+  const stars: CharmStar[] = starBases.map((star) => ({ ...star, score: starScore(profile, star.positions, star.triggers) }));
   const starCount = (key: CharmStarKey) => stars.find((star) => star.key === key)!.positions.length;
 
   const branches = profile.pillars.map((pillar) => pillar.branch);

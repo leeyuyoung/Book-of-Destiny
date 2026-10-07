@@ -97,12 +97,9 @@ export function DohwaRadarCard({ dohwa }: { dohwa: DohwaView }) {
   );
 }
 
-/** 무료 화면에서 따로 보여주지 않는 장 */
-const LOCKED_CHAPTER_KEYS: ReportChapterKey[] = ["firstImpression", "looks", "flirt", "language", "styling", "admirers", "inLove", "match", "heart"];
-
 /** 잠긴 장들을 제목과 설명, 흐리게 가린 글로 세로로 이어 보여준다. */
-export function LockedChapterList({ href, unlocked = false }: { href: string; unlocked?: boolean }) {
-  const chapters = REPORT_CHAPTERS.filter((chapter) => LOCKED_CHAPTER_KEYS.includes(chapter.key));
+export function LockedChapterList({ keys, href, unlocked = false }: { keys: ReportChapterKey[]; href: string; unlocked?: boolean }) {
+  const chapters = REPORT_CHAPTERS.filter((chapter) => keys.includes(chapter.key));
 
   return (
     <div className="flex flex-col gap-12">
@@ -169,29 +166,36 @@ export function DohwaLetter({ name, href }: { name: string; href: string }) {
         >
           <p className="relative font-hand text-[18px] leading-none text-[#6e1f36]">{name}에게</p>
 
+          <p className="relative mt-4 font-hand text-[16px] leading-[1.9] break-keep">
+            치명적인 너의 비밀, 남들 몰래 몇 가지만 먼저 귀띔해 주마.
+          </p>
+
           <div className="relative mt-5 flex flex-col gap-4 font-hand text-[16px] leading-[1.9] break-keep [text-shadow:0_0_0.6px_rgb(30_25_21_/_0.5)]">
             <LetterLine chapter="firstImpression">
-              너를 처음 본 이들은 다들 네가 <PetalVeil em={4.2} seed={0} /> 같다고 하지.
+              너를 한 번 본 이들은 <PetalVeil em={4.2} seed={0} /> 같은 그 잔상을 밤새 지우지 못하지.
             </LetterLine>
             <LetterLine chapter="looks">
-              네 도화는 <PetalVeil em={2.6} seed={1} />에 맺혀 있어. 그래서 다들 거기서 눈을 못 떼지.
+              네 얼굴에서 가장 위험한 곳은 <PetalVeil em={2.6} seed={1} />이란다. 다들 거기서 눈을 떼지 못해 애가 타.
             </LetterLine>
             <LetterLine chapter="flirt">
-              상대가 무너지는 건 네가 <PetalVeil em={5} seed={2} /> 할 때란다.
+              네가 <PetalVeil em={5} seed={2} /> 하는 순간, 버티던 마음도 속절없이 무너지느니라.
+            </LetterLine>
+            <LetterLine chapter="language">
+              무심코 던진 <PetalVeil em={4} seed={6} /> 그 한마디에, 누군가는 오늘 밤도 잠 못 이루지.
             </LetterLine>
             <LetterLine chapter="styling">
-              <PetalVeil em={2.8} seed={3} /> 빛을 걸치는 날, 네 꽃은 두{"\u00a0"}배로 피어나지.
+              <PetalVeil em={2.8} seed={3} /> 빛을 걸치는 날, 네 꽃은 두{"\u00a0"}배로 짙어진단다.
             </LetterLine>
             <LetterLine chapter="match">
-              <PetalVeil em={2.4} seed={4} /> 기운을 지닌 이는 붙잡고, <PetalVeil em={2.4} seed={5} /> 기운을 지닌 이는 멀리하렴.
+              <PetalVeil em={2.4} seed={4} /> 기운의 사람은 꼭 붙잡고, <PetalVeil em={2.4} seed={5} /> 기운의 사람은 당장 끊어 내거라. 네 꽃을 시들게 할 독이니.
             </LetterLine>
           </div>
 
           <div className="relative mt-8 flex items-end justify-between">
             <p className="text-[11px] leading-relaxed text-[#1e1915]/60">
-              꽃잎을 걷으면
+              꽃잎 아래 적힌 건
               <br />
-              전부 읽을 수 있느니라
+              너만 알아야 할 이야기란다
             </p>
             <div className="flex items-center gap-2">
               <span className="font-hand text-[18px] tracking-[0.06em] text-[#1e1915]/90">도화선녀</span>

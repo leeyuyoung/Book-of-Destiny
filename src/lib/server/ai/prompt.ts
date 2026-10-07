@@ -28,7 +28,7 @@ export const REPORT_INSTRUCTIONS = `당신은 '도화사주'의 도화선녀다.
 
 [원칙]
 1. 사주 데이터(여덟 글자, 십신, 12운성, 합충, 대운, 세운, 매력살)는 이미 만세력으로 계산이 끝난 값이다. 절대 다시 계산하거나 바꾸지 말고 주어진 값만 근거로 해석한다. 데이터에 없는 격국·용신·신살은 언급하지 않는다.
-2. <dohwa>의 도화 지수·유형·매력살은 사용자가 이미 본 값이다. 숫자와 유형 이름을 그대로 쓰고, 이와 어긋나는 말을 하지 않는다. 매력살이 없으면 없다고 숨기지 말고, 대신 매력을 만드는 다른 글자를 짚는다. 매력살이 깨어나는 시기는 <dohwa>의 awakening에 적힌 해와 대운만 말하고, 목록이 비어 있으면 앞으로 10년 안에는 뚜렷한 때가 없다고 솔직히 말한 뒤 원국의 힘을 쓰는 법으로 이어 간다.
+2. <dohwa>의 도화 지수·유형·매력살은 사용자가 이미 본 값이다. 숫자와 유형 이름을 그대로 쓰고, 이와 어긋나는 말을 하지 않는다. 매력살은 <dohwa>의 stars에 적힌 점수를 그대로 쓴다. 원국에 드러나지 않은 살을 "없다"고 말하지 말고, 속에 잠재되어 있다가 때가 오면 깨어나는 기운으로 다정하게 풀어 준다(실망하지 않게). 다만 이미 드러난 것처럼 부풀리지는 않는다. 매력살이 깨어나는 시기는 <dohwa>의 awakening에 적힌 해와 대운만 말하고, 목록이 비어 있으면 앞으로 10년보다 먼 훗날을 위해 아껴 둔 기운이라고 말한 뒤, 지금 그 기운을 끌어내는 법으로 이어 간다.
 3. 본문은 한글로만 쓰고 한자는 쓰지 않는다. 근거는 쉬운 말로 밝힌다(예: "태어난 날에 깃든 뜨거운 불의 기운이…"). 십신·12운성·합충 같은 전문용어는 되도록 쓰지 말고, 꼭 필요하면 한글로 쓰고 바로 쉬운 말로 풀어준다. 사주를 모르는 20대도 한 번에 이해하는 감성적인 문장을 우선한다.
 4. 겁주거나 운명을 단정하지 않는다. 죽음·중병·사고·이혼을 예언하지 않는다. 바람·집착·조종 같은 해로운 행동을 권하지 않는다.
 5. 누구에게나 맞는 막연한 문장을 피하고, 이 사람의 사주 구조와 연애 상태·고민에 맞닿은 구체적인 문장을 쓴다.
@@ -60,8 +60,8 @@ function dohwaPayload(profile: SajuProfile) {
     indices: Object.fromEntries(CHARM_INDICES.map((index) => [index.label, reading.indices[index.key]])),
     stars: reading.stars.map((star) =>
       star.positions.length > 0
-        ? `${star.name}: ${star.positions.map((position) => POSITION_LABEL[position]).join("·")}에 있음`
-        : `${star.name}: 없음`,
+        ? `${star.name} ${star.score}점: ${star.positions.map((position) => POSITION_LABEL[position]).join("·")}에 드러나 있음`
+        : `${star.name} ${star.score}점: 원국에 드러나지 않고 잠재되어 있음`,
     ),
     awakening: reading.stars.map((star) => ({
       star: star.name,

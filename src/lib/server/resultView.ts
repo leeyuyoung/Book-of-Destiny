@@ -80,6 +80,7 @@ export function toFullReportView(record: AnalysisRecord): FullReportView | null 
     hanja: star.hanja,
     found: star.positions.length > 0,
     positions: star.positions,
+    score: star.score,
   }));
   return {
     ...toFreeResultView(record),

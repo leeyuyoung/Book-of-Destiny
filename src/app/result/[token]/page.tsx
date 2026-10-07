@@ -7,7 +7,7 @@ import { CharmStars, FinalCheckoutPrompt, MidCheckoutPrompt, SectionTitle, Stick
 import { ReviewCarousel } from "@/components/result/ReviewCarousel";
 import { TypeHero } from "@/components/result/TypeHero";
 import { Reveal } from "@/components/ui/Reveal";
-import { chapterOf } from "@/lib/constants/result";
+import { chapterOf, type ReportChapterKey } from "@/lib/constants/result";
 import { DETAILED_REPORT_PRICE, formatPrice } from "@/lib/constants/service";
 import { TOKEN_PATTERN } from "@/lib/server/analysis";
 import { sampleFreeResult, toFreeResultView } from "@/lib/server/resultView";
@@ -28,6 +28,9 @@ async function loadResult(token: string) {
 
 const starTypes = chapterOf("starTypes");
 const timeline = chapterOf("timeline");
+/** 서찰 아래에 이어 보여주는 잠긴 장. 7장과 8장 사이에 중간 결제 안내를 끼우고, 12장은 11장 인연 시기 뒤에 따로 둔다. */
+const STORY_CHAPTERS_BEFORE_PROMPT: ReportChapterKey[] = ["firstImpression", "looks", "flirt", "language", "styling"];
+const STORY_CHAPTERS_AFTER_PROMPT: ReportChapterKey[] = ["admirers", "inLove", "match"];
 
 export default async function ResultPage({ params }: PageProps<"/result/[token]">) {
   const { token } = await params;
@@ -41,6 +44,7 @@ export default async function ResultPage({ params }: PageProps<"/result/[token]"
     : token === "sample"
       ? { href: "/start", label: "내 꽃도 보러 가기" }
       : { href: checkoutHref, label: `숨겨진 도화력 확인하기 · ${formatPrice(DETAILED_REPORT_PRICE)}` };
+  const chapterHref = paid ? sticky.href : checkoutHref;
 
   return (
     <PageShell>
@@ -103,8 +107,15 @@ export default async function ResultPage({ params }: PageProps<"/result/[token]"
               }
             />
             {!paid && <DohwaLetter name={result.name} href={checkoutHref} />}
-            <LockedChapterList href={paid ? sticky.href : checkoutHref} unlocked={paid} />
-            {!paid && <MidCheckoutPrompt checkoutHref={checkoutHref} />}
+            <LockedChapterList keys={STORY_CHAPTERS_BEFORE_PROMPT} href={chapterHref} unlocked={paid} />
+            {!paid ? (
+              <div className="my-7">
+                <MidCheckoutPrompt checkoutHref={checkoutHref} />
+              </div>
+            ) : (
+              <div className="h-7" />
+            )}
+            <LockedChapterList keys={STORY_CHAPTERS_AFTER_PROMPT} href={chapterHref} unlocked={paid} />
           </section>
         </Reveal>
 
@@ -113,6 +124,10 @@ export default async function ResultPage({ params }: PageProps<"/result/[token]"
             <SectionTitle eyebrow={`제${timeline.chapter}장`} title={timeline.title} description={timeline.teaser} />
             <LoveTimelineStrip years={result.timelineYears} />
           </section>
+        </Reveal>
+
+        <Reveal>
+          <LockedChapterList keys={["heart"]} href={chapterHref} unlocked={paid} />
         </Reveal>
 
         <ReviewCarousel />

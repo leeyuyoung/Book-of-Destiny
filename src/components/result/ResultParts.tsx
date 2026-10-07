@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { CHARM_STAR_LABELS, REPORT_CHAPTERS } from "@/lib/constants/result";
-import { POSITION_LABELS } from "@/lib/constants/sajuLabels";
 import { DETAILED_REPORT_PRICE, formatPrice } from "@/lib/constants/service";
 import type { CharmStarKey } from "@/lib/saju/dohwa";
 import type { CharmStarView } from "@/types/result";
@@ -16,16 +15,18 @@ export function SectionTitle({ eyebrow, title, description }: { eyebrow?: string
   );
 }
 
-/** 결제 전에는 이름과 뜻만 보이고, 결제 후에는 실제로 있는지와 자리를 보여준다. */
+/** 결제 전에는 점수를 흐리게 가리고, 결제 후에는 실제 점수를 보여준다. 원국에 있는 살은 카드가 붉게 빛난다. */
 export function CharmStars({ stars }: { stars?: CharmStarView[] }) {
   const items = (Object.keys(CHARM_STAR_LABELS) as CharmStarKey[]).map((key) => ({
     ...CHARM_STAR_LABELS[key],
+    key,
     found: stars?.find((star) => star.key === key),
   }));
   return (
     <div className="grid grid-cols-3 gap-2">
       {items.map((star) => {
         const has = Boolean(star.found?.found);
+        const score = star.found?.score;
         return (
           <div
             key={star.name}
@@ -33,28 +34,64 @@ export function CharmStars({ stars }: { stars?: CharmStarView[] }) {
               stars && has ? "border-cinnabar/60 bg-crimson/25" : "border-line bg-night/70"
             }`}
           >
-            <span
-              aria-hidden
-              className="flex h-14 w-14 items-center justify-center rounded-full border border-cinnabar/40 bg-crimson-deep/50 font-serif text-[17px] tracking-tight text-blossom [writing-mode:vertical-rl]"
-            >
-              {star.hanja}
+            <span className="flex h-14 w-14 items-center justify-center rounded-full border border-cinnabar/40 bg-crimson-deep/50">
+              <StarTulip starKey={star.key} />
             </span>
             <span className="text-sm text-paper">{star.name}</span>
             <span className="text-[11px] leading-snug text-mist break-keep">{star.meaning}</span>
-            {stars ? (
-              <span className={`mt-1 rounded-full px-2 py-0.5 text-[11px] ${has ? "bg-cinnabar/25 text-blossom" : "bg-white/5 text-mist-dim"}`}>
-                {has ? "품고 있어" : "지금은 잠들어 있어"}
-              </span>
-            ) : (
-              <span className="mt-1 text-xs text-mist">???</span>
-            )}
-            {stars && has && star.found && (
-              <span className="text-[10px] text-mist">{star.found.positions.map((position) => POSITION_LABELS[position]).join(" · ")}</span>
-            )}
+            <span className="mt-auto pt-1 font-serif leading-none">
+              {score === undefined ? (
+                <span aria-hidden className="inline-block select-none text-[26px] text-paper/90 blur-[6px]">
+                  88
+                </span>
+              ) : (
+                <span className={`text-[26px] ${has ? "text-blossom-glow" : "text-paper/90"}`}>{score}</span>
+              )}
+              <span className="ml-0.5 text-xs text-mist">점</span>
+            </span>
           </div>
         );
       })}
     </div>
+  );
+}
+
+const STAR_TULIP_COLORS: Record<CharmStarKey, { light: string; base: string; deep: string }> = {
+  dohwa: { light: "#fbd3df", base: "#f0a3bb", deep: "#d97a98" },
+  hongyeom: { light: "#f7838f", base: "#e0384f", deep: "#a91c38" },
+  hwagae: { light: "#dcc4f5", base: "#b48be0", deep: "#7f52b8" },
+};
+
+function StarTulip({ starKey }: { starKey: CharmStarKey }) {
+  const color = STAR_TULIP_COLORS[starKey];
+  const backId = `star-tulip-back-${starKey}`;
+  const frontId = `star-tulip-front-${starKey}`;
+  return (
+    <svg aria-hidden viewBox="0 0 40 40" className="h-11 w-11 drop-shadow-[0_0_6px_rgb(255_255_255_/_0.15)]">
+      <defs>
+        <linearGradient id={backId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color.base} />
+          <stop offset="100%" stopColor={color.deep} />
+        </linearGradient>
+        <linearGradient id={frontId} x1="0.2" y1="0" x2="0.8" y2="1">
+          <stop offset="0%" stopColor={color.light} />
+          <stop offset="100%" stopColor={color.base} />
+        </linearGradient>
+      </defs>
+      <path d="M20 25 L20 38" stroke="#5f8a5a" strokeWidth="1.4" strokeLinecap="round" />
+      <path d="M20 35 C15 33 12.5 29 13 25 C16.5 27 19 30.5 20 35 Z" fill="#5f8a5a" />
+      <path d="M20 5 C25 8 27.5 15 26.5 21 C25 25.5 15 25.5 13.5 21 C12.5 15 15 8 20 5 Z" fill={`url(#${backId})`} />
+      <path d="M11.5 9 C16 10 19.5 14.5 20.5 20 C21 24 18 26.5 15 25.5 C11 24 10 16 11.5 9 Z" fill={`url(#${backId})`} />
+      <path d="M28.5 9 C24 10 20.5 14.5 19.5 20 C19 24 22 26.5 25 25.5 C29 24 30 16 28.5 9 Z" fill={`url(#${backId})`} />
+      <path
+        d="M20 8.5 C24 11.5 25.2 17.5 23.8 22.5 C22.6 26 17.4 26 16.2 22.5 C14.8 17.5 16 11.5 20 8.5 Z"
+        fill={`url(#${frontId})`}
+        stroke={color.deep}
+        strokeWidth="0.4"
+        strokeOpacity="0.6"
+      />
+      <path d="M18.6 12.5 C17.6 15.5 17.6 19 18.4 22" stroke="#ffffff" strokeOpacity="0.35" strokeWidth="0.8" fill="none" strokeLinecap="round" />
+    </svg>
   );
 }
 

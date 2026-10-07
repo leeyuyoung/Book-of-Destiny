@@ -37,7 +37,7 @@ export type FreeResultView = {
   timelineYears: number[];
 };
 
-export type CharmStarView = { key: string; name: string; hanja: string; found: boolean; positions: PillarPosition[] };
+export type CharmStarView = { key: string; name: string; hanja: string; found: boolean; positions: PillarPosition[]; score: number };
 
 export type ReportChapterView = {
   chapter: number;
