@@ -1,10 +1,23 @@
 import type { CharmIndexKey, CharmStarKey } from "@/lib/saju/dohwa";
 import type { FiveElementKey } from "@/lib/saju/profileTypes";
 
-/** 일간 오행으로 정해지는 도화 유형. 무료 화면에 그대로 보여준다. 한자는 장식으로만 쓴다. */
+/**
+ * 일간 오행으로 정해지는 도화 유형. 무료 화면에 그대로 보여준다. 한자는 장식으로만 쓴다.
+ * story와 tease는 무료 화면 첫머리에서 선녀가 말풍선으로 건네는 말이다.
+ */
 export const DOHWA_TYPES: Record<
   FiveElementKey,
-  { hanja: string; name: string; alias: string; elementHanja: string; headline: string; description: string; vibes: string[] }
+  {
+    hanja: string;
+    name: string;
+    alias: string;
+    elementHanja: string;
+    headline: string;
+    description: string;
+    story: string;
+    tease: string;
+    vibes: string[];
+  }
 > = {
   wood: {
     hanja: "春風桃花",
@@ -13,6 +26,8 @@ export const DOHWA_TYPES: Record<
     elementHanja: "木",
     headline: "무해한 얼굴로 사람을 무너뜨리는 꽃",
     description: "다들 너를 그저 편한 사람이라 착각하지. 정신 차려 보면 이미 네 생각에 잠 못 드는데 말이야. 그 무방비한 얼굴이 네 가장 무서운 무기란다.",
+    story: "다들 너를 그저 편한 사람이라 착각하지. 정신 차려 보면 이미 네 생각에 잠 못 드는데 말이야.",
+    tease: "근데 그 무방비한 얼굴, 아직 반도 안 쓴 거 알고 있니?",
     vibes: ["맑은 척 경계를 허무는 첫인상", "웃는 순간 상대가 무장 해제되는 얼굴", "편해서 방심했다가 빠져나오지 못하는 타입", "천천히 스며들어 끝내 지워지지 않는 여운"],
   },
   fire: {
@@ -22,6 +37,8 @@ export const DOHWA_TYPES: Record<
     elementHanja: "火",
     headline: "눈 마주친 순간 게임을 끝내는 꽃",
     description: "네가 들어서면 공기의 온도부터 달라지지. 데일 걸 알면서도 다들 너한테 손을 뻗는단다. 그 열기, 아직 반도 안 쓴 거 알고 있니?",
+    story: "네가 들어서면 공기의 온도부터 달라지지. 데일 걸 알면서도 다들 너한테 손을 뻗는단다.",
+    tease: "근데 그 열기, 아직 반도 안 쓴 거 알고 있니?",
     vibes: ["한 번 보면 잊히지 않는 눈빛", "표정 하나로 분위기를 쥐락펴락하는 얼굴", "가만히 있어도 모든 시선을 훔치는 존재감", "위험한 줄 알면서도 다가오게 만드는 열기"],
   },
   earth: {
@@ -31,6 +48,8 @@ export const DOHWA_TYPES: Record<
     elementHanja: "土",
     headline: "한 번 품은 자를 절대 놓아주지 않는 꽃",
     description: "멀리선 단정한 척, 고요한 척하지. 하지만 네 곁에 한 번 들어온 자는 그 온기 없이는 못 산단다. 그 반전이 네 매력의 정체야.",
+    story: "멀리선 단정한 척, 고요한 척하지. 하지만 네 곁에 한 번 들어온 자는 그 온기 없이는 못 산단다.",
+    tease: "근데 그 반전, 아직 반도 안 쓴 거 알고 있니?",
     vibes: ["단정한데 묘하게 눈이 가는 분위기", "가까이 갈수록 짙어지는 향", "알면 알수록 뒤통수치는 반전 매력", "한번 빠지면 다른 사람이 안 보이는 중독성"],
   },
   metal: {
@@ -40,6 +59,8 @@ export const DOHWA_TYPES: Record<
     elementHanja: "金",
     headline: "차가워서 미치도록 갖고 싶은 꽃",
     description: "쉽게 곁을 내주지 않으니 다들 애가 타서 안달이지. 그 서늘함, 네가 생각하는 것보다 훨씬 치명적이란다. 녹는 순간을 고르는 법만 알면 돼.",
+    story: "쉽게 곁을 내주지 않으니 다들 애가 타서 안달이지. 네가 생각하는 것보다 훨씬 치명적이란다.",
+    tease: "근데 그 서늘함, 아직 반도 안 쓴 거 알고 있니?",
     vibes: ["선이 또렷해서 다가가기 겁나는 도도함", "말수가 적어 밤새 곱씹게 만드는 사람", "무심하게 던진 한마디의 파괴력", "허락된 단 한 사람만 보는 녹아내린 얼굴"],
   },
   water: {
@@ -49,6 +70,8 @@ export const DOHWA_TYPES: Record<
     elementHanja: "水",
     headline: "한번 빠지면 바닥이 안 보이는 꽃",
     description: "속을 알 수 없는 눈빛에 다들 한 번은 길을 잃지. 들여다볼수록 깊이 가라앉아, 헤어나올 생각조차 못 한단다. 넌 그걸 아직 모르고 흘리고 다니는 거고.",
+    story: "속을 알 수 없는 눈빛에 다들 한 번은 길을 잃지. 들여다볼수록 깊이 가라앉아, 헤어나올 생각조차 못 한단다.",
+    tease: "근데 그 깊이, 아직 반도 안 쓴 거 알고 있니?",
     vibes: ["촉촉해서 시선이 빨려드는 눈매", "속을 몰라서 더 파고들고 싶은 분위기", "낮보다 밤에 더 위험해지는 사람", "한번 빠지면 헤어나올 수 없는 깊이"],
   },
 };
@@ -229,4 +252,4 @@ export const REVIEWS_INCLUDE_SAMPLES = REVIEWS.some((review) => review.sample);
 
 const realReviews = REVIEWS.filter((review) => !review.sample);
 export const REVIEW_AVERAGE =
-  realReviews.length > 0 ? (realReviews.reduce((sum, review) => sum + review.rating, 0) / realReviews.length).toFixed(2) : null;
+  realReviews.length > 0 ? (realReviews.reduce((sum, review) => sum + review.rating, 0) / realReviews.length).toFixed(1) : null;

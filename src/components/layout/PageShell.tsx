@@ -10,11 +10,13 @@ type PageShellProps = {
   showFooter?: boolean;
   /** 소개 화면처럼 분위기를 더 강하게 보여줄 때 full */
   intensity?: "full" | "soft";
+  /** 화면 아래에 떠 있는 버튼이 있으면 맨 끝 내용이 가리지 않게 그만큼 비워 둔다 */
+  withStickyBar?: boolean;
 };
 
-export function PageShell({ children, showHeader = true, showFooter = true, intensity = "soft" }: PageShellProps) {
+export function PageShell({ children, showHeader = true, showFooter = true, intensity = "soft", withStickyBar = false }: PageShellProps) {
   return (
-    <div className="relative isolate flex min-h-dvh flex-col">
+    <div className={`relative isolate flex min-h-dvh flex-col ${withStickyBar ? "pb-24" : ""}`}>
       <NightGardenBackground intensity={intensity} />
       {showHeader && (
         <header className="sticky top-0 z-30 border-b border-line/50 bg-ink/60 backdrop-blur-md">

@@ -25,15 +25,15 @@ export function ReviewCarousel() {
     <section className="flex flex-col gap-5">
       <div className="flex flex-col gap-3">
         <h2 className="font-eerie text-[28px] leading-snug text-paper">
-          내 얘기잖아?!
+          어? 이거 내 얘기인데?
           <br />
-          <span className="text-blossom-glow">{REVIEWS_INCLUDE_SAMPLES ? "먼저 꽃을 펼친 이들" : "100% 실제 리뷰들"}</span>
+          <span className="text-blossom-glow">{REVIEWS_INCLUDE_SAMPLES ? "먼저 꽃을 펼친 이들" : `100% 솔직 리뷰`}</span>
         </h2>
         {REVIEW_AVERAGE && (
           <p className="text-sm leading-relaxed text-mist">
-            <span className="font-medium text-paper">{SERVICE.name}</span>로 내 도화 지수를 확인한 분들이
+            나의 도화 기운을 확인한 이용자들이
             <br />
-            평균 <span className="font-medium text-paper">{REVIEW_AVERAGE}</span>점을 남겼어요!
+            평균 <span className="font-medium text-paper">{REVIEW_AVERAGE}</span>점의 만족도를 남겨주었어요.
           </p>
         )}
         {REVIEWS_INCLUDE_SAMPLES && (

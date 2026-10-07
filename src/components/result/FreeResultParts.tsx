@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { PetalVeil } from "@/components/result/LetterPetals";
@@ -123,6 +124,27 @@ export function LockedChapterList({ keys, href, unlocked = false }: { keys: Repo
         </article>
       ))}
     </div>
+  );
+}
+
+/** 잠긴 장 사이에 쉬어 가는 선녀 그림 */
+export function PeachInterlude() {
+  return (
+    <figure
+      className="-mx-5 relative aspect-[3/4] overflow-hidden"
+      style={{
+        maskImage: "linear-gradient(180deg, transparent 0%, black 24%, black 70%, transparent 100%)",
+        WebkitMaskImage: "linear-gradient(180deg, transparent 0%, black 24%, black 70%, transparent 100%)",
+      }}
+    >
+      <Image
+        src="/images/dohwa-peach-bite.jpg"
+        alt="달밤의 꽃나무 아래에서 과즙이 튀는 분홍 복숭아를 한입 베어 문 채 이쪽을 바라보는 선녀"
+        fill
+        sizes="(max-width: 640px) 100vw, 576px"
+        className="object-cover"
+      />
+    </figure>
   );
 }
 

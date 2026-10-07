@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { CHARM_STAR_LABELS, REPORT_CHAPTERS } from "@/lib/constants/result";
-import { DETAILED_REPORT_PRICE, formatPrice } from "@/lib/constants/service";
 import type { CharmStarKey } from "@/lib/saju/dohwa";
 import type { CharmStarView } from "@/types/result";
 
@@ -134,31 +133,20 @@ export function MidCheckoutPrompt({ checkoutHref }: CheckoutProps) {
   );
 }
 
-export function FinalCheckoutPrompt({ checkoutHref }: CheckoutProps) {
+/** 리포트 전 장의 제목 목록 */
+export function ReportContents() {
   return (
-    <section className="flex flex-col gap-6 rounded-3xl border border-cinnabar/40 bg-gradient-to-b from-crimson-deep/70 via-night to-night px-6 py-9">
-      <div className="flex flex-col items-center gap-2 text-center">
-        <p className="font-eerie text-[26px] leading-snug text-paper">
-          넌 이미 충분히 색기 있어.
-          <br />
-          <span className="text-blossom-glow">이제 그걸 쓸 차례란다.</span>
-        </p>
-        <p className="text-sm text-mist">어떻게 꺼내고, 누구에게 쓰고, 언제 터뜨릴지. 네 사주로만 쓰는 연애·매력 리포트 전 {REPORT_CHAPTERS.length}장</p>
-      </div>
-      <ul className="grid grid-cols-3 gap-2 text-center">
-        {[
-          { value: `${REPORT_CHAPTERS.length}장`, label: "연애·매력 리포트" },
-          { value: "1~2분", label: "완성까지" },
-          { value: "이메일", label: "함께 보내 드려요" },
-        ].map((item) => (
-          <li key={item.label} className="flex flex-col gap-1 rounded-xl border border-line/70 bg-ink/50 px-2 py-3">
-            <span className="font-serif text-lg text-blossom">{item.value}</span>
-            <span className="text-[11px] text-mist">{item.label}</span>
+    <nav aria-label="리포트 목차" className="rounded-3xl border border-line bg-night/70 px-6 py-5">
+      <p className="text-xs text-cinnabar">연애·매력 리포트 전 {REPORT_CHAPTERS.length}장</p>
+      <ol className="mt-3 flex flex-col">
+        {REPORT_CHAPTERS.map((chapter) => (
+          <li key={chapter.key} className="flex items-baseline gap-3 border-b border-line/50 py-3 last:border-0">
+            <span className="w-10 shrink-0 text-xs text-cinnabar/80">제{chapter.chapter}장</span>
+            <span className="font-serif text-[15px] text-paper">{chapter.title}</span>
           </li>
         ))}
-      </ul>
-      <CheckoutLink href={checkoutHref} />
-    </section>
+      </ol>
+    </nav>
   );
 }
 
@@ -168,7 +156,7 @@ function CheckoutLink({ href }: { href: string }) {
       href={href}
       className="flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-crimson to-cinnabar px-6 font-serif text-[15px] text-paper shadow-[0_0_40px_-8px_rgb(232_137_155_/_0.8)] transition-transform active:scale-[0.98]"
     >
-      숨겨진 도화력 확인하기 · {formatPrice(DETAILED_REPORT_PRICE)}
+      숨겨진 도화력 확인하기
     </Link>
   );
 }

@@ -21,6 +21,8 @@ export type DohwaView = {
     elementHanja: string;
     headline: string;
     description: string;
+    story: string;
+    tease: string;
     vibes: string[];
   };
 };
