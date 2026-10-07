@@ -12,8 +12,6 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // 별도 앱(2번째 앞단 버전)은 v2 폴더 안에서 따로 검사한다.
-    "v2/**",
   ]),
 ]);
 
