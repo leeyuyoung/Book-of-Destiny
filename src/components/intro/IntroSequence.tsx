@@ -16,10 +16,10 @@ const BEATS = [
   {
     key: "arrive",
     scene: "garden",
-    ms: 3400,
+    ms: 4000,
     bubbles: [
       { kind: "caption", text: INTRO_SCRIPT.caption, at: 0.8, place: { top: "9%", left: "7%" } },
-      { kind: "thought", text: INTRO_SCRIPT.wonder, at: 2.0, place: { top: "44%", right: "9%" } },
+      { kind: "monologue", text: INTRO_SCRIPT.wonder, at: 1.6, place: { top: "64%" } },
     ],
   },
   {

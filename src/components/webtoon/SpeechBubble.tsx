@@ -3,7 +3,8 @@
 import { motion } from "motion/react";
 import type { CSSProperties } from "react";
 
-export type BubbleKind = "caption" | "thought" | "speech" | "whisper" | "sfx";
+/** monologue는 말풍선 없이 화면 위에 떠오르는 보는 이 자신의 속마음이다. */
+export type BubbleKind = "caption" | "thought" | "monologue" | "speech" | "whisper" | "sfx";
 /** 말풍선 꼬리가 향하는 쪽 */
 export type Tail = "bottom-left" | "bottom-right" | "top-left" | "top-right";
 export type Bubble = {
@@ -35,6 +36,22 @@ export function SpeechBubble({ bubble }: { bubble: Bubble }) {
       >
         {bubble.text}
       </motion.p>
+    );
+  }
+
+  if (bubble.kind === "monologue") {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0, transition: { delay: bubble.at, duration: 1 } }}
+        exit={{ opacity: 0, transition: { duration: 0.25 } }}
+        className="absolute inset-x-0 flex justify-center"
+        style={bubble.place}
+      >
+        <p className="max-w-[calc(100%-2rem)] whitespace-pre-line rounded-[2rem] bg-[radial-gradient(closest-side,rgb(10_6_20_/_0.6),rgb(10_6_20_/_0.3)_75%,transparent)] px-6 py-4 text-center font-serif text-[clamp(16px,5vw,20px)] font-light leading-relaxed text-paper break-keep [text-shadow:0_1px_4px_rgba(10,6,20,0.95),0_0_14px_rgba(10,6,20,0.8)]">
+          {bubble.text}
+        </p>
+      </motion.div>
     );
   }
 
