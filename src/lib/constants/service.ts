@@ -20,7 +20,7 @@ export const INTRO_SCRIPT = {
   flustered: "저, 저는 그냥…",
   scent: "이 향… 도화살이 아주 짙구나.",
   gasp: "…!",
-  tease: "꽤나 홀리고 다녔겠어. 아니면… 홀리고 싶었거나.",
+  tease: "이리 짙은 걸… 여태 썩히고 있었느냐?",
 } as const;
 
 /** 인트로 마지막 장면. lead와 invite는 말풍선으로 뜨고, 줄을 바꿀 자리에 \n을 넣는다. */
