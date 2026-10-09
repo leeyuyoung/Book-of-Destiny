@@ -33,7 +33,6 @@ export type AnalysisFormValues = {
   birthHour: string;
   birthMinute: string;
   birthTimeUnknown: boolean;
-  gender: "" | "female" | "male";
   name: string;
   relationshipStatus: "" | RelationshipStatus;
   concern: string;
@@ -48,7 +47,6 @@ export const EMPTY_FORM_VALUES: AnalysisFormValues = {
   birthHour: "",
   birthMinute: "",
   birthTimeUnknown: false,
-  gender: "",
   name: "",
   relationshipStatus: "",
   concern: "",
@@ -117,12 +115,6 @@ export const birthTimeStepSchema = z
     }
   });
 
-export const genderStepSchema = z.object({ gender: z.string() }).superRefine((values, ctx) => {
-  if (values.gender !== "female" && values.gender !== "male") {
-    ctx.addIssue({ code: "custom", path: ["gender"], message: "하나만 골라 보거라." });
-  }
-});
-
 export const nameStepSchema = z.object({ name: nameRule });
 
 export const loveStepSchema = z
@@ -136,7 +128,6 @@ export const loveStepSchema = z
 export const STEP_SCHEMAS = [
   birthDateStepSchema,
   birthTimeStepSchema,
-  genderStepSchema,
   nameStepSchema,
   loveStepSchema,
 ] as const;
@@ -154,7 +145,7 @@ export function validateStep(stepIndex: number, values: AnalysisFormValues): Fie
   return errors;
 }
 
-/** 서버와 만세력 계산에 넘기는 정규화된 입력 */
+/** 서버와 만세력 계산에 넘기는 정규화된 입력. 여성 전용 서비스라 성별은 묻지 않고 female로 고정한다(대운 방향 계산에 쓰인다). */
 export const analysisInputSchema = z.object({
   name: nameRule,
   birth: z.object({
@@ -166,7 +157,7 @@ export const analysisInputSchema = z.object({
     hour: z.number().int().min(0).max(23).nullable(),
     minute: z.number().int().min(0).max(59).nullable(),
   }),
-  gender: z.enum(["female", "male"]),
+  gender: z.literal("female"),
   relationshipStatus: z.enum(RELATIONSHIP_STATUS_VALUES),
   concern: concernRule.nullable(),
 });
@@ -195,7 +186,7 @@ export function toAnalysisInput(
       hour: timeKnown ? Number(values.birthHour) : null,
       minute: timeKnown ? Number(values.birthMinute) : null,
     },
-    gender: values.gender,
+    gender: "female",
     relationshipStatus: values.relationshipStatus,
     concern: concern.length > 0 ? concern : null,
   });

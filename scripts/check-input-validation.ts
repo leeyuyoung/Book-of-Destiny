@@ -13,7 +13,6 @@ const valid: AnalysisFormValues = {
   birthDay: "24",
   birthHour: "5",
   birthMinute: "30",
-  gender: "female",
   name: "  달빛 서윤 ",
   relationshipStatus: "some",
   concern: "연락이 뜸해졌어요.\n\n\n\n먼저 다가가도 될까요?",
@@ -32,16 +31,15 @@ const cases: Case[] = [
   { label: "미래 날짜", step: 0, patch: { birthYear: String(new Date().getFullYear()), birthMonth: "12", birthDay: "31" }, expectKeys: ["birthDate"] },
   { label: "시간 미선택", step: 1, patch: { birthHour: "" }, expectKeys: ["birthTime"] },
   { label: "시간 모름", step: 1, patch: { birthHour: "", birthMinute: "", birthTimeUnknown: true }, expectKeys: [] },
-  { label: "성별 미선택", step: 2, patch: { gender: "" }, expectKeys: ["gender"] },
-  { label: "이름 비어있음", step: 3, patch: { name: "   " }, expectKeys: ["name"] },
-  { label: "이름에 숫자 허용", step: 3, patch: { name: "서윤99" }, expectKeys: [] },
-  { label: "자음·모음만 입력해도 허용", step: 3, patch: { name: "ㅇㄹ" }, expectKeys: [] },
-  { label: "모음 섞인 입력 허용", step: 3, patch: { name: "ㅐㄹ" }, expectKeys: [] },
-  { label: "꺾쇠만 입력하면 빈 이름", step: 3, patch: { name: "<>" }, expectKeys: ["name"] },
-  { label: "이름 13자", step: 3, patch: { name: "가나다라마바사아자차카타파" }, expectKeys: ["name"] },
-  { label: "연애 상태 미선택", step: 4, patch: { relationshipStatus: "" }, expectKeys: ["relationshipStatus"] },
-  { label: "고민은 비워도 됨", step: 4, patch: { concern: "   " }, expectKeys: [] },
-  { label: "고민 1001자", step: 4, patch: { concern: "가".repeat(1001) }, expectKeys: ["concern"] },
+  { label: "이름 비어있음", step: 2, patch: { name: "   " }, expectKeys: ["name"] },
+  { label: "이름에 숫자 허용", step: 2, patch: { name: "서윤99" }, expectKeys: [] },
+  { label: "자음·모음만 입력해도 허용", step: 2, patch: { name: "ㅇㄹ" }, expectKeys: [] },
+  { label: "모음 섞인 입력 허용", step: 2, patch: { name: "ㅐㄹ" }, expectKeys: [] },
+  { label: "꺾쇠만 입력하면 빈 이름", step: 2, patch: { name: "<>" }, expectKeys: ["name"] },
+  { label: "이름 13자", step: 2, patch: { name: "가나다라마바사아자차카타파" }, expectKeys: ["name"] },
+  { label: "연애 상태 미선택", step: 3, patch: { relationshipStatus: "" }, expectKeys: ["relationshipStatus"] },
+  { label: "고민은 비워도 됨", step: 3, patch: { concern: "   " }, expectKeys: [] },
+  { label: "고민 1001자", step: 3, patch: { concern: "가".repeat(1001) }, expectKeys: ["concern"] },
 ];
 
 let failed = 0;
@@ -55,6 +53,10 @@ for (const testCase of cases) {
 
 const normalized = toAnalysisInput(valid);
 console.log("\n정규화 결과:", JSON.stringify(normalized, null, 2));
+
+const femaleOk = normalized.ok && normalized.input.gender === "female";
+if (!femaleOk) failed++;
+console.log(`${femaleOk ? "PASS" : "FAIL"}  성별은 묻지 않고 female로 고정`);
 
 const emptyConcern = toAnalysisInput({ ...valid, concern: "  \n " });
 const emptyConcernOk = emptyConcern.ok && emptyConcern.input.concern === null;

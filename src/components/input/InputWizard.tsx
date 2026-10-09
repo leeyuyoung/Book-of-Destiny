@@ -15,7 +15,6 @@ import {
 } from "@/lib/validation/analysisInput";
 import { BirthDateStep } from "./steps/BirthDateStep";
 import { BirthTimeStep } from "./steps/BirthTimeStep";
-import { GenderStep } from "./steps/GenderStep";
 import { LoveStep } from "./steps/LoveStep";
 import { NameStep } from "./steps/NameStep";
 import type { StepProps } from "./steps/types";
@@ -23,7 +22,6 @@ import type { StepProps } from "./steps/types";
 const STEP_COMPONENTS: ReadonlyArray<(props: StepProps) => ReactNode> = [
   BirthDateStep,
   BirthTimeStep,
-  GenderStep,
   NameStep,
   LoveStep,
 ];

@@ -61,7 +61,6 @@ export const REPORT_WRITING_MESSAGES = [
 export const INPUT_STEPS = [
   { sub: "귀에 대고 속삭여 보거라.", question: "“네가 태어난 날, 언제지?”" },
   { sub: "몰라도 괜찮아. 어차피 내가 찾아낼 테니.", question: "“몇 시에 태어났느냐?”" },
-  { sub: "보면 알지만… 네 입으로 듣고 싶구나.", question: "“여인이냐, 사내냐?”" },
   { sub: "오늘 밤 내가 부를 이름이니, 예쁜 걸로.", question: "“이름이 뭐지?”" },
   { sub: "숨겨 봤자 소용없다.", question: "“지금 네 마음 차지한 놈, 있느냐?”" },
 ] as const;
