@@ -139,7 +139,7 @@ export default async function ResultPage({ params, searchParams }: PageProps<"/r
         />
       </div>
 
-      <div className="mt-10">
+      <div className="mt-16 mb-3">
         <ReportToc gender={result.gender} />
       </div>
 
