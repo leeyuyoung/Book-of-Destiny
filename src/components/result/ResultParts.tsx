@@ -1,5 +1,5 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
+import { MythicButtonLink } from "@/components/ui/MythicButtonLink";
 import { CHARM_STAR_LABELS, REPORT_CHAPTERS } from "@/lib/constants/result";
 import type { CharmStarKey } from "@/lib/saju/dohwa";
 import type { CharmStarView } from "@/types/result";
@@ -120,13 +120,15 @@ type CheckoutProps = { checkoutHref: string };
 
 export function MidCheckoutPrompt({ checkoutHref }: CheckoutProps) {
   return (
-    <div className="flex flex-col items-center gap-4 rounded-3xl border border-cinnabar/30 bg-gradient-to-b from-crimson-deep/60 to-night px-6 py-8 text-center">
+    <div className="flex flex-col items-center gap-4 rounded-3xl border border-cinnabar/30 bg-gradient-to-b from-crimson-deep/60 to-night px-4 py-8 text-center">
       <p className="font-serif text-[17px] leading-relaxed text-paper">
         여기서 멈출 거냐?
         <br />
         …난 <span className="text-blossom-glow">아직 시작도 안 했는데.</span>
       </p>
-      <CheckoutLink href={checkoutHref} />
+      <div className="mt-2 w-full">
+        <MythicButtonLink href={checkoutHref}>도화신선과 끝까지 가기</MythicButtonLink>
+      </div>
     </div>
   );
 }
@@ -148,27 +150,13 @@ export function ReportContents() {
   );
 }
 
-function CheckoutLink({ href }: { href: string }) {
-  return (
-    <Link
-      href={href}
-      className="flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-crimson to-cinnabar px-6 font-serif text-[15px] text-paper shadow-[0_0_40px_-8px_rgb(232_137_155_/_0.8)] transition-transform active:scale-[0.98]"
-    >
-      도화신선과 끝까지 가기
-    </Link>
-  );
-}
-
 /** 화면 아래에 늘 떠 있는 결제 버튼 */
 export function StickyCheckoutBar({ href, label }: { href: string; label: string }) {
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 bg-gradient-to-t from-ink via-ink/90 to-transparent px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-8">
-      <Link
-        href={href}
-        className="pointer-events-auto mx-auto flex min-h-14 max-w-xl items-center justify-center rounded-full bg-gradient-to-r from-crimson to-cinnabar px-6 font-serif text-[15px] text-paper shadow-[0_0_40px_-8px_rgb(232_137_155_/_0.9)] transition-transform active:scale-[0.98]"
-      >
-        {label}
-      </Link>
+      <div className="pointer-events-auto mx-auto max-w-xl">
+        <MythicButtonLink href={href}>{label}</MythicButtonLink>
+      </div>
     </div>
   );
 }

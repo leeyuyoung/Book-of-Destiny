@@ -15,7 +15,7 @@ type PageShellProps = {
 
 export function PageShell({ children, showHeader = true, showFooter = true, intensity = "soft", withStickyBar = false }: PageShellProps) {
   return (
-    <div className={`relative isolate flex min-h-dvh flex-col ${withStickyBar ? "pb-24" : ""}`}>
+    <div className={`relative isolate flex min-h-dvh flex-col ${withStickyBar ? "pb-28" : ""}`}>
       <NightGardenBackground intensity={intensity} />
       {showHeader && (
         <header className="sticky top-0 z-30 border-b border-line/50 bg-ink/60 backdrop-blur-md">
