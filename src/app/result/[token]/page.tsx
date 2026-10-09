@@ -40,7 +40,7 @@ export default async function ResultPage({ params, searchParams }: PageProps<"/r
   const cta = paid
     ? { href: `/report/${token}`, label: "펼친 꽃 다시 보러 가기" }
     : token === "sample"
-      ? { href: "/start", label: "내 꽃도 보러 가기" }
+      ? { href: "/start", label: "내 숨겨진 색기력 확인하기" }
       : { href: `/checkout/${token}`, label: "색기 쓰는 법 배우기" };
 
   return (
