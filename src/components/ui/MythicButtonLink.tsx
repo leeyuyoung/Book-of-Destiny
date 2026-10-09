@@ -57,7 +57,7 @@ export function MythicButtonLink({ href, children }: { href: string; children: R
 
       <Link
         href={href}
-        className="group relative z-10 flex min-h-[4.25rem] w-full items-center justify-center overflow-hidden rounded-full border-[1.5px] border-[#f6d58e] bg-[linear-gradient(180deg,#ffc4cf_0%,#f48da6_50%,#cf5a7e_100%)] px-12 shadow-[0_0_0_1px_rgb(122_31_67_/_0.5),0_10px_30px_rgb(0_0_0_/_0.45),0_0_36px_-6px_rgb(255_178_196_/_0.85)] transition-transform duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#f6d58e]/70"
+        className="group relative z-10 flex min-h-[4.25rem] w-full items-center justify-center overflow-hidden rounded-full border-[1.5px] border-[#f6d58e] bg-[linear-gradient(180deg,#ffc4cf_0%,#f48da6_50%,#cf5a7e_100%)] px-11 shadow-[0_0_0_1px_rgb(122_31_67_/_0.5),0_10px_30px_rgb(0_0_0_/_0.45),0_0_36px_-6px_rgb(255_178_196_/_0.85)] transition-transform duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#f6d58e]/70"
       >
         <span aria-hidden className="pointer-events-none absolute inset-[5px] rounded-full border border-[#f6d58e]/55" />
         <span
@@ -79,7 +79,7 @@ export function MythicButtonLink({ href, children }: { href: string; children: R
         <Blossom className="right-4" />
 
         <span
-          className="relative font-serif text-[18px] font-bold leading-none tracking-[0.1em] text-[#fffaf3]"
+          className="relative whitespace-nowrap font-serif text-[clamp(13px,4.4vw,18px)] font-bold leading-none tracking-[0.06em] text-[#fffaf3]"
           style={{ textShadow: INK_OUTLINE }}
         >
           {children}
