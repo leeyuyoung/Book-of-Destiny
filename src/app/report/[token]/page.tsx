@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { PageShell } from "@/components/layout/PageShell";
 import { FiveElementsCard } from "@/components/result/FiveElementsCard";
-import { ChapterCoverImage, ChapterTitle, DohwaRadarCard } from "@/components/result/FreeResultParts";
+import { ChapterCoverImage, ChapterTitle, coverFrameClass, DohwaRadarCard, WHOLE_COVER_KEYS } from "@/components/result/FreeResultParts";
 import { ManseryeokTable } from "@/components/result/ManseryeokTable";
 import { ReportWaiting } from "@/components/result/ReportWaiting";
 import { CharmStars, LoveTimeline, ReportPortrait, SectionTitle } from "@/components/result/ResultParts";
@@ -117,8 +117,8 @@ export default async function ReportPage({ params }: PageProps<"/report/[token]"
         {report.chapters.map((chapter) => (
           <article key={chapter.chapter} id={`chapter-${chapter.chapter}`} className="flex scroll-mt-20 flex-col gap-8">
             <Reveal>
-              <figure className="relative -mx-5 aspect-[4/5] overflow-hidden">
-                <ChapterCoverImage src={chapter.image} />
+              <figure className={`relative -mx-5 overflow-hidden ${coverFrameClass(chapter.key)}`}>
+                <ChapterCoverImage src={chapter.image} whole={WHOLE_COVER_KEYS.has(chapter.key)} />
                 <figcaption className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-2 px-6 pb-4 text-center">
                   <span className="rounded-full border border-gold/40 bg-ink/60 px-3 py-1 text-xs tracking-[0.2em] text-gold-soft backdrop-blur-sm">
                     제{chapter.chapter}장

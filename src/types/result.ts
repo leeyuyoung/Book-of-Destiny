@@ -1,3 +1,4 @@
+import type { ReportChapterKey } from "@/lib/constants/result";
 import type { FiveElementKey, PillarPosition, TenGod, TwelveStage } from "@/lib/saju/profileTypes";
 
 export type { FiveElementKey };
@@ -45,7 +46,7 @@ export type CharmStarView = { key: string; name: string; hanja: string; found: b
 
 export type ReportChapterView = {
   chapter: number;
-  key: string;
+  key: ReportChapterKey;
   title: string;
   subtitle: string;
   image: string;

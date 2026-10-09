@@ -199,7 +199,7 @@ export function ReportVolume() {
 /** 장 표지 그림. 위아래 모두 배경으로 스며들어, 아래에 얹은 제목이 배경 위에서 읽힌다. */
 export function ChapterCoverImage({ src, whole = false }: { src: string; whole?: boolean }) {
   const mask = whole
-    ? "linear-gradient(180deg, rgb(0 0 0 / 0.15) 0%, black 7%, black 62%, rgb(0 0 0 / 0.5) 78%, transparent 91%)"
+    ? "linear-gradient(180deg, rgb(0 0 0 / 0.15) 0%, black 7%, black 59%, rgb(0 0 0 / 0.5) 74%, transparent 86%)"
     : "linear-gradient(180deg, transparent 0%, black 16%, black 50%, rgb(0 0 0 / 0.35) 78%, transparent 100%)";
   return (
     <Image
@@ -214,14 +214,18 @@ export function ChapterCoverImage({ src, whole = false }: { src: string; whole?:
 }
 
 /** 그림 위아래 장식까지 다 보여야 하는 장. 틀을 세로로 늘려 그림(3:4)을 자르지 않고 위에 붙이고, 제목은 그림 끝자락에 살짝 걸친다. */
-const WHOLE_COVER_KEYS: ReadonlySet<ReportChapterKey> = new Set(["gaze", "night"]);
+export const WHOLE_COVER_KEYS: ReadonlySet<ReportChapterKey> = new Set(["gaze", "night"]);
+
+export function coverFrameClass(key: ReportChapterKey) {
+  return WHOLE_COVER_KEYS.has(key) ? "aspect-[3/4.65]" : "aspect-[4/5]";
+}
 
 /**
  * 결제 전 표지에서 얼굴을 가려 두는 장. 그림은 얼굴 자리를 흐리게 한 사본을 쓰고, x·y는 가린 자리의 중심이다.
- * x·y는 그림이 아니라 표지 틀 기준이라, 틀 비율(4:5 또는 통째로 보이는 3:4.4)이 바뀌면 다시 잡아야 한다.
+ * x·y는 그림이 아니라 표지 틀 기준이라, 틀 비율(4:5 또는 통째로 보이는 3:4.65)이 바뀌면 다시 잡아야 한다.
  */
 const LOCKED_FACES: Partial<Record<ReportChapterKey, { image: string; x: string; y: string; caption: string }>> = {
-  gaze: { image: "/images/result/chapter-2-locked.jpg", x: "49.8%", y: "39.9%", caption: "그 남자가 보는 네 얼굴" },
+  gaze: { image: "/images/result/chapter-2-locked.jpg", x: "49.8%", y: "37.8%", caption: "그 남자가 보는 네 얼굴" },
   fate: { image: "/images/result/chapter-5-locked.jpg", x: "50.1%", y: "29.6%", caption: "네 남자의 얼굴" },
 };
 
@@ -293,7 +297,7 @@ export function ChapterCovers({ gender }: { gender: "female" | "male" }) {
         return (
           <Reveal key={chapter.key}>
             <article className="flex flex-col gap-5">
-              <figure className={`relative -mx-5 overflow-hidden ${whole ? "aspect-[3/4.4]" : "aspect-[4/5]"}`}>
+              <figure className={`relative -mx-5 overflow-hidden ${coverFrameClass(chapter.key)}`}>
                 <ChapterCoverImage src={lockedFace?.image ?? chapter.image} whole={whole} />
                 {lockedFace && <FaceLock x={lockedFace.x} y={lockedFace.y} caption={lockedFace.caption} />}
                 <figcaption className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-2 px-6 pb-4 text-center">
