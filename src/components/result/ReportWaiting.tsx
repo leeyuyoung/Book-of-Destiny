@@ -126,7 +126,7 @@ export function ReportWaiting({ token, failed }: { token: string; failed: boolea
             <p className="font-serif text-base leading-relaxed text-paper">
               꽃을 펼치다 잠시 바람이 불었구나.
               <br />
-              <span className="text-mist">결제는 안전하게 완료되었으니, 다시 펼쳐 보거라.</span>
+              <span className="text-mist">결제는 안전하게 끝났으니, 다시 열어 보거라.</span>
             </p>
             <Button onClick={retry}>다시 펼치기</Button>
             {retryError && (

@@ -117,7 +117,7 @@ export function LockedChapterList({ keys, href, unlocked = false }: { keys: Repo
                 className="flex items-center gap-1.5 rounded-full border border-cinnabar/30 bg-ink/90 px-3 py-1.5 text-xs text-paper/90 shadow-[0_0_24px_rgb(7_6_14_/_0.9)]"
               >
                 {!unlocked && <LockIcon />}
-                {unlocked ? "펼친 꽃에서 읽기" : "펼치면 전부 알려주마"}
+                {unlocked ? "펼친 꽃에서 읽기" : "끝까지 가면 전부 알려주마"}
               </Link>
             </div>
           </div>
@@ -127,7 +127,7 @@ export function LockedChapterList({ keys, href, unlocked = false }: { keys: Repo
   );
 }
 
-/** 잠긴 장 사이에 쉬어 가는 선녀 그림 */
+/** 잠긴 장 사이에 쉬어 가는 그림 */
 export function PeachInterlude() {
   return (
     <figure
@@ -138,8 +138,8 @@ export function PeachInterlude() {
       }}
     >
       <Image
-        src="/images/dohwa-peach-bite.jpg"
-        alt="달밤의 꽃나무 아래에서 과즙이 튀는 분홍 복숭아를 한입 베어 문 채 이쪽을 바라보는 선녀"
+        src="/images/sinseon/peach-bite.jpg"
+        alt="달밤의 꽃나무 가지에 걸터앉아 분홍 복숭아를 베어 문 채 곁눈질로 웃는 도화신선"
         fill
         sizes="(max-width: 640px) 100vw, 576px"
         className="object-cover"
@@ -175,7 +175,7 @@ export function LoveTimelineStrip({ years }: { years: number[] }) {
 }
 
 /**
- * 도화선녀가 건네는 서찰. 리포트 몇 장의 첫 귀띔을 선녀 말투로 적고, 핵심 낱말은 꽃잎으로 덮는다.
+ * 도화신선이 건네는 서찰. 리포트 몇 장의 첫 귀띔을 신선 말투로 적고, 핵심 낱말은 꽃잎으로 덮는다.
  * 여기서 귀띔한 내용은 리포트 작성 지시(REPORT_CHAPTERS의 guide)에도 들어 있어야 한다.
  */
 export function DohwaLetter({ name, href }: { name: string; href: string }) {
@@ -189,7 +189,7 @@ export function DohwaLetter({ name, href }: { name: string; href: string }) {
           <p className="relative font-hand text-[18px] leading-none text-[#6e1f36]">{name}에게</p>
 
           <p className="relative mt-4 font-hand text-[16px] leading-[1.9] break-keep">
-            치명적인 너의 비밀, 남들 몰래 몇 가지만 먼저 귀띔해 주마.
+            네가 숨긴 비밀, 남들 몰래 몇 가지만 먼저 귓가에 흘려 주마.
           </p>
 
           <div className="relative mt-5 flex flex-col gap-4 font-hand text-[16px] leading-[1.9] break-keep [text-shadow:0_0_0.6px_rgb(30_25_21_/_0.5)]">
@@ -200,13 +200,13 @@ export function DohwaLetter({ name, href }: { name: string; href: string }) {
               네 얼굴에서 가장 위험한 곳은 <PetalVeil em={2.6} seed={1} />이란다. 다들 거기서 눈을 떼지 못해 애가 타.
             </LetterLine>
             <LetterLine chapter="flirt">
-              네가 <PetalVeil em={5} seed={2} /> 하는 순간, 버티던 마음도 속절없이 무너지느니라.
+              네가 <PetalVeil em={5} seed={2} /> 하는 순간, 버티던 마음도 속절없이 무너지지.
             </LetterLine>
             <LetterLine chapter="language">
               무심코 던진 <PetalVeil em={4} seed={6} /> 그 한마디에, 누군가는 오늘 밤도 잠 못 이루지.
             </LetterLine>
             <LetterLine chapter="styling">
-              <PetalVeil em={2.8} seed={3} /> 빛을 걸치는 날, 네 꽃은 두{"\u00a0"}배로 짙어진단다.
+              <PetalVeil em={2.8} seed={3} /> 빛을 걸치는 날, 네 꽃은 두{"\u00a0"}배로 짙어진다.
             </LetterLine>
             <LetterLine chapter="match">
               <PetalVeil em={2.4} seed={4} /> 기운의 사람은 꼭 붙잡고, <PetalVeil em={2.4} seed={5} /> 기운의 사람은 당장 끊어 내거라. 네 꽃을 시들게 할 독이니.
@@ -217,10 +217,10 @@ export function DohwaLetter({ name, href }: { name: string; href: string }) {
             <p className="text-[11px] leading-relaxed text-[#1e1915]/60">
               꽃잎 아래 적힌 건
               <br />
-              너만 알아야 할 이야기란다
+              너랑 나만 아는 이야기다
             </p>
             <div className="flex items-center gap-2">
-              <span className="font-hand text-[18px] tracking-[0.06em] text-[#1e1915]/90">도화선녀</span>
+              <span className="font-hand text-[18px] tracking-[0.06em] text-[#1e1915]/90">도화신선</span>
               <InkSeal />
             </div>
           </div>

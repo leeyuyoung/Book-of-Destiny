@@ -54,10 +54,10 @@ export function BirthTimeStep({ values, errors, update }: StepProps) {
       <div className="h-px bg-line" />
       <p className="text-xs leading-relaxed text-mist-dim">
         {unknown
-          ? "괜찮단다. 시각 없이 여섯 글자로 읽어주마."
+          ? "괜찮다. 시각 없이도 여섯 글자면 충분하지."
           : hourBranch
             ? `${hourBranch.name}(${hourBranch.hanja}) · ${hourBranch.range}이로구나.`
-            : "24시간 기준으로 적어주렴. 예) 오후 3시 30분 → 15 : 30"}
+            : "24시간 기준으로 적거라. 예) 오후 3시 30분 → 15 : 30"}
       </p>
       <FieldError message={errors.birthTime} />
     </div>

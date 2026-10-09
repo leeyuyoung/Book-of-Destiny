@@ -122,11 +122,9 @@ export function MidCheckoutPrompt({ checkoutHref }: CheckoutProps) {
   return (
     <div className="flex flex-col items-center gap-4 rounded-3xl border border-cinnabar/30 bg-gradient-to-b from-crimson-deep/60 to-night px-6 py-8 text-center">
       <p className="font-serif text-[17px] leading-relaxed text-paper">
-        여기까지는 맛보기란다.
+        여기서 멈출 거냐?
         <br />
-        네 매력을 <span className="text-blossom-glow">끝까지 꺼내는 법</span>은
-        <br />
-        꽃을 펼친 이에게만 알려주마.
+        …난 <span className="text-blossom-glow">아직 시작도 안 했는데.</span>
       </p>
       <CheckoutLink href={checkoutHref} />
     </div>
@@ -156,7 +154,7 @@ function CheckoutLink({ href }: { href: string }) {
       href={href}
       className="flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-crimson to-cinnabar px-6 font-serif text-[15px] text-paper shadow-[0_0_40px_-8px_rgb(232_137_155_/_0.8)] transition-transform active:scale-[0.98]"
     >
-      숨겨진 도화력 확인하기
+      도화신선과 끝까지 가기
     </Link>
   );
 }

@@ -1,10 +1,10 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button, ButtonLink } from "@/components/ui/Button";
-import { BloomingBlossom } from "@/components/ui/BloomingBlossom";
 import {
   clearAnalysisToken,
   clearPendingAnalysis,
@@ -164,32 +164,39 @@ export function AnalyzingExperience() {
   const listIndex = phase.kind === "ready" ? ANALYSIS_MESSAGES.length : messageIndex;
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-14 py-16 text-center">
-      <div className="relative flex h-56 w-56 items-center justify-center">
-        <svg viewBox="0 0 200 200" className="absolute inset-0 h-full w-full -rotate-90">
-          <circle cx="100" cy="100" r="92" fill="none" stroke="rgb(214 176 122 / 0.14)" strokeWidth="1" />
-          <motion.circle
-            cx="100"
-            cy="100"
-            r="92"
-            fill="none"
-            stroke="url(#progress-gold)"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: progress }}
+    <div className="flex flex-1 flex-col items-center justify-center gap-8 pb-12 text-center">
+      <div className="-mx-5 flex w-[calc(100%+2.5rem)] flex-col items-center gap-5">
+        <div
+          className="relative aspect-[3/4] max-h-[58dvh] w-full overflow-hidden"
+          style={{
+            maskImage: "linear-gradient(180deg, transparent 0%, black 5%, black 72%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(180deg, transparent 0%, black 5%, black 72%, transparent 100%)",
+          }}
+        >
+          <motion.div
+            className="absolute inset-0"
+            initial={{ scale: 1, opacity: 0 }}
+            animate={{ scale: 1.08, opacity: 1 }}
+            transition={{ scale: { duration: 12, ease: "easeOut" }, opacity: { duration: 1.4 } }}
+          >
+            <Image
+              src="/images/sinseon/pulse.jpg"
+              alt="여자주인공을 벽에 밀어붙이고 머리 위로 올린 손목을 쥐어 맥을 짚는 도화신선"
+              fill
+              loading="eager"
+              sizes="(max-width: 640px) 100vw, 576px"
+              className="object-cover object-[50%_20%]"
+            />
+          </motion.div>
+        </div>
+        <div className="h-px w-40 overflow-hidden rounded-full bg-gold/15">
+          <motion.div
+            className="h-full origin-left bg-gradient-to-r from-[#fff3dc] to-blossom"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: progress }}
             transition={{ duration: 1.6, ease: "easeInOut" }}
           />
-          <defs>
-            <linearGradient id="progress-gold" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#fff3dc" />
-              <stop offset="100%" stopColor="#e8899b" />
-            </linearGradient>
-          </defs>
-        </svg>
-        <div className="absolute inset-6 rounded-full border border-line animate-spin-celestial" />
-        <div className="absolute inset-0 rounded-full bg-gold/5 blur-2xl animate-breathe" />
-        <BloomingBlossom bloom={progress} size={140} />
+        </div>
       </div>
 
       <div className="flex min-h-24 flex-col items-center justify-center px-4">
@@ -215,9 +222,9 @@ export function AnalyzingExperience() {
               className="flex w-full max-w-xs flex-col items-center gap-8"
             >
               <p className="font-serif text-lg font-light leading-relaxed">
-                네 꽃의 첫 잎이
+                찾았다, 네 꽃.
                 <br />
-                <span className="text-gold-gradient">피어났구나.</span>
+                <span className="text-gold-gradient">이제 보여주마.</span>
               </p>
               <ButtonLink href={`/result/${phase.token}`}>내 꽃 보러 가기</ButtonLink>
             </motion.div>

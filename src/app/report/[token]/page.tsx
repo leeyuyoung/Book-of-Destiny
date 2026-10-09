@@ -76,7 +76,7 @@ export default async function ReportPage({ params }: PageProps<"/report/[token]"
             <SectionTitle
               eyebrow="다섯 기운"
               title="네 안에 흐르는 다섯 기운"
-              description="나무·불·흙·쇠·물. 어떤 기운이 짙고 어떤 기운이 비었는지가 네 분위기를 만든단다."
+              description="나무·불·흙·쇠·물. 어떤 기운이 짙고 어떤 기운이 비었는지가 네 분위기를 만들지."
             />
             <FiveElementsCard fiveElements={report.fiveElements} currentLuck={report.currentLuck} />
           </section>

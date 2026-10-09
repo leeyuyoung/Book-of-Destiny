@@ -26,7 +26,7 @@ async function loadResult(token: string) {
 
 const starTypes = chapterOf("starTypes");
 const timeline = chapterOf("timeline");
-/** 서찰 아래에 이어 보여주는 잠긴 장. 5장과 6장 사이에 선녀 그림, 7장과 8장 사이에 중간 결제 안내를 끼우고, 12장은 11장 인연 시기 뒤에 따로 둔다. */
+/** 서찰 아래에 이어 보여주는 잠긴 장. 5장과 6장 사이에 쉬어 가는 그림, 7장과 8장 사이에 중간 결제 안내를 끼우고, 12장은 11장 인연 시기 뒤에 따로 둔다. */
 const STORY_CHAPTERS_BEFORE_PICTURE: ReportChapterKey[] = ["firstImpression", "looks", "flirt"];
 const STORY_CHAPTERS_BEFORE_PROMPT: ReportChapterKey[] = ["language", "styling"];
 const STORY_CHAPTERS_AFTER_PROMPT: ReportChapterKey[] = ["admirers", "inLove", "match"];
@@ -42,7 +42,7 @@ export default async function ResultPage({ params }: PageProps<"/result/[token]"
     ? { href: `/report/${token}`, label: "펼친 꽃 다시 보러 가기" }
     : token === "sample"
       ? { href: "/start", label: "내 꽃도 보러 가기" }
-      : { href: checkoutHref, label: "숨겨진 도화력 확인하기" };
+      : { href: checkoutHref, label: "도화신선과 끝까지 가기" };
   const chapterHref = paid ? sticky.href : checkoutHref;
 
   return (
@@ -57,7 +57,7 @@ export default async function ResultPage({ params }: PageProps<"/result/[token]"
                   <>
                     너, 생각보다 훨씬
                     <br />
-                    <span className="text-blossom-glow">치명적인 아이란다</span>
+                    <span className="text-blossom-glow">치명적이구나</span>
                   </>
                 }
               />
@@ -70,7 +70,7 @@ export default async function ResultPage({ params }: PageProps<"/result/[token]"
               <SectionTitle
                 eyebrow={`제${starTypes.chapter}장`}
                 title={starTypes.title}
-                description="몇 개를 쥐고 태어났는지, 어디에 숨겨 뒀는지가 네 색기의 결을 정한단다."
+                description="몇 개를 쥐고 태어났는지, 어디에 숨겨 뒀는지가 네 색기의 결을 정하지."
               />
               <CharmStars />
             </section>

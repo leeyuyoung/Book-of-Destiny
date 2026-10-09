@@ -7,7 +7,7 @@ import { josa } from "@/lib/constants/sajuLabels";
 import type { DohwaView } from "@/types/result";
 
 const EASE = [0.22, 0.61, 0.36, 1] as const;
-/** 선녀가 떠오른 뒤 첫 말풍선을 띄우기까지(ms) */
+/** 신선이 떠오른 뒤 첫 말풍선을 띄우기까지(ms) */
 const FIRST_BUBBLE_MS = 1400;
 /** 말풍선마다 "…" 을 보여주는 시간(ms) */
 const TYPING_MS = 700;
@@ -19,7 +19,7 @@ const VIBE_STAGGER_S = 0.35;
 
 type ResultStoryProps = { name: string; type: DohwaView["type"]; children: ReactNode };
 
-/** 결과 첫머리. 선녀가 말풍선으로 한 마디씩 건넨 뒤 분위기를 세로로 띄우고, 그 아래로 결과를 펼친다. 중간에 건너뛸 수 없다. */
+/** 결과 첫머리. 신선이 말풍선으로 한 마디씩 건넨 뒤 분위기를 세로로 띄우고, 그 아래로 결과를 펼친다. 중간에 건너뛸 수 없다. */
 export function ResultStory({ name, type, children }: ResultStoryProps) {
   const instant = !!useReducedMotion();
   const lines: { text: ReactNode; chars: number }[] = [
@@ -72,8 +72,8 @@ export function ResultStory({ name, type, children }: ResultStoryProps) {
           }}
         >
           <Image
-            src="/images/dohwa-heroine.jpg"
-            alt="달밤의 복숭아꽃 정원에 선 한복 차림의 도화선녀"
+            src="/images/sinseon/hero.jpg"
+            alt="달밤의 복숭아꽃 정원에서 꽃가지를 입가에 대고 웃는 한복 차림의 도화신선"
             fill
             priority
             sizes="(max-width: 640px) 100vw, 576px"
@@ -139,7 +139,7 @@ function SpeechBubble({ instant, children }: { instant: boolean; children: React
       transition={{ duration: instant ? 0 : 0.5, ease: EASE }}
     >
       {typing ? (
-        <span aria-label="선녀가 말하는 중" className="flex h-[26px] items-center gap-1">
+        <span aria-label="신선이 말하는 중" className="flex h-[26px] items-center gap-1">
           {[0, 1, 2].map((dot) => (
             <motion.span
               key={dot}

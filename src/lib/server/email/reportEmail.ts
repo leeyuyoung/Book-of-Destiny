@@ -7,15 +7,15 @@ const escapeHtml = (value: string) =>
 
 /** 리포트가 완성되면 보내는 링크 메일. 리포트 본문은 담지 않고 링크만 보낸다. */
 export function buildReportEmail({ name, reportUrl }: { name: string; reportUrl: string }) {
-  const subject = `[${SERVICE.name}] ${name}, 네 꽃이 활짝 피었단다`;
+  const subject = `[${SERVICE.name}] ${name}, 네 꽃, 끝까지 다 읽었다`;
   const safeName = escapeHtml(name);
   const safeUrl = escapeHtml(reportUrl);
 
   const text = [
     `${name}, 기다렸지?`,
     "",
-    "네 사주로만 쓴 연애·매력 리포트가 완성되었단다.",
-    "아래 링크에서 언제든 다시 펼쳐 보거라.",
+    "네 사주로만 쓴 연애·매력 리포트가 완성됐다.",
+    "아래 링크에서 언제든 다시 열어 보거라.",
     "",
     reportUrl,
     "",
@@ -33,11 +33,11 @@ export function buildReportEmail({ name, reportUrl }: { name: string; reportUrl:
         <tr><td style="padding:40px 32px;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#f5ede6;">
           <p style="margin:0 0 8px;font-size:12px;color:#e8899b;">끝까지 펼친 꽃</p>
           <h1 style="margin:0 0 24px;font-size:22px;font-weight:400;line-height:1.5;color:#f5ede6;">
-            <span style="color:#f4b8c2;">${safeName}</span>,<br>네 꽃이 활짝 피었단다
+            <span style="color:#f4b8c2;">${safeName}</span>,<br>네 꽃, 끝까지 다 읽었다
           </h1>
           <p style="margin:0 0 28px;font-size:14px;line-height:1.8;color:#bcb0c4;">
-            네 사주로만 쓴 연애·매력 리포트가 완성되었단다.<br>
-            아래 버튼을 누르면 언제든 다시 펼쳐 볼 수 있지.
+            네 사주로만 쓴 연애·매력 리포트가 완성됐다.<br>
+            아래 버튼을 누르면 언제든 다시 볼 수 있지.
           </p>
           <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="border-radius:999px;background:#9c3f62;">
             <a href="${safeUrl}" style="display:inline-block;padding:14px 32px;font-size:15px;color:#f5ede6;text-decoration:none;">내 꽃 펼쳐 보기</a>

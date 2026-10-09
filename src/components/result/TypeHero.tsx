@@ -8,7 +8,7 @@ export function TypeHero({ name, type, eyebrow, hook }: TypeHeroProps) {
     <section className="-mx-5">
       <div className="relative aspect-[4/5] w-full overflow-hidden">
         <Image
-          src="/images/dohwa-heroine.jpg"
+          src="/images/sinseon/hero.jpg"
           alt=""
           fill
           sizes="(max-width: 640px) 100vw, 576px"

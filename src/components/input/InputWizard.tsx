@@ -147,11 +147,11 @@ export default function InputWizard() {
           </AnimatePresence>
 
           <Button type="submit" variant="light" disabled={submitting} className="mt-7">
-            {isLastStep ? (submitting ? "꽃을 펼치는 중…" : "내 꽃 읽어주기") : "다음으로"}
+            {isLastStep ? (submitting ? "신선이 다가오는 중…" : "도화신선에게 맡기기") : "다음으로"}
           </Button>
           {isLastStep && (
             <p className="mt-3 text-center text-[11px] leading-relaxed text-mist-dim">
-              만 14세 이상만 이용할 수 있어요 · 들려준 이야기는 사주 풀이에만 쓰여요
+              만 19세 이상만 이용할 수 있어요 · 들려준 이야기는 사주 풀이에만 쓰여요
             </p>
           )}
         </div>

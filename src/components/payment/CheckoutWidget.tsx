@@ -137,7 +137,7 @@ export function CheckoutWidget({ clientKey, token, amount }: CheckoutWidgetProps
             </span>
           </CheckboxField>
           <CheckboxField id="agree-age14" checked={agreeAge14} onChange={setAgreeAge14} hasError={!!contactErrors.agreeAge14}>
-            (필수) 만 14세 이상입니다
+            (필수) 만 19세 이상입니다
           </CheckboxField>
           {(contactErrors.agreePrivacy || contactErrors.agreeAge14) && (
             <p role="alert" className="text-xs leading-relaxed text-fire">

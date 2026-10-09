@@ -75,7 +75,7 @@ export function ManseryeokTable({ name, dayPillarName, birthLabel, pillars }: Ma
 
       <p className="border-t border-line/60 px-5 py-3 text-[11px] leading-relaxed text-mist-dim">
         위 칸은 하늘의 기운, 아래 칸은 땅의 기운이란다. 테두리가 빛나는 글자가 바로 너야.
-        {!columns[0] && " 출생 시간을 몰라 태어난 시 칸은 비워 두었단다."}
+        {!columns[0] && " 출생 시간을 몰라 태어난 시 칸은 비워 뒀다."}
       </p>
     </div>
   );

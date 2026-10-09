@@ -3,8 +3,8 @@ import { FieldError } from "../fields/Field";
 import type { StepProps } from "./types";
 
 const GENDER_OPTIONS = [
-  { value: "female", label: "여성" },
-  { value: "male", label: "남성" },
+  { value: "female", label: "여인" },
+  { value: "male", label: "사내" },
 ] as const;
 
 export function GenderStep({ values, errors, update }: StepProps) {
