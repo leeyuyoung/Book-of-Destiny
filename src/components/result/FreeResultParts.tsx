@@ -2,7 +2,7 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 import { LockIcon } from "@/components/result/ResultParts";
 import { Reveal } from "@/components/ui/Reveal";
-import { REPORT_CHAPTERS, withPartner } from "@/lib/constants/result";
+import { REPORT_CHAPTERS, type ReportChapterKey, withPartner } from "@/lib/constants/result";
 import type { DohwaView } from "@/types/result";
 
 const RADAR_SIZE = 300;
@@ -196,27 +196,46 @@ export function ReportVolume() {
   );
 }
 
-/** 장 표지 그림. 위는 배경으로 스며들고, 아래는 제목이 읽히도록 어둡게 깐다. */
+/** 장 표지 그림. 위아래 모두 배경으로 스며들어, 아래에 얹은 제목이 배경 위에서 읽힌다. */
 export function ChapterCoverImage({ src }: { src: string }) {
   return (
-    <>
-      <Image
-        src={src}
-        alt=""
-        fill
-        sizes="(max-width: 640px) 100vw, 576px"
-        className="object-cover"
-        style={{
-          maskImage: "linear-gradient(180deg, transparent 0%, black 16%, black 100%)",
-          WebkitMaskImage: "linear-gradient(180deg, transparent 0%, black 16%, black 100%)",
-        }}
-      />
-      <div
+    <Image
+      src={src}
+      alt=""
+      fill
+      sizes="(max-width: 640px) 100vw, 576px"
+      className="object-cover"
+      style={{
+        maskImage: "linear-gradient(180deg, transparent 0%, black 16%, black 50%, rgb(0 0 0 / 0.35) 78%, transparent 100%)",
+        WebkitMaskImage: "linear-gradient(180deg, transparent 0%, black 16%, black 50%, rgb(0 0 0 / 0.35) 78%, transparent 100%)",
+      }}
+    />
+  );
+}
+
+/**
+ * 결제 전 표지에서 얼굴을 가려 두는 장. 그림은 얼굴 자리를 흐리게 한 사본을 쓰고, x·y는 가린 자리의 중심이다.
+ * 표지 틀(4:5)이 그림(3:4)의 위아래를 잘라 내므로 y는 잘린 틀 기준으로 잡았다.
+ */
+const LOCKED_FACES: Partial<Record<ReportChapterKey, { image: string; x: string; y: string; caption: string }>> = {
+  gaze: { image: "/images/result/chapter-2-locked.jpg", x: "49.8%", y: "43.5%", caption: "그들 눈에 비친 네 얼굴" },
+  fate: { image: "/images/result/chapter-5-locked.jpg", x: "40.2%", y: "23.3%", caption: "네 인연의 얼굴·키·나이" },
+};
+
+function FaceLock({ x, y, caption }: { x: string; y: string; caption: string }) {
+  return (
+    <div className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-2.5" style={{ left: x, top: y }}>
+      <span
         aria-hidden
-        className="absolute inset-0"
-        style={{ background: "linear-gradient(180deg, transparent 55%, rgb(7 6 14 / 0.9) 85%, var(--color-ink) 100%)" }}
-      />
-    </>
+        className="flex size-12 items-center justify-center rounded-full border border-gold/50 bg-ink/70 text-gold-soft shadow-[0_0_20px_rgb(232_137_155_/_0.45)] backdrop-blur-sm"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.8" />
+          <path d="M8 11V8a4 4 0 1 1 8 0v3" stroke="currentColor" strokeWidth="1.8" />
+        </svg>
+      </span>
+      <p className="whitespace-nowrap rounded-full bg-ink/70 px-3 py-1 text-[11px] text-paper/90 backdrop-blur-sm">{caption}</p>
+    </div>
   );
 }
 
@@ -224,33 +243,37 @@ export function ChapterCoverImage({ src }: { src: string }) {
 export function ChapterCovers({ gender }: { gender: "female" | "male" }) {
   return (
     <div className="flex flex-col gap-14">
-      {REPORT_CHAPTERS.map((chapter) => (
-        <Reveal key={chapter.key}>
-          <article className="flex flex-col gap-5">
-            <figure className="relative -mx-5 aspect-[4/5] overflow-hidden">
-              <ChapterCoverImage src={chapter.image} />
-              <figcaption className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-2 px-6 pb-4 text-center">
-                <span className="rounded-full border border-gold/40 bg-ink/60 px-3 py-1 text-xs tracking-[0.2em] text-gold-soft backdrop-blur-sm">
-                  제{chapter.chapter}장
-                </span>
-                <h3 className="font-eerie text-[clamp(1.7rem,8vw,2.2rem)] leading-tight text-paper [text-shadow:0_0_24px_rgb(232_137_155_/_0.55)]">
-                  {chapter.title}
-                </h3>
-                <p className="font-serif text-[15px] text-blossom-glow">{chapter.subtitle}</p>
-              </figcaption>
-            </figure>
-            <ol className="flex flex-col gap-2">
-              {chapter.sections.map((section, index) => (
-                <li key={section.title} className="flex items-center gap-3 rounded-2xl border border-line/70 bg-night/70 px-4 py-3.5">
-                  <span className="font-serif text-sm text-cinnabar">{index + 1}</span>
-                  <span className="flex-1 font-serif text-[15px] text-paper break-keep">{withPartner(section.title, gender)}</span>
-                  <LockIcon />
-                </li>
-              ))}
-            </ol>
-          </article>
-        </Reveal>
-      ))}
+      {REPORT_CHAPTERS.map((chapter) => {
+        const lockedFace = LOCKED_FACES[chapter.key];
+        return (
+          <Reveal key={chapter.key}>
+            <article className="flex flex-col gap-5">
+              <figure className="relative -mx-5 aspect-[4/5] overflow-hidden">
+                <ChapterCoverImage src={lockedFace?.image ?? chapter.image} />
+                {lockedFace && <FaceLock x={lockedFace.x} y={lockedFace.y} caption={lockedFace.caption} />}
+                <figcaption className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-2 px-6 pb-4 text-center">
+                  <span className="rounded-full border border-gold/40 bg-ink/60 px-3 py-1 text-xs tracking-[0.2em] text-gold-soft backdrop-blur-sm">
+                    제{chapter.chapter}장
+                  </span>
+                  <h3 className="font-eerie text-[clamp(1.7rem,8vw,2.2rem)] leading-tight text-paper [text-shadow:0_0_24px_rgb(232_137_155_/_0.55)]">
+                    {chapter.title}
+                  </h3>
+                  <p className="font-serif text-[15px] text-blossom-glow">{chapter.subtitle}</p>
+                </figcaption>
+              </figure>
+              <ol className="flex flex-col gap-2">
+                {chapter.sections.map((section, index) => (
+                  <li key={section.title} className="flex items-center gap-3 rounded-2xl border border-line/70 bg-night/70 px-4 py-3.5">
+                    <span className="font-serif text-sm text-cinnabar">{index + 1}</span>
+                    <span className="flex-1 font-serif text-[15px] text-paper break-keep">{withPartner(section.title, gender)}</span>
+                    <LockIcon />
+                  </li>
+                ))}
+              </ol>
+            </article>
+          </Reveal>
+        );
+      })}
     </div>
   );
 }
