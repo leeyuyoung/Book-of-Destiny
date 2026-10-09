@@ -18,7 +18,7 @@ const BEATS = [
     scene: "garden",
     ms: 4000,
     bubbles: [
-      { kind: "caption", text: INTRO_SCRIPT.caption, at: 0.8, place: { top: "9%", left: "7%" } },
+      { kind: "caption", text: INTRO_SCRIPT.caption, at: 0.8, place: { top: "15%", left: "7%" } },
       { kind: "monologue", text: INTRO_SCRIPT.wonder, at: 1.6, place: { top: "64%" } },
     ],
   },

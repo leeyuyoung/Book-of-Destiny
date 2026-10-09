@@ -15,6 +15,8 @@ export type Bubble = {
   /** 그림 위 자리. 그림 크기에 대한 백분율로 적는다. */
   place: Pick<CSSProperties, "top" | "left" | "right">;
   tail?: Tail;
+  /** 꼬리가 말풍선 옆 끝에서 얼마나 안쪽에 붙는지(폭 대비 비율). 작을수록 끝으로 간다. */
+  tailInset?: number;
   /** 짧고 힘준 한마디라 글자를 크게 키운다. */
   big?: boolean;
 };
@@ -88,32 +90,49 @@ export function SpeechBubble({ bubble }: { bubble: Bubble }) {
   const width = bubble.text.includes("\n") ? "max-w-[80%]" : "max-w-[68%]";
   return (
     <motion.div {...pop} className={`absolute ${width} drop-shadow-[0_10px_24px_rgb(0_0_0_/_0.5)]`} style={bubble.place}>
-      {bubble.tail && <BubbleTail tail={bubble.tail} fill={fill} stroke={stroke} layer="under" />}
+      {/* 꼬리와 몸통이 겹쳐 그려지므로, 한 덩어리로 묶어 비치게 해야 겹친 자리가 진해지지 않는다. */}
+      <div aria-hidden className="absolute inset-0 opacity-[0.86]">
+        {bubble.tail && <BubbleTail tail={bubble.tail} inset={bubble.tailInset} fill={fill} stroke={stroke} layer="under" />}
+        <div className="absolute inset-0 rounded-[50%] border-[1.5px]" style={{ backgroundColor: fill, borderColor: stroke }} />
+        {bubble.tail && <BubbleTail tail={bubble.tail} inset={bubble.tailInset} fill={fill} stroke={stroke} layer="over" />}
+      </div>
       <p
-        className={`relative z-10 min-w-[9rem] whitespace-pre-line rounded-[50%] border-[1.5px] px-8 py-6 text-center font-sans font-semibold leading-snug break-keep ${
-          bubble.big ? "text-[24px]" : whisper ? "text-[17px]" : "text-[19px]"
+        className={`relative z-10 min-w-[9rem] whitespace-pre-line px-8 py-10 text-center font-serif font-medium leading-snug break-keep ${
+          bubble.big ? "text-[23px]" : whisper ? "text-[17px]" : "text-[18px]"
         } ${whisper ? "text-blossom-glow" : "text-[#16121f]"}`}
-        style={{ backgroundColor: fill, borderColor: stroke }}
       >
         {bubble.text}
       </p>
-      {bubble.tail && <BubbleTail tail={bubble.tail} fill={fill} stroke={stroke} layer="over" />}
     </motion.div>
   );
 }
 
-const TAIL_PATH = "M4 0 C 6 9, 7 16, 5 26 C 11 20, 15 10, 18 0 Z";
+const TAIL_PATH = "M5.5 0 L 7.4 24.5 Q 7.7 26, 8.4 24.8 L 16 0 Z";
 
 /**
- * 타원 말풍선에서 휘어져 나오는 꼬리.
+ * 말풍선에서 곧게 뻗어 끝이 뾰족한 꼬리.
  * 아래 장은 테두리를 두껍게 그리고, 위 장은 속만 칠해 말풍선 테두리와 꼬리 안쪽 선을 지운다.
  * 그래서 꼬리와 말풍선이 한 덩어리로 이어져 보인다.
  */
-function BubbleTail({ tail, fill, stroke, layer }: { tail: Tail; fill: string; stroke: string; layer: "under" | "over" }) {
+function BubbleTail({
+  tail,
+  inset = 0.24,
+  fill,
+  stroke,
+  layer,
+}: {
+  tail: Tail;
+  inset?: number;
+  fill: string;
+  stroke: string;
+  layer: "under" | "over";
+}) {
   const [vertical, horizontal] = tail.split("-") as ["top" | "bottom", "left" | "right"];
+  /** 타원은 가장자리로 갈수록 위아래 폭이 줄어드니, 꼬리가 끝으로 갈수록 그만큼 더 안쪽에서 시작해야 몸통에 붙어 있다. */
+  const edgeGap = 50 * (1 - Math.sqrt(1 - (1 - 2 * inset) ** 2));
   const style: CSSProperties = {
-    [vertical === "bottom" ? "top" : "bottom"]: "calc(100% - 12px)",
-    [horizontal]: "24%",
+    [vertical === "bottom" ? "top" : "bottom"]: `calc(100% - ${edgeGap.toFixed(1)}% - 3px)`,
+    [horizontal]: `${inset * 100}%`,
     transform: `scale(${horizontal === "right" ? -1 : 1}, ${vertical === "top" ? -1 : 1})`,
   };
 

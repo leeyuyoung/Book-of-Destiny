@@ -39,8 +39,8 @@ export default async function ResultPage({ params, searchParams }: PageProps<"/r
   const cta = paid
     ? { href: `/report/${token}`, label: "내 리포트 보러 가기" }
     : token === "sample"
-      ? { href: "/start", label: "숨겨진 색기 사용법 배우기" }
-      : { href: `/checkout/${token}`, label: "숨겨진 색기 사용법 배우기" };
+      ? { href: "/start", label: "숨겨진 색기 쓰는 법" }
+      : { href: `/checkout/${token}`, label: "숨겨진 색기 쓰는 법" };
 
   return (
     <PageShell withStickyBar>
@@ -93,8 +93,8 @@ export default async function ResultPage({ params, searchParams }: PageProps<"/r
           alt="복숭아를 입가에 대고 위험하게 웃으며 이쪽을 내려다보는 도화신선"
           headroom={0.15}
           bubbles={[
-            { kind: "speech", text: "네가 마음만 먹으면,\n상대는 이미 네 손안에 있어.", at: 0.3, place: { top: "3%", left: "4%" }, tail: "bottom-right" },
-            { kind: "whisper", text: "그 방법,\n내가 알려줄게.", at: 1.5, place: { top: "77%", right: "4%" }, tail: "top-left", big: true },
+            { kind: "speech", text: "네가 마음만 먹으면,\n그 남잔 이미 네 손안에 있어.", at: 0.3, place: { top: "3%", left: "4%" }, tail: "bottom-right" },
+            { kind: "whisper", text: "그 방법,\n내가 알려줄게.", at: 1.5, place: { top: "74%", right: "4%" }, tail: "top-left", big: true },
           ]}
         />
       </div>
@@ -131,14 +131,15 @@ export default async function ResultPage({ params, searchParams }: PageProps<"/r
         <WebtoonPanel
           src="/images/result/closing.jpg"
           alt="한 팔로 여자주인공의 어깨를 감싸 귓가에 속삭이며, 다른 손을 내밀어 함께 가자고 청하는 도화신선"
+          headroom={0.22}
           bubbles={[
-            { kind: "speech", text: "그 색기,\n썩히기엔 아깝잖아?", at: 0.3, place: { top: "3%", left: "4%" }, tail: "bottom-right" },
-            { kind: "whisper", text: "이제\n써먹어야지.", at: 1.6, place: { top: "76%", right: "5%" }, tail: "top-left", big: true },
+            { kind: "speech", text: "그 색기,\n썩히기엔 아깝잖아?", at: 0.3, place: { top: "3%", left: "4%" }, tail: "bottom-right", tailInset: 0.14 },
+            { kind: "whisper", text: "이제\n써먹어야지.", at: 1.6, place: { top: "77%", right: "5%" }, tail: "top-left", big: true },
           ]}
         />
       </div>
 
-      <div className="mt-10 mb-10">
+      <div className="mt-10">
         <ReportToc gender={result.gender} />
       </div>
 
