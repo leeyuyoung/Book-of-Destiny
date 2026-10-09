@@ -24,7 +24,7 @@ const BEATS = [
     scene: "pinHands",
     ms: 4200,
     bubbles: [
-      { kind: "speech", text: ANALYSIS_SCRIPT.hold, at: 0.6, place: { top: "6%", left: "5%" }, tail: "bottom-right" },
+      { kind: "speech", text: ANALYSIS_SCRIPT.hold, at: 0.6, place: { top: "4%", right: "5%" }, tail: "bottom-left" },
       { kind: "thought", text: ANALYSIS_SCRIPT.flustered, at: 2.1, place: { top: "52%", right: "6%" } },
     ],
   },
@@ -33,8 +33,8 @@ const BEATS = [
     ms: 5000,
     bubbles: [
       { kind: "sfx", text: ANALYSIS_SCRIPT.pin, at: 0.2, place: { top: "3%", right: "24%" } },
-      { kind: "speech", text: ANALYSIS_SCRIPT.doubt, at: 0.9, place: { top: "38%", right: "4%" }, tail: "top-right" },
-      { kind: "whisper", text: ANALYSIS_SCRIPT.tease, at: 2.6, place: { top: "56%", left: "5%" }, tail: "top-right" },
+      { kind: "speech", text: ANALYSIS_SCRIPT.doubt, at: 0.9, place: { top: "47%", right: "4%" }, tail: "top-right" },
+      { kind: "whisper", text: ANALYSIS_SCRIPT.tease, at: 2.6, place: { top: "63%", left: "5%" }, tail: "top-right" },
     ],
   },
 ] as const satisfies readonly Beat[];
@@ -42,7 +42,6 @@ const BEATS = [
 const SCENES = BEATS.map((beat) => beat.scene);
 /** 계산은 금방 끝나지만, 의식처럼 보이도록 두 컷이 모두 지나갈 때까지는 보여준다. */
 const MIN_RITUAL_MS = BEATS.reduce((total, beat) => total + beat.ms, 0);
-const REDIRECT_DELAY_MS = 1400;
 const POLL_INTERVAL_MS = 2000;
 const GIVE_UP_AFTER_MS = 60 * 1000;
 /** 진행 바가 대략 이 시간에 63%쯤 차도록 한다. 실제 진행률이 아니라 기다림을 보여주는 장치다. */
@@ -147,13 +146,11 @@ export function AnalyzingExperience() {
         await wait(Math.max(0, MIN_RITUAL_MS - (Date.now() - startedAt)));
         if (!activeRef.current) return;
         setPhase(next);
-        await wait(REDIRECT_DELAY_MS);
-        if (activeRef.current) router.replace(`/result/${next.token}`);
         return;
       }
       setPhase(next);
     });
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     activeRef.current = true;
@@ -230,7 +227,7 @@ export function AnalyzingExperience() {
                 <br />
                 <span className="text-gold-gradient">이제… 하나씩 벗겨 주마.</span>
               </p>
-              <ButtonLink href={`/result/${phase.token}`}>숨김없이 보여줘</ButtonLink>
+              <Button onClick={() => router.replace(`/result/${phase.token}`)}>숨김없이 보여줘</Button>
             </motion.div>
           )}
           {phase.kind === "error" && (

@@ -17,6 +17,17 @@ const SCENES = {
 
 export type HeroineScene = keyof typeof SCENES;
 
+/** 인물이 크게 보이도록 확대하는 장면. origin은 확대 기준점이라 그 지점이 화면에서 제자리에 남는다. */
+const SCENE_ZOOM: Partial<Record<HeroineScene, { scale: number; origin: string }>> = {
+  sleeping: { scale: 1.15, origin: "62% 22%" },
+  awake: { scale: 1.15, origin: "62% 23%" },
+  trapped: { scale: 1.15, origin: "57% 23%" },
+  scent: { scale: 1.15, origin: "30% 30%" },
+  main: { scale: 1.45, origin: "44% 5%" },
+  pinHands: { scale: 1.3, origin: "100% 0%" },
+  pinRaised: { scale: 1.3, origin: "100% 0%" },
+};
+
 /**
  * 인트로 전체를 채우는 도화신선 그림과 그 위로 흩날리는 꽃잎. scene이 바뀌면 그림이 천천히 겹쳐 바뀐다.
  * 세로 화면에서는 그림이 화면을 가득 덮고, 가로로 넓은 화면에서는 얼굴이 잘리지 않도록
@@ -67,16 +78,26 @@ export function HeroineBackdrop({
               style={{ "--scene-w": `${SCENES[key].ratio * 100}vh` } as CSSProperties}
             >
               <div className="absolute inset-0 animate-portrait-breathe will-change-transform">
-                <Image
-                  src={SCENES[key].src}
-                  alt={SCENES[key].alt}
-                  fill
-                  sizes="100vw"
-                  loading="eager"
-                  fetchPriority={key === scenes[0] ? "high" : "auto"}
-                  className="select-none object-cover object-[50%_22%]"
-                  draggable={false}
-                />
+                <div
+                  className="absolute inset-0"
+                  style={
+                    SCENE_ZOOM[key] && {
+                      transform: `scale(${SCENE_ZOOM[key].scale})`,
+                      transformOrigin: SCENE_ZOOM[key].origin,
+                    }
+                  }
+                >
+                  <Image
+                    src={SCENES[key].src}
+                    alt={SCENES[key].alt}
+                    fill
+                    sizes="100vw"
+                    loading="eager"
+                    fetchPriority={key === scenes[0] ? "high" : "auto"}
+                    className="select-none object-cover object-[50%_22%]"
+                    draggable={false}
+                  />
+                </div>
               </div>
             </div>
           </div>
