@@ -4,6 +4,7 @@ import { CHARM_INDICES, DOHWA_TYPES, REPORT_CHAPTERS, gradeOf, withPartner } fro
 import { buildSajuProfile, calculateSaju, readDohwa, type SajuProfile } from "@/lib/saju";
 import type { CharmStarView, CurrentLuckView, DohwaView, FreeResultView, FullReportView, PillarView } from "@/types/result";
 import { storedReport } from "./analysis";
+import { reportPortraits } from "./portraits";
 import type { AnalysisRecord } from "./store";
 
 function pillarViews(profile: SajuProfile): PillarView[] {
@@ -108,6 +109,7 @@ export function toFullReportView(record: AnalysisRecord): FullReportView | null 
       })),
     })),
     loveTimeline: report.loveTimeline,
+    portraits: reportPortraits(),
   };
 }
 

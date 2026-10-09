@@ -1,7 +1,8 @@
+import Image from "next/image";
 import type { ReactNode } from "react";
 import { CHARM_STAR_LABELS } from "@/lib/constants/result";
 import type { CharmStarKey } from "@/lib/saju/dohwa";
-import type { CharmStarView } from "@/types/result";
+import type { CharmStarView, ReportPortraitView } from "@/types/result";
 
 export function SectionTitle({ eyebrow, title, description }: { eyebrow?: string; title: ReactNode; description?: string }) {
   return (
@@ -112,6 +113,20 @@ export function LoveTimeline({ timeline }: { timeline: { year: number; mood: str
         </li>
       ))}
     </ol>
+  );
+}
+
+/** 리포트 본문 사이에 넣는 얼굴 그림. 아래에 짧은 설명을 단다. */
+export function ReportPortrait({ portrait }: { portrait: ReportPortraitView }) {
+  return (
+    <figure className="flex flex-col items-center gap-3">
+      <div className="relative aspect-[3/4] w-full max-w-[340px] overflow-hidden rounded-3xl border border-gold/30 shadow-[0_0_40px_rgb(232_137_155_/_0.25)]">
+        <Image src={portrait.src} alt={portrait.caption} fill sizes="340px" className="object-cover" />
+      </div>
+      <figcaption className="rounded-full border border-gold/40 bg-ink/60 px-3.5 py-1 font-serif text-[13px] text-gold-soft">
+        {portrait.caption}
+      </figcaption>
+    </figure>
   );
 }
 

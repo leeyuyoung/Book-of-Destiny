@@ -197,29 +197,32 @@ export function ReportVolume() {
 }
 
 /** 장 표지 그림. 위아래 모두 배경으로 스며들어, 아래에 얹은 제목이 배경 위에서 읽힌다. */
-export function ChapterCoverImage({ src }: { src: string }) {
+export function ChapterCoverImage({ src, whole = false }: { src: string; whole?: boolean }) {
+  const mask = whole
+    ? "linear-gradient(180deg, rgb(0 0 0 / 0.15) 0%, black 7%, black 62%, rgb(0 0 0 / 0.5) 78%, transparent 91%)"
+    : "linear-gradient(180deg, transparent 0%, black 16%, black 50%, rgb(0 0 0 / 0.35) 78%, transparent 100%)";
   return (
     <Image
       src={src}
       alt=""
       fill
       sizes="(max-width: 640px) 100vw, 576px"
-      className="object-cover"
-      style={{
-        maskImage: "linear-gradient(180deg, transparent 0%, black 16%, black 50%, rgb(0 0 0 / 0.35) 78%, transparent 100%)",
-        WebkitMaskImage: "linear-gradient(180deg, transparent 0%, black 16%, black 50%, rgb(0 0 0 / 0.35) 78%, transparent 100%)",
-      }}
+      className={whole ? "object-contain object-top" : "object-cover"}
+      style={{ maskImage: mask, WebkitMaskImage: mask }}
     />
   );
 }
 
+/** 그림 위아래 장식까지 다 보여야 하는 장. 틀을 세로로 늘려 그림(3:4)을 자르지 않고 위에 붙이고, 제목은 그림 끝자락에 살짝 걸친다. */
+const WHOLE_COVER_KEYS: ReadonlySet<ReportChapterKey> = new Set(["gaze", "night"]);
+
 /**
  * 결제 전 표지에서 얼굴을 가려 두는 장. 그림은 얼굴 자리를 흐리게 한 사본을 쓰고, x·y는 가린 자리의 중심이다.
- * 표지 틀(4:5)이 그림(3:4)의 위아래를 잘라 내므로 y는 잘린 틀 기준으로 잡았다.
+ * x·y는 그림이 아니라 표지 틀 기준이라, 틀 비율(4:5 또는 통째로 보이는 3:4.4)이 바뀌면 다시 잡아야 한다.
  */
 const LOCKED_FACES: Partial<Record<ReportChapterKey, { image: string; x: string; y: string; caption: string }>> = {
-  gaze: { image: "/images/result/chapter-2-locked.jpg", x: "49.8%", y: "43.5%", caption: "그들 눈에 비친 네 얼굴" },
-  fate: { image: "/images/result/chapter-5-locked.jpg", x: "40.2%", y: "23.3%", caption: "네 인연의 얼굴·키·나이" },
+  gaze: { image: "/images/result/chapter-2-locked.jpg", x: "49.8%", y: "39.9%", caption: "그 남자가 보는 네 얼굴" },
+  fate: { image: "/images/result/chapter-5-locked.jpg", x: "50.1%", y: "29.6%", caption: "네 남자의 얼굴" },
 };
 
 function FaceLock({ x, y, caption }: { x: string; y: string; caption: string }) {
@@ -239,24 +242,66 @@ function FaceLock({ x, y, caption }: { x: string; y: string; caption: string }) 
   );
 }
 
+const ADULT_TAG = "[19금]";
+
+/** 장 제목 앞의 [19금] 표시만 빨갛게 칠한다. */
+export function ChapterTitle({ title }: { title: string }) {
+  if (!title.startsWith(ADULT_TAG)) return title;
+  return (
+    <>
+      <span className="text-[#ff3b55]">{ADULT_TAG}</span>
+      {title.slice(ADULT_TAG.length)}
+    </>
+  );
+}
+
+/** 페이지 맨 아래에 펼쳐 둔 리포트 목차. 장 제목과 소제목만 한 목록으로 보여준다. */
+export function ReportToc({ gender }: { gender: "female" | "male" }) {
+  return (
+    <section className="rounded-2xl border border-line/70 bg-night/70">
+      <h2 className="px-4 py-4 text-center font-serif text-[15px] text-paper">목차 전체보기</h2>
+      <ol className="flex flex-col gap-6 border-t border-line/50 px-5 py-6">
+        {REPORT_CHAPTERS.map((chapter) => (
+          <li key={chapter.key} className="flex flex-col gap-2.5">
+            <p className="font-serif text-[15px] text-paper">
+              <span className="mr-2 text-xs tracking-[0.15em] text-gold-soft">제{chapter.chapter}장</span>
+              <ChapterTitle title={chapter.title} />
+            </p>
+            <ol className="flex flex-col gap-1.5 pl-1">
+              {chapter.sections.map((section, index) => (
+                <li key={section.title} className="flex items-center gap-2.5 text-[14px] text-mist">
+                  <span className="text-cinnabar">{index + 1}</span>
+                  <span className="flex-1 break-keep">{withPartner(section.title, gender)}</span>
+                  <LockIcon />
+                </li>
+              ))}
+            </ol>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
 /** 유료 리포트 목차. 장마다 그림 표지와 두 줄 제목, 그 아래 잠긴 소제목을 보여준다. */
 export function ChapterCovers({ gender }: { gender: "female" | "male" }) {
   return (
     <div className="flex flex-col gap-14">
       {REPORT_CHAPTERS.map((chapter) => {
         const lockedFace = LOCKED_FACES[chapter.key];
+        const whole = WHOLE_COVER_KEYS.has(chapter.key);
         return (
           <Reveal key={chapter.key}>
             <article className="flex flex-col gap-5">
-              <figure className="relative -mx-5 aspect-[4/5] overflow-hidden">
-                <ChapterCoverImage src={lockedFace?.image ?? chapter.image} />
+              <figure className={`relative -mx-5 overflow-hidden ${whole ? "aspect-[3/4.4]" : "aspect-[4/5]"}`}>
+                <ChapterCoverImage src={lockedFace?.image ?? chapter.image} whole={whole} />
                 {lockedFace && <FaceLock x={lockedFace.x} y={lockedFace.y} caption={lockedFace.caption} />}
                 <figcaption className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-2 px-6 pb-4 text-center">
                   <span className="rounded-full border border-gold/40 bg-ink/60 px-3 py-1 text-xs tracking-[0.2em] text-gold-soft backdrop-blur-sm">
                     제{chapter.chapter}장
                   </span>
                   <h3 className="font-eerie text-[clamp(1.7rem,8vw,2.2rem)] leading-tight text-paper [text-shadow:0_0_24px_rgb(232_137_155_/_0.55)]">
-                    {chapter.title}
+                    <ChapterTitle title={chapter.title} />
                   </h3>
                   <p className="font-serif text-[15px] text-blossom-glow">{chapter.subtitle}</p>
                 </figcaption>

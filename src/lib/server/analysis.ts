@@ -34,7 +34,7 @@ export async function createAnalysis(input: AnalysisInput): Promise<AnalysisReco
     name: input.name,
     email: null,
     relationshipStatus: input.relationshipStatus,
-    concern: input.concern,
+    concern: null,
     profile,
     report: null,
     paidAt: null,
@@ -80,10 +80,7 @@ async function runReportGeneration(token: string): Promise<void> {
   try {
     const record = await store.get(token);
     if (!record) return;
-    const report = await generateReport(record.profile, {
-      relationshipStatus: record.relationshipStatus,
-      concern: record.concern,
-    });
+    const report = await generateReport(record.profile, { relationshipStatus: record.relationshipStatus });
     await store.update(token, { status: "ready", report });
     const latest = await store.get(token);
     if (latest?.paidAt) await sendReportEmail(latest);

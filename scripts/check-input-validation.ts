@@ -15,7 +15,6 @@ const valid: AnalysisFormValues = {
   birthMinute: "30",
   name: "  달빛 서윤 ",
   relationshipStatus: "some",
-  concern: "연락이 뜸해졌어요.\n\n\n\n먼저 다가가도 될까요?",
 };
 
 type Case = { label: string; step: number; patch: Partial<AnalysisFormValues>; expectKeys: string[] };
@@ -38,8 +37,6 @@ const cases: Case[] = [
   { label: "꺾쇠만 입력하면 빈 이름", step: 2, patch: { name: "<>" }, expectKeys: ["name"] },
   { label: "이름 13자", step: 2, patch: { name: "가나다라마바사아자차카타파" }, expectKeys: ["name"] },
   { label: "연애 상태 미선택", step: 3, patch: { relationshipStatus: "" }, expectKeys: ["relationshipStatus"] },
-  { label: "고민은 비워도 됨", step: 3, patch: { concern: "   " }, expectKeys: [] },
-  { label: "고민 1001자", step: 3, patch: { concern: "가".repeat(1001) }, expectKeys: ["concern"] },
 ];
 
 let failed = 0;
@@ -57,11 +54,6 @@ console.log("\n정규화 결과:", JSON.stringify(normalized, null, 2));
 const femaleOk = normalized.ok && normalized.input.gender === "female";
 if (!femaleOk) failed++;
 console.log(`${femaleOk ? "PASS" : "FAIL"}  성별은 묻지 않고 female로 고정`);
-
-const emptyConcern = toAnalysisInput({ ...valid, concern: "  \n " });
-const emptyConcernOk = emptyConcern.ok && emptyConcern.input.concern === null;
-if (!emptyConcernOk) failed++;
-console.log(`${emptyConcernOk ? "PASS" : "FAIL"}  빈 고민은 null로 저장`);
 
 const contactCases = [
   { label: "결제 이메일 정상", input: { email: " User@Example.COM ", agreePrivacy: true, agreeAge14: true }, ok: true },

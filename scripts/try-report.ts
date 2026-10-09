@@ -12,10 +12,7 @@ const profile = buildSajuProfile(
 
 async function main() {
   const startedAt = Date.now();
-  const report = await generateReport(profile, {
-    relationshipStatus: "some",
-    concern: "썸 타는 사람이 있는데 연락이 뜸해졌어요. 제가 먼저 다가가도 될지 모르겠어요.",
-  });
+  const report = await generateReport(profile, { relationshipStatus: "some" });
   const seconds = ((Date.now() - startedAt) / 1000).toFixed(1);
   const paragraphsOf = (chapter: (typeof report.chapters)[number]) => chapter.sections.flatMap((section) => section.paragraphs);
   const characters = report.chapters.reduce((sum, chapter) => sum + paragraphsOf(chapter).join("").length, 0);

@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageShell } from "@/components/layout/PageShell";
-import { ChapterCovers, FreeReading, ReportVolume, StatementCut } from "@/components/result/FreeResultParts";
+import { ChapterCovers, FreeReading, ReportToc, ReportVolume, StatementCut } from "@/components/result/FreeResultParts";
 import { CharmStars } from "@/components/result/ResultParts";
 import { ReviewCarousel } from "@/components/result/ReviewCarousel";
 import { StickyCheckoutBar } from "@/components/result/StickyCheckoutBar";
-import { MythicButtonLink } from "@/components/ui/MythicButtonLink";
 import { Reveal } from "@/components/ui/Reveal";
 import { WebtoonPanel } from "@/components/webtoon/WebtoonPanel";
 import { TOKEN_PATTERN } from "@/lib/server/analysis";
@@ -50,10 +49,10 @@ export default async function ResultPage({ params, searchParams }: PageProps<"/r
       <WebtoonPanel
         priority
         src="/images/result/opening.jpg"
-        alt="달밤의 복숭아꽃 정원에서 한 손에 사주가 적힌 종이를 들고, 다른 손으로 여자주인공의 턱을 들어 올리며 웃는 도화신선"
+        alt="달밤의 복숭아꽃 정원에서 한 손에 사주가 적힌 종이를 들어 보이고, 다른 팔로 여자주인공의 허리를 감싸며 웃는 도화신선"
         bubbles={[
           { kind: "speech", text: "이것 봐라…", at: 0.4, place: { top: "4%", left: "5%" }, tail: "bottom-right" },
-          { kind: "whisper", text: `${result.name}.`, at: 1.4, place: { top: "52%", right: "4%" }, tail: "top-left", big: true },
+          { kind: "whisper", text: `${result.name}.`, at: 1.4, place: { top: "31%", right: "3%" }, big: true },
           {
             kind: "caption",
             text: `${result.birth.year}년 ${seasonOf(result.birth.month)}에 태어난 꽃이로구나`,
@@ -130,7 +129,7 @@ export default async function ResultPage({ params, searchParams }: PageProps<"/r
       <div className="mt-16">
         <WebtoonPanel
           src="/images/result/closing.jpg"
-          alt="여자주인공의 귓가에 속삭이며 다른 손을 내밀어 함께 가자고 청하는 도화신선"
+          alt="한 팔로 여자주인공의 어깨를 감싸 귓가에 속삭이며, 다른 손을 내밀어 함께 가자고 청하는 도화신선"
           bubbles={[
             { kind: "speech", text: "그 색기,\n썩히기엔 아깝잖아?", at: 0.3, place: { top: "3%", left: "4%" }, tail: "bottom-right" },
             { kind: "whisper", text: "이제\n써먹어야지.", at: 1.6, place: { top: "76%", right: "5%" }, tail: "top-left", big: true },
@@ -138,9 +137,9 @@ export default async function ResultPage({ params, searchParams }: PageProps<"/r
         />
       </div>
 
-      <Reveal className="mt-6 mb-10">
-        <MythicButtonLink href={cta.href}>{cta.label}</MythicButtonLink>
-      </Reveal>
+      <div className="mt-10 mb-10">
+        <ReportToc gender={result.gender} />
+      </div>
 
       <StickyCheckoutBar href={cta.href} label={cta.label} showAfterId={paid ? undefined : PUSH_PANEL_ID} />
     </PageShell>

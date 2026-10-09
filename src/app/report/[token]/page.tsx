@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { PageShell } from "@/components/layout/PageShell";
 import { FiveElementsCard } from "@/components/result/FiveElementsCard";
-import { ChapterCoverImage, DohwaRadarCard } from "@/components/result/FreeResultParts";
+import { ChapterCoverImage, ChapterTitle, DohwaRadarCard } from "@/components/result/FreeResultParts";
 import { ManseryeokTable } from "@/components/result/ManseryeokTable";
 import { ReportWaiting } from "@/components/result/ReportWaiting";
-import { CharmStars, LoveTimeline, SectionTitle } from "@/components/result/ResultParts";
+import { CharmStars, LoveTimeline, ReportPortrait, SectionTitle } from "@/components/result/ResultParts";
 import { TypeHero } from "@/components/result/TypeHero";
 import { Reveal } from "@/components/ui/Reveal";
 import { TOKEN_PATTERN } from "@/lib/server/analysis";
@@ -96,7 +96,9 @@ export default async function ReportPage({ params }: PageProps<"/report/[token]"
               <li key={chapter.chapter} className="border-b border-line/50 py-3 last:border-0">
                 <a href={`#chapter-${chapter.chapter}`} className="flex items-baseline gap-3 hover:text-blossom">
                   <span className="w-10 shrink-0 text-xs text-cinnabar/80">제{chapter.chapter}장</span>
-                  <span className="font-serif text-[15px]">{chapter.title}</span>
+                  <span className="font-serif text-[15px]">
+                    <ChapterTitle title={chapter.title} />
+                  </span>
                 </a>
                 <ol className="mt-1.5 flex flex-col gap-1 pl-[3.25rem]">
                   {chapter.sections.map((section, index) => (
@@ -122,7 +124,7 @@ export default async function ReportPage({ params }: PageProps<"/report/[token]"
                     제{chapter.chapter}장
                   </span>
                   <h2 className="font-eerie text-[clamp(1.7rem,8vw,2.2rem)] leading-tight text-paper [text-shadow:0_0_24px_rgb(232_137_155_/_0.55)]">
-                    {chapter.title}
+                    <ChapterTitle title={chapter.title} />
                   </h2>
                   <p className="font-serif text-[15px] text-blossom-glow">{chapter.subtitle}</p>
                 </figcaption>
@@ -143,6 +145,11 @@ export default async function ReportPage({ params }: PageProps<"/report/[token]"
                     {section.title}
                   </h3>
                 </Reveal>
+                {index === 0 && (chapter.key === "gaze" || chapter.key === "fate") && (
+                  <Reveal>
+                    <ReportPortrait portrait={chapter.key === "gaze" ? report.portraits.self : report.portraits.partner} />
+                  </Reveal>
+                )}
                 <Reveal>
                   <div className="flex flex-col gap-5 font-serif text-[16px] font-light leading-[2] text-paper/90">
                     {section.paragraphs.map((paragraph, paragraphIndex) => (
@@ -150,7 +157,7 @@ export default async function ReportPage({ params }: PageProps<"/report/[token]"
                     ))}
                   </div>
                 </Reveal>
-                {chapter.key === "bloom" && index === 0 && (
+                {chapter.key === "fate" && index === 2 && (
                   <Reveal>
                     <LoveTimeline timeline={report.loveTimeline} />
                   </Reveal>

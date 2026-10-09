@@ -71,6 +71,8 @@ export type CurrentLuckView = {
 };
 
 /** 결제가 확인되고 리포트가 완성된 뒤에만 만들어진다. */
+export type ReportPortraitView = { src: string; caption: string };
+
 export type FullReportView = FreeResultView & {
   analyzedAt: string;
   summary: string;
@@ -80,4 +82,5 @@ export type FullReportView = FreeResultView & {
   currentLuck: CurrentLuckView | null;
   chapters: ReportChapterView[];
   loveTimeline: { year: number; mood: string; body: string }[];
+  portraits: { self: ReportPortraitView; partner: ReportPortraitView };
 };

@@ -1,9 +1,8 @@
 import { z } from "zod";
-import { sanitizeEmail, sanitizeMultiLine, sanitizeSingleLine } from "./sanitize";
+import { sanitizeEmail, sanitizeSingleLine } from "./sanitize";
 
 export const MIN_BIRTH_YEAR = 1920;
 export const NAME_MAX_LENGTH = 12;
-export const CONCERN_MAX_LENGTH = 1000;
 export const LUNAR_MAX_DAY = 30;
 
 export const RELATIONSHIP_STATUSES = [
@@ -35,7 +34,6 @@ export type AnalysisFormValues = {
   birthTimeUnknown: boolean;
   name: string;
   relationshipStatus: "" | RelationshipStatus;
-  concern: string;
 };
 
 export const EMPTY_FORM_VALUES: AnalysisFormValues = {
@@ -49,7 +47,6 @@ export const EMPTY_FORM_VALUES: AnalysisFormValues = {
   birthTimeUnknown: false,
   name: "",
   relationshipStatus: "",
-  concern: "",
 };
 
 export function daysInMonth(calendarType: "solar" | "lunar", year: number, month: number): number {
@@ -69,11 +66,6 @@ const nameRule = z
       .min(1, "이름 정도는 알려주거라.")
       .max(NAME_MAX_LENGTH, `${NAME_MAX_LENGTH}자 이내로 줄이거라.`),
   );
-
-const concernRule = z
-  .string()
-  .transform(sanitizeMultiLine)
-  .pipe(z.string().max(CONCERN_MAX_LENGTH, `${CONCERN_MAX_LENGTH}자 이내로 줄이거라.`));
 
 export const birthDateStepSchema = z
   .object({
@@ -118,7 +110,7 @@ export const birthTimeStepSchema = z
 export const nameStepSchema = z.object({ name: nameRule });
 
 export const loveStepSchema = z
-  .object({ relationshipStatus: z.string(), concern: concernRule })
+  .object({ relationshipStatus: z.string() })
   .superRefine((values, ctx) => {
     if (!RELATIONSHIP_STATUS_VALUES.includes(values.relationshipStatus as RelationshipStatus)) {
       ctx.addIssue({ code: "custom", path: ["relationshipStatus"], message: "숨기지 말고 하나 고르거라." });
@@ -159,7 +151,6 @@ export const analysisInputSchema = z.object({
   }),
   gender: z.literal("female"),
   relationshipStatus: z.enum(RELATIONSHIP_STATUS_VALUES),
-  concern: concernRule.nullable(),
 });
 
 export type AnalysisInput = z.infer<typeof analysisInputSchema>;
@@ -174,7 +165,6 @@ export function toAnalysisInput(
   }
 
   const timeKnown = !values.birthTimeUnknown;
-  const concern = sanitizeMultiLine(values.concern);
   const parsed = analysisInputSchema.safeParse({
     name: values.name,
     birth: {
@@ -188,7 +178,6 @@ export function toAnalysisInput(
     },
     gender: "female",
     relationshipStatus: values.relationshipStatus,
-    concern: concern.length > 0 ? concern : null,
   });
 
   if (!parsed.success) return { ok: false, stepIndex: 0, errors: { form: "다시 한번 확인해 보거라." } };
