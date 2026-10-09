@@ -14,6 +14,8 @@ export type Bubble = {
   /** 그림 위 자리. 그림 크기에 대한 백분율로 적는다. */
   place: Pick<CSSProperties, "top" | "left" | "right">;
   tail?: Tail;
+  /** 짧고 힘준 한마디라 글자를 크게 키운다. */
+  big?: boolean;
 };
 
 /** 웹툰 칸 위에 얹는 말풍선. 종류마다 모양을 달리한다. */
@@ -72,8 +74,8 @@ export function SpeechBubble({ bubble }: { bubble: Bubble }) {
       {bubble.tail && <BubbleTail tail={bubble.tail} fill={fill} stroke={stroke} layer="under" />}
       <p
         className={`relative z-10 min-w-[9rem] whitespace-pre-line rounded-[50%] border-[2.5px] px-8 py-6 text-center font-sans font-bold leading-snug break-keep ${
-          whisper ? "text-[17px] text-blossom-glow" : "text-[19px] text-[#16121f]"
-        }`}
+          bubble.big ? "text-[24px]" : whisper ? "text-[17px]" : "text-[19px]"
+        } ${whisper ? "text-blossom-glow" : "text-[#16121f]"}`}
         style={{ backgroundColor: fill, borderColor: stroke }}
       >
         {bubble.text}

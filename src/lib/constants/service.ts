@@ -23,11 +23,10 @@ export const INTRO_SCRIPT = {
   tease: "꽤나 홀리고 다녔겠어. 아니면… 홀리고 싶었거나.",
 } as const;
 
-/** 인트로 마지막 장면 */
+/** 인트로 마지막 장면. lead와 invite는 말풍선으로 뜨고, 줄을 바꿀 자리에 \n을 넣는다. */
 export const HERO_COPY = {
-  badge: "19금 도화살 풀이",
-  lead: ["“오늘 밤, 네 몸에 핀 꽃", "하나하나 벗겨서 읽어주마.”"],
-  invite: "“도화신선이 직접.”",
+  lead: "오늘 밤, 네 몸에 핀 꽃\n하나하나 벗겨서 읽어주마.",
+  invite: "도화신선이 직접.",
   cta: "도화신선에게 사주 내어주기",
 } as const;
 
