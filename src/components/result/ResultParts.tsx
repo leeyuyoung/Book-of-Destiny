@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
-import { MythicButtonLink } from "@/components/ui/MythicButtonLink";
-import { CHARM_STAR_LABELS, REPORT_CHAPTERS } from "@/lib/constants/result";
+import { CHARM_STAR_LABELS } from "@/lib/constants/result";
 import type { CharmStarKey } from "@/lib/saju/dohwa";
 import type { CharmStarView } from "@/types/result";
 
@@ -14,7 +13,7 @@ export function SectionTitle({ eyebrow, title, description }: { eyebrow?: string
   );
 }
 
-/** 결제 전에는 점수를 흐리게 가리고, 결제 후에는 실제 점수를 보여준다. 원국에 있는 살은 카드가 붉게 빛난다. */
+/** 결제 전에는 점수를 흐리게 가리고 풀이 한 줄도 숨긴다. 결제 후에는 실제 점수를 보여주고, 원국에 있는 살은 카드가 붉게 빛난다. */
 export function CharmStars({ stars }: { stars?: CharmStarView[] }) {
   const items = (Object.keys(CHARM_STAR_LABELS) as CharmStarKey[]).map((key) => ({
     ...CHARM_STAR_LABELS[key],
@@ -37,7 +36,7 @@ export function CharmStars({ stars }: { stars?: CharmStarView[] }) {
               <StarTulip starKey={star.key} />
             </span>
             <span className="text-sm text-paper">{star.name}</span>
-            <span className="text-[11px] leading-snug text-mist break-keep">{star.meaning}</span>
+            {stars && <span className="text-[11px] leading-snug text-mist break-keep">{star.meaning}</span>}
             <span className="mt-auto pt-1 font-serif leading-none">
               {score === undefined ? (
                 <span aria-hidden className="inline-block select-none text-[26px] text-paper/90 blur-[6px]">
@@ -113,51 +112,6 @@ export function LoveTimeline({ timeline }: { timeline: { year: number; mood: str
         </li>
       ))}
     </ol>
-  );
-}
-
-type CheckoutProps = { checkoutHref: string };
-
-export function MidCheckoutPrompt({ checkoutHref }: CheckoutProps) {
-  return (
-    <div className="flex flex-col items-center gap-4 rounded-3xl border border-cinnabar/30 bg-gradient-to-b from-crimson-deep/60 to-night px-4 py-8 text-center">
-      <p className="font-serif text-[17px] leading-relaxed text-paper">
-        여기서 멈출 거냐?
-        <br />
-        …난 <span className="text-blossom-glow">아직 시작도 안 했는데.</span>
-      </p>
-      <div className="mt-2 w-full">
-        <MythicButtonLink href={checkoutHref}>도화신선과 끝까지 가기</MythicButtonLink>
-      </div>
-    </div>
-  );
-}
-
-/** 리포트 전 장의 제목 목록 */
-export function ReportContents() {
-  return (
-    <nav aria-label="리포트 목차" className="rounded-3xl border border-line bg-night/70 px-6 py-5">
-      <p className="text-xs text-cinnabar">연애·매력 리포트 전 {REPORT_CHAPTERS.length}장</p>
-      <ol className="mt-3 flex flex-col">
-        {REPORT_CHAPTERS.map((chapter) => (
-          <li key={chapter.key} className="flex items-baseline gap-3 border-b border-line/50 py-3 last:border-0">
-            <span className="w-10 shrink-0 text-xs text-cinnabar/80">제{chapter.chapter}장</span>
-            <span className="font-serif text-[15px] text-paper">{chapter.title}</span>
-          </li>
-        ))}
-      </ol>
-    </nav>
-  );
-}
-
-/** 화면 아래에 늘 떠 있는 결제 버튼 */
-export function StickyCheckoutBar({ href, label }: { href: string; label: string }) {
-  return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 bg-gradient-to-t from-ink via-ink/90 to-transparent px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-8">
-      <div className="pointer-events-auto mx-auto max-w-xl">
-        <MythicButtonLink href={href}>{label}</MythicButtonLink>
-      </div>
-    </div>
   );
 }
 

@@ -4,7 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { PageShell } from "@/components/layout/PageShell";
 import { CheckoutWidget } from "@/components/payment/CheckoutWidget";
 import { Ornament } from "@/components/ui/SectionHeading";
-import { REPORT_CHAPTERS } from "@/lib/constants/result";
+import { REPORT_CHAPTERS, REPORT_SECTION_COUNT } from "@/lib/constants/result";
 import { DETAILED_REPORT_PRICE, formatPrice } from "@/lib/constants/service";
 import { TOKEN_PATTERN } from "@/lib/server/analysis";
 import { ORDER_NAME } from "@/lib/server/payments";
@@ -40,8 +40,7 @@ export default async function CheckoutPage({ params }: PageProps<"/checkout/[tok
           <span className="font-serif text-lg text-gold-soft">{formatPrice(DETAILED_REPORT_PRICE)}</span>
         </div>
         <p className="text-xs leading-relaxed text-mist">
-          전 {REPORT_CHAPTERS.length}장 · 이성이 보는 첫인상과 공략법, 외모의 느낌, 색기의 종류와 깨어나는 때, 플러팅, 밤새
-          떠올리게 하는 말, 어울리는 치장, 끌려오는 사람, 연애 패턴, 궁합, 앞으로 3년 연애운, 지금 네 마음에 대한 답
+          전 {REPORT_CHAPTERS.length}장 {REPORT_SECTION_COUNT}개 소제목 · {REPORT_CHAPTERS.map((chapter) => chapter.title).join(", ")}
         </p>
         <p className="rounded-xl border border-line/70 bg-ink/40 px-4 py-3 text-[11px] leading-relaxed text-mist-dim">
           결제가 확인되면 네 사주로만 리포트를 새로 쓰기 시작하며, 보통 1~2분 안에 완성되어 이 화면과 이메일로 열람할 수

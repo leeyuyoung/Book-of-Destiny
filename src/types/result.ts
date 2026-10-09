@@ -22,8 +22,9 @@ export type DohwaView = {
     headline: string;
     description: string;
     story: string;
-    tease: string;
     vibes: string[];
+    plain: string;
+    checks: [string, string, string];
   };
 };
 
@@ -35,8 +36,9 @@ export type FreeResultView = {
   pillars: PillarView[];
   birthTimeKnown: boolean;
   dohwa: DohwaView;
-  /** 연애운 표에 쓰는 앞으로의 연도 */
-  timelineYears: number[];
+  gender: "female" | "male";
+  /** 양력 생년월. 결과 첫머리에서 신선이 읽어 준다. */
+  birth: { year: number; month: number };
 };
 
 export type CharmStarView = { key: string; name: string; hanja: string; found: boolean; positions: PillarPosition[]; score: number };
@@ -45,9 +47,10 @@ export type ReportChapterView = {
   chapter: number;
   key: string;
   title: string;
-  teaser: string;
+  subtitle: string;
+  image: string;
   headline: string;
-  paragraphs: string[];
+  sections: { title: string; paragraphs: string[] }[];
 };
 
 /** 만세력으로 센 오행 개수와 가장 짙은·비어 있는 기운 */

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { CHARM_INDICES, DOHWA_TYPES, LOVE_TIMELINE_YEARS, REPORT_CHAPTERS, gradeOf } from "@/lib/constants/result";
+import { CHARM_INDICES, DOHWA_TYPES, REPORT_CHAPTERS, gradeOf, withPartner } from "@/lib/constants/result";
 import { buildSajuProfile, calculateSaju, readDohwa, type SajuProfile } from "@/lib/saju";
 import type { CharmStarView, CurrentLuckView, DohwaView, FreeResultView, FullReportView, PillarView } from "@/types/result";
 import { storedReport } from "./analysis";
@@ -46,7 +46,8 @@ function freeView(name: string, profile: SajuProfile): FreeResultView {
     pillars: pillarViews(profile),
     birthTimeKnown: profile.calculation.hourPillar !== null,
     dohwa: dohwaView(profile),
-    timelineYears: profile.yearlyFortunes.slice(0, LOVE_TIMELINE_YEARS).map((fortune) => fortune.year),
+    gender: profile.calculation.gender,
+    birth: { year: profile.calculation.solarDate.year, month: profile.calculation.solarDate.month },
   };
 }
 
@@ -98,19 +99,28 @@ export function toFullReportView(record: AnalysisRecord): FullReportView | null 
       chapter: meta.chapter,
       key: meta.key,
       title: meta.title,
-      teaser: meta.teaser,
+      subtitle: meta.subtitle,
+      image: meta.image,
       headline: report.chapters[index].headline,
-      paragraphs: report.chapters[index].paragraphs,
+      sections: meta.sections.map((section, sectionIndex) => ({
+        title: withPartner(section.title, profile.calculation.gender),
+        paragraphs: report.chapters[index].sections[sectionIndex].paragraphs,
+      })),
     })),
     loveTimeline: report.loveTimeline,
   };
 }
 
 /** /result/sample 화면용. 실제 만세력으로 계산한 예시 사주다. */
-export function sampleFreeResult(): FreeResultView {
+/** 샘플 화면에서 도화 유형별로 보여 줄 생일. 유형은 태어난 날의 오행으로 정해진다. */
+const SAMPLE_BIRTH_DAY: Record<keyof typeof DOHWA_TYPES, number> = { wood: 17, fire: 19, earth: 21, metal: 23, water: 25 };
+
+export const isSampleType = (value: unknown): value is keyof typeof DOHWA_TYPES => typeof value === "string" && value in SAMPLE_BIRTH_DAY;
+
+export function sampleFreeResult(type: keyof typeof DOHWA_TYPES = "wood"): FreeResultView {
   const profile = buildSajuProfile(
     calculateSaju({
-      birth: { calendarType: "solar", isLeapMonth: false, year: 1998, month: 4, day: 17, hour: 23, minute: 40 },
+      birth: { calendarType: "solar", isLeapMonth: false, year: 1998, month: 4, day: SAMPLE_BIRTH_DAY[type], hour: 23, minute: 40 },
       gender: "female",
     }),
   );

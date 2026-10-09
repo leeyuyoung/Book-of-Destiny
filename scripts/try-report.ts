@@ -17,14 +17,15 @@ async function main() {
     concern: "썸 타는 사람이 있는데 연락이 뜸해졌어요. 제가 먼저 다가가도 될지 모르겠어요.",
   });
   const seconds = ((Date.now() - startedAt) / 1000).toFixed(1);
-  const characters = report.chapters.reduce((sum, chapter) => sum + chapter.paragraphs.join("").length, 0);
+  const paragraphsOf = (chapter: (typeof report.chapters)[number]) => chapter.sections.flatMap((section) => section.paragraphs);
+  const characters = report.chapters.reduce((sum, chapter) => sum + paragraphsOf(chapter).join("").length, 0);
 
   writeFileSync(".data/sample-report.json", JSON.stringify(report, null, 2));
   console.log(`생성 ${seconds}초, 본문 ${characters.toLocaleString()}자`);
   console.log(`summary: ${report.summary}`);
   console.log(`keywords: ${report.keywords.join(", ")}`);
   for (const chapter of report.chapters) {
-    console.log(`제${chapter.chapter}장 (${chapter.paragraphs.length}문단) ${chapter.headline}`);
+    console.log(`제${chapter.chapter}장 (${paragraphsOf(chapter).length}문단) ${chapter.headline}`);
   }
   for (const item of report.loveTimeline) console.log(`${item.year}년 ${item.mood}`);
 }

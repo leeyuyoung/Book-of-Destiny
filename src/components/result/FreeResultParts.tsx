@@ -1,9 +1,8 @@
 import Image from "next/image";
-import Link from "next/link";
 import type { ReactNode } from "react";
-import { PetalVeil } from "@/components/result/LetterPetals";
-import { LockIcon, SectionTitle } from "@/components/result/ResultParts";
-import { BLURRED_FILLER, REPORT_CHAPTERS, type ReportChapterKey } from "@/lib/constants/result";
+import { LockIcon } from "@/components/result/ResultParts";
+import { Reveal } from "@/components/ui/Reveal";
+import { REPORT_CHAPTERS, withPartner } from "@/lib/constants/result";
 import type { DohwaView } from "@/types/result";
 
 const RADAR_SIZE = 300;
@@ -90,194 +89,168 @@ export function DohwaRadarCard({ dohwa }: { dohwa: DohwaView }) {
           );
         })}
       </svg>
-
-      <p className="relative mt-1 text-center text-xs text-mist">
-        네 꽃에서 가장 짙은 기운 · <span className="text-blossom">{top.label}</span>
-      </p>
     </div>
   );
 }
 
-/** 잠긴 장들을 제목과 설명, 흐리게 가린 글로 세로로 이어 보여준다. */
-export function LockedChapterList({ keys, href, unlocked = false }: { keys: ReportChapterKey[]; href: string; unlocked?: boolean }) {
-  const chapters = REPORT_CHAPTERS.filter((chapter) => keys.includes(chapter.key));
-
+/** 그림 없이 검은 바탕에 대사만 크게 띄우는 칸. 줄마다 차례로 떠오르고, 줄 사이에 붉은 선을 긋는다. */
+export function StatementCut({ lines }: { lines: ReactNode[] }) {
   return (
-    <div className="flex flex-col gap-12">
-      {chapters.map((chapter) => (
-        <article key={chapter.key} className="flex flex-col gap-4">
-          <SectionTitle eyebrow={`제${chapter.chapter}장`} title={chapter.title} description={chapter.teaser} />
-          <div className="relative select-none">
-            <p aria-hidden className="text-[15px] leading-[1.9] text-paper/80 blur-[5px]">
-              {BLURRED_FILLER}
-            </p>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Link
-                href={href}
-                className="flex items-center gap-1.5 rounded-full border border-cinnabar/30 bg-ink/90 px-3 py-1.5 text-xs text-paper/90 shadow-[0_0_24px_rgb(7_6_14_/_0.9)]"
-              >
-                {!unlocked && <LockIcon />}
-                {unlocked ? "펼친 꽃에서 읽기" : "끝까지 가면 전부 알려주마"}
-              </Link>
-            </div>
-          </div>
-        </article>
+    <div className="flex flex-col items-center gap-6 py-10 text-center">
+      {lines.map((line, index) => (
+        <Reveal key={index} delay={index * 0.15} className="flex flex-col items-center gap-6">
+          {index > 0 && <span aria-hidden className="h-10 w-px bg-gradient-to-b from-transparent via-cinnabar/70 to-transparent" />}
+          <p className="font-eerie text-[clamp(1.5rem,7vw,1.9rem)] leading-snug text-paper break-keep [text-shadow:0_0_24px_rgb(232_137_155_/_0.35)]">
+            {line}
+          </p>
+        </Reveal>
       ))}
     </div>
   );
 }
 
-/** 잠긴 장 사이에 쉬어 가는 그림 */
-export function PeachInterlude() {
+/** 결제 전에 보여주는 무료 풀이. 유형 판정 다음에, 색기가 먹히는 모습 둘과 정작 못 쓰는 모습 하나를 체크리스트로 짚는다. */
+export function FreeReading({ type }: { type: DohwaView["type"] }) {
+  const [charm1, charm2, flaw] = type.checks;
   return (
-    <figure
-      className="-mx-5 relative aspect-[3/4] overflow-hidden"
-      style={{
-        maskImage: "linear-gradient(180deg, transparent 0%, black 24%, black 70%, transparent 100%)",
-        WebkitMaskImage: "linear-gradient(180deg, transparent 0%, black 24%, black 70%, transparent 100%)",
-      }}
-    >
+    <section className="flex flex-col gap-16">
+      <Reveal className="flex flex-col items-center gap-3 text-center">
+        <p className="font-serif text-[16px] text-mist">네 색기 유형은…</p>
+        <div className="relative flex items-center justify-center py-2">
+          <span aria-hidden className="absolute font-serif text-[120px] leading-none text-cinnabar/15">
+            {type.elementHanja}
+          </span>
+          <h3 className="relative font-eerie text-[clamp(2.6rem,13vw,3.2rem)] leading-none text-blossom-glow [text-shadow:0_0_30px_rgb(232_137_155_/_0.7)]">
+            {type.name}
+          </h3>
+        </div>
+        <p className="font-serif text-[18px] text-paper">{type.plain}</p>
+      </Reveal>
+
+      <div className="flex flex-col gap-4">
+        <Reveal>
+          <p className="text-center font-eerie text-[clamp(1.3rem,6vw,1.55rem)] text-paper">솔직히, 이거 너잖아?</p>
+        </Reveal>
+        <ul className="flex flex-col gap-3">
+          {[charm1, charm2].map((line, index) => (
+            <Reveal key={line} delay={0.25 + index * 0.35}>
+              <li className="flex items-center gap-3 rounded-2xl border border-line bg-night/70 px-4 py-4">
+                <CheckMark />
+                <span className="font-serif text-[16px] text-paper break-keep">{line}</span>
+              </li>
+            </Reveal>
+          ))}
+          <Reveal delay={0.95}>
+            <li className="flex items-center gap-3 rounded-2xl border border-line bg-night/70 px-4 py-4">
+              <CheckMark />
+              <span className="font-serif text-[16px] text-paper break-keep">{flaw}</span>
+            </li>
+          </Reveal>
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+function CheckMark() {
+  return (
+    <span aria-hidden className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-cinnabar/90 text-ink">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </span>
+  );
+}
+
+/** 분량 어필에 내세우는 본문 글자 수. 예시 리포트(public/images/result/report-columns.jpg)는 5,507자였다. 리포트 분량을 줄이면 함께 고친다. */
+const REPORT_MIN_CHARS = 4000;
+
+/** 결제 전에 보여주는 리포트 분량. 실제 예시 리포트를 흐리게 가려 여러 줄로 이어 붙인 그림 위에 글자 수를 크게 띄운다. */
+export function ReportVolume() {
+  return (
+    <section className="flex flex-col items-center gap-2 text-center">
+      <Reveal>
+        <h2 className="font-eerie text-[clamp(1.9rem,9vw,2.4rem)] leading-tight text-paper">
+          {REPORT_MIN_CHARS.toLocaleString()}자 이상의
+          <br />
+          <span className="text-blossom-glow">미친 분량</span>
+        </h2>
+      </Reveal>
+      <Reveal>
+        <p className="font-serif text-[16px] text-paper/85">네 색기 쓰는 법, 하나도 빼놓지 않았다</p>
+      </Reveal>
+      <div className="relative -mx-5 mt-4 aspect-[760/912] w-[calc(100%+2.5rem)]">
+        <Image
+          src="/images/result/report-columns.jpg"
+          alt="흐리게 가린 실제 예시 리포트를 여러 줄로 이어 붙인 화면"
+          fill
+          sizes="(max-width: 640px) 100vw, 576px"
+          className="object-cover object-top"
+          style={{
+            maskImage: "linear-gradient(180deg, transparent 0%, black 8%, black 72%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(180deg, transparent 0%, black 8%, black 72%, transparent 100%)",
+          }}
+        />
+      </div>
+    </section>
+  );
+}
+
+/** 장 표지 그림. 위는 배경으로 스며들고, 아래는 제목이 읽히도록 어둡게 깐다. */
+export function ChapterCoverImage({ src }: { src: string }) {
+  return (
+    <>
       <Image
-        src="/images/sinseon/peach-bite.jpg"
-        alt="달밤의 꽃나무 가지에 걸터앉아 분홍 복숭아를 베어 문 채 곁눈질로 웃는 도화신선"
+        src={src}
+        alt=""
         fill
         sizes="(max-width: 640px) 100vw, 576px"
         className="object-cover"
+        style={{
+          maskImage: "linear-gradient(180deg, transparent 0%, black 16%, black 100%)",
+          WebkitMaskImage: "linear-gradient(180deg, transparent 0%, black 16%, black 100%)",
+        }}
       />
-    </figure>
+      <div
+        aria-hidden
+        className="absolute inset-0"
+        style={{ background: "linear-gradient(180deg, transparent 55%, rgb(7 6 14 / 0.9) 85%, var(--color-ink) 100%)" }}
+      />
+    </>
   );
 }
 
-/** 앞으로의 연애운을 해마다 꽃 마디로 잇는다. 결제 전에는 내용 대신 꽃잎으로 덮어 둔다. */
-export function LoveTimelineStrip({ years }: { years: number[] }) {
+/** 유료 리포트 목차. 장마다 그림 표지와 두 줄 제목, 그 아래 잠긴 소제목을 보여준다. */
+export function ChapterCovers({ gender }: { gender: "female" | "male" }) {
   return (
-    <div className="rounded-3xl border border-line bg-night/70 px-4 pb-5 pt-6">
-      <ol className="relative grid" style={{ gridTemplateColumns: `repeat(${years.length}, minmax(0, 1fr))` }}>
-        <span aria-hidden className="absolute left-[16%] right-[16%] top-5 h-px bg-gradient-to-r from-cinnabar/20 via-cinnabar/70 to-cinnabar/20" />
-        {years.map((year) => (
-          <li key={year} className="relative flex flex-col items-center gap-2 text-center">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full border border-cinnabar/50 bg-ink font-serif text-sm text-blossom shadow-[0_0_20px_-6px_rgb(232_137_155_/_0.8)]">
-              ?
-            </span>
-            <span className="font-serif text-sm text-paper">{year}년</span>
-            <span aria-hidden className="select-none text-[11px] leading-relaxed text-paper/70 blur-[4px]">
-              인연이 감겨드는 달
-            </span>
-          </li>
-        ))}
-      </ol>
-      <p className="mt-4 flex items-center justify-center gap-1.5 text-[11px] text-mist">
-        <LockIcon />
-        어느 해, 어느 달에 꽃이 터지는지는 펼치면 알려주마
-      </p>
+    <div className="flex flex-col gap-14">
+      {REPORT_CHAPTERS.map((chapter) => (
+        <Reveal key={chapter.key}>
+          <article className="flex flex-col gap-5">
+            <figure className="relative -mx-5 aspect-[4/5] overflow-hidden">
+              <ChapterCoverImage src={chapter.image} />
+              <figcaption className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-2 px-6 pb-4 text-center">
+                <span className="rounded-full border border-gold/40 bg-ink/60 px-3 py-1 text-xs tracking-[0.2em] text-gold-soft backdrop-blur-sm">
+                  제{chapter.chapter}장
+                </span>
+                <h3 className="font-eerie text-[clamp(1.7rem,8vw,2.2rem)] leading-tight text-paper [text-shadow:0_0_24px_rgb(232_137_155_/_0.55)]">
+                  {chapter.title}
+                </h3>
+                <p className="font-serif text-[15px] text-blossom-glow">{chapter.subtitle}</p>
+              </figcaption>
+            </figure>
+            <ol className="flex flex-col gap-2">
+              {chapter.sections.map((section, index) => (
+                <li key={section.title} className="flex items-center gap-3 rounded-2xl border border-line/70 bg-night/70 px-4 py-3.5">
+                  <span className="font-serif text-sm text-cinnabar">{index + 1}</span>
+                  <span className="flex-1 font-serif text-[15px] text-paper break-keep">{withPartner(section.title, gender)}</span>
+                  <LockIcon />
+                </li>
+              ))}
+            </ol>
+          </article>
+        </Reveal>
+      ))}
     </div>
   );
 }
-
-/**
- * 도화신선이 건네는 서찰. 리포트 몇 장의 첫 귀띔을 신선 말투로 적고, 핵심 낱말은 꽃잎으로 덮는다.
- * 여기서 귀띔한 내용은 리포트 작성 지시(REPORT_CHAPTERS의 guide)에도 들어 있어야 한다.
- */
-export function DohwaLetter({ name, href }: { name: string; href: string }) {
-  return (
-    <Link href={href} className="group relative block px-1 pt-3">
-      <div className="-rotate-[0.8deg] drop-shadow-[0_18px_28px_rgb(0_0_0_/_0.75)] transition-transform group-active:scale-[0.99]">
-        <div
-          className="relative bg-[#d8d0c2] bg-cover bg-center px-7 pb-8 pt-10 text-[#1e1915] shadow-[inset_0_0_40px_rgb(92_80_64_/_0.35),inset_0_0_6px_rgb(70_60_48_/_0.3)]"
-          style={{ clipPath: TORN_EDGE, backgroundImage: "url(/images/letter-paper.jpg)" }}
-        >
-          <p className="relative font-hand text-[18px] leading-none text-[#6e1f36]">{name}에게</p>
-
-          <p className="relative mt-4 font-hand text-[16px] leading-[1.9] break-keep">
-            네가 숨긴 비밀, 남들 몰래 몇 가지만 먼저 귓가에 흘려 주마.
-          </p>
-
-          <div className="relative mt-5 flex flex-col gap-4 font-hand text-[16px] leading-[1.9] break-keep [text-shadow:0_0_0.6px_rgb(30_25_21_/_0.5)]">
-            <LetterLine chapter="firstImpression">
-              너를 한 번 본 이들은 <PetalVeil em={4.2} seed={0} /> 같은 그 잔상을 밤새 지우지 못하지.
-            </LetterLine>
-            <LetterLine chapter="looks">
-              네 얼굴에서 가장 위험한 곳은 <PetalVeil em={2.6} seed={1} />이란다. 다들 거기서 눈을 떼지 못해 애가 타.
-            </LetterLine>
-            <LetterLine chapter="flirt">
-              네가 <PetalVeil em={5} seed={2} /> 하는 순간, 버티던 마음도 속절없이 무너지지.
-            </LetterLine>
-            <LetterLine chapter="language">
-              무심코 던진 <PetalVeil em={4} seed={6} /> 그 한마디에, 누군가는 오늘 밤도 잠 못 이루지.
-            </LetterLine>
-            <LetterLine chapter="styling">
-              <PetalVeil em={2.8} seed={3} /> 빛을 걸치는 날, 네 꽃은 두{"\u00a0"}배로 짙어진다.
-            </LetterLine>
-            <LetterLine chapter="match">
-              <PetalVeil em={2.4} seed={4} /> 기운의 사람은 꼭 붙잡고, <PetalVeil em={2.4} seed={5} /> 기운의 사람은 당장 끊어 내거라. 네 꽃을 시들게 할 독이니.
-            </LetterLine>
-          </div>
-
-          <div className="relative mt-8 flex items-end justify-between">
-            <p className="text-[11px] leading-relaxed text-[#1e1915]/60">
-              꽃잎 아래 적힌 건
-              <br />
-              너랑 나만 아는 이야기다
-            </p>
-            <div className="flex items-center gap-2">
-              <span className="font-hand text-[18px] tracking-[0.06em] text-[#1e1915]/90">도화신선</span>
-              <InkSeal />
-            </div>
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
-}
-
-function LetterLine({ chapter, children }: { chapter: ReportChapterKey; children: ReactNode }) {
-  const number = REPORT_CHAPTERS.find((item) => item.key === chapter)!.chapter;
-  return (
-    <p className="relative pl-7">
-      <span className="absolute left-0 top-[0.45em] font-serif text-[10px] leading-none text-[#9c3f62]/70">{number}장</span>
-      {children}
-    </p>
-  );
-}
-
-/** 붉은 인주가 고르지 않게 묻은 음각 낙관. 가장자리를 거칠게 일그러뜨리고 군데군데 인주가 빠지게 한다. */
-function InkSeal() {
-  return (
-    <svg aria-hidden viewBox="0 0 64 64" className="h-[58px] w-[58px] rotate-[7deg] mix-blend-multiply">
-      <defs>
-        <filter id="seal-ink" x="-10%" y="-10%" width="120%" height="120%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="4" result="warp" />
-          <feDisplacementMap in="SourceGraphic" in2="warp" scale="3.2" xChannelSelector="R" yChannelSelector="G" result="rough" />
-          <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="11" result="grain" />
-          <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -3.2 0 0 0 2.7" result="holes" />
-          <feComposite in="rough" in2="holes" operator="in" />
-        </filter>
-      </defs>
-      <g filter="url(#seal-ink)">
-        <rect x="5" y="5" width="54" height="54" rx="5" fill="#b0213f" />
-        <rect x="9.5" y="9.5" width="45" height="45" rx="2.5" fill="none" stroke="#efe2cb" strokeWidth="1.6" />
-        <text x="32" y="29" textAnchor="middle" fontFamily="var(--font-serif)" fontWeight="700" fontSize="19" fill="#efe2cb">
-          桃
-        </text>
-        <text x="32" y="50" textAnchor="middle" fontFamily="var(--font-serif)" fontWeight="700" fontSize="19" fill="#efe2cb">
-          花
-        </text>
-      </g>
-    </svg>
-  );
-}
-
-/** 찢어 낸 종이의 들쭉날쭉한 가장자리. 위쪽은 깊게, 아래와 옆은 얕게 찢는다. 매번 같은 모양이 나오도록 씨앗을 고정한다. */
-const TORN_EDGE = (() => {
-  let state = 20251007;
-  const random = () => {
-    state = (state * 16807) % 2147483647;
-    return state / 2147483647;
-  };
-  const points: string[] = [];
-  for (let x = 0; x <= 100; x += 2.5) points.push(`${x}% ${(random() * 2.2).toFixed(2)}%`);
-  for (let y = 8; y <= 92; y += 12) points.push(`${(100 - random() * 0.9).toFixed(2)}% ${y}%`);
-  for (let x = 100; x >= 0; x -= 3) points.push(`${x}% ${(100 - random() * 1.3).toFixed(2)}%`);
-  for (let y = 92; y >= 8; y -= 12) points.push(`${(random() * 0.9).toFixed(2)}% ${y}%`);
-  return `polygon(${points.join(", ")})`;
-})();

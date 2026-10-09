@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { PageShell } from "@/components/layout/PageShell";
 import { FiveElementsCard } from "@/components/result/FiveElementsCard";
-import { DohwaRadarCard } from "@/components/result/FreeResultParts";
+import { ChapterCoverImage, DohwaRadarCard } from "@/components/result/FreeResultParts";
 import { ManseryeokTable } from "@/components/result/ManseryeokTable";
 import { ReportWaiting } from "@/components/result/ReportWaiting";
 import { CharmStars, LoveTimeline, SectionTitle } from "@/components/result/ResultParts";
@@ -93,43 +93,72 @@ export default async function ReportPage({ params }: PageProps<"/report/[token]"
           <p className="text-xs text-cinnabar">목차</p>
           <ol className="mt-3 flex flex-col">
             {report.chapters.map((chapter) => (
-              <li key={chapter.chapter}>
-                <a
-                  href={`#chapter-${chapter.chapter}`}
-                  className="flex items-baseline gap-3 border-b border-line/50 py-3 last:border-0 hover:text-blossom"
-                >
+              <li key={chapter.chapter} className="border-b border-line/50 py-3 last:border-0">
+                <a href={`#chapter-${chapter.chapter}`} className="flex items-baseline gap-3 hover:text-blossom">
                   <span className="w-10 shrink-0 text-xs text-cinnabar/80">제{chapter.chapter}장</span>
                   <span className="font-serif text-[15px]">{chapter.title}</span>
                 </a>
+                <ol className="mt-1.5 flex flex-col gap-1 pl-[3.25rem]">
+                  {chapter.sections.map((section, index) => (
+                    <li key={section.title}>
+                      <a href={`#chapter-${chapter.chapter}-${index + 1}`} className="text-[13px] text-mist hover:text-blossom">
+                        {section.title}
+                      </a>
+                    </li>
+                  ))}
+                </ol>
               </li>
             ))}
           </ol>
         </nav>
 
-        {report.chapters.map((chapter) => {
-          const isTimeline = chapter.key === "timeline";
-          const paragraphs = isTimeline ? chapter.paragraphs.slice(0, 1) : chapter.paragraphs;
-          return (
-            <article key={chapter.chapter} id={`chapter-${chapter.chapter}`} className="flex scroll-mt-20 flex-col gap-6">
-              <Reveal>
-                <SectionTitle eyebrow={`제${chapter.chapter}장`} title={chapter.title} description={chapter.teaser} />
-              </Reveal>
-              <Reveal>
-                <div className="flex flex-col gap-5 font-serif text-[16px] font-light leading-[2] text-paper/90">
-                  <blockquote className="border-l-2 border-cinnabar/60 pl-4 text-[17px] text-blossom">{chapter.headline}</blockquote>
-                  {paragraphs.map((paragraph, index) => (
-                    <p key={index}>{paragraph}</p>
-                  ))}
-                </div>
-              </Reveal>
-              {isTimeline && (
+        {report.chapters.map((chapter) => (
+          <article key={chapter.chapter} id={`chapter-${chapter.chapter}`} className="flex scroll-mt-20 flex-col gap-8">
+            <Reveal>
+              <figure className="relative -mx-5 aspect-[4/5] overflow-hidden">
+                <ChapterCoverImage src={chapter.image} />
+                <figcaption className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-2 px-6 pb-4 text-center">
+                  <span className="rounded-full border border-gold/40 bg-ink/60 px-3 py-1 text-xs tracking-[0.2em] text-gold-soft backdrop-blur-sm">
+                    제{chapter.chapter}장
+                  </span>
+                  <h2 className="font-eerie text-[clamp(1.7rem,8vw,2.2rem)] leading-tight text-paper [text-shadow:0_0_24px_rgb(232_137_155_/_0.55)]">
+                    {chapter.title}
+                  </h2>
+                  <p className="font-serif text-[15px] text-blossom-glow">{chapter.subtitle}</p>
+                </figcaption>
+              </figure>
+            </Reveal>
+            <Reveal>
+              <blockquote className="border-l-2 border-cinnabar/60 pl-4 font-serif text-[17px] font-light leading-[1.9] text-blossom">
+                {chapter.headline}
+              </blockquote>
+            </Reveal>
+            {chapter.sections.map((section, index) => (
+              <section key={section.title} id={`chapter-${chapter.chapter}-${index + 1}`} className="flex scroll-mt-20 flex-col gap-4">
                 <Reveal>
-                  <LoveTimeline timeline={report.loveTimeline} />
+                  <h3 className="flex items-baseline gap-2 font-serif text-[19px] text-paper break-keep">
+                    <span className="text-sm text-cinnabar">
+                      {chapter.chapter}-{index + 1}
+                    </span>
+                    {section.title}
+                  </h3>
                 </Reveal>
-              )}
-            </article>
-          );
-        })}
+                <Reveal>
+                  <div className="flex flex-col gap-5 font-serif text-[16px] font-light leading-[2] text-paper/90">
+                    {section.paragraphs.map((paragraph, paragraphIndex) => (
+                      <p key={paragraphIndex}>{paragraph}</p>
+                    ))}
+                  </div>
+                </Reveal>
+                {chapter.key === "bloom" && index === 0 && (
+                  <Reveal>
+                    <LoveTimeline timeline={report.loveTimeline} />
+                  </Reveal>
+                )}
+              </section>
+            ))}
+          </article>
+        ))}
       </div>
 
       <section className="mt-20 flex flex-col items-center gap-4 text-center">
