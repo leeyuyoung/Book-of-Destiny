@@ -19,10 +19,11 @@ export type HeroineScene = keyof typeof SCENES;
 
 /** 인물이 크게 보이도록 확대하는 장면. origin은 확대 기준점이라 그 지점이 화면에서 제자리에 남는다. */
 const SCENE_ZOOM: Partial<Record<HeroineScene, { scale: number; origin: string }>> = {
-  sleeping: { scale: 1.15, origin: "62% 22%" },
-  awake: { scale: 1.15, origin: "62% 23%" },
-  trapped: { scale: 1.15, origin: "57% 23%" },
-  scent: { scale: 1.15, origin: "30% 30%" },
+  garden: { scale: 1.12, origin: "50% 0%" },
+  sleeping: { scale: 1.18, origin: "62% 0%" },
+  awake: { scale: 1.18, origin: "62% 0%" },
+  trapped: { scale: 1.18, origin: "57% 0%" },
+  scent: { scale: 1.18, origin: "30% 0%" },
   main: { scale: 1.45, origin: "44% 5%" },
   pinHands: { scale: 1.3, origin: "100% 0%" },
   pinRaised: { scale: 1.3, origin: "100% 0%" },

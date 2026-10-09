@@ -141,7 +141,7 @@ export function IntroSequence() {
         scenes={SCENES}
         scene={current.scene}
         fadeMs={isFinal ? 400 : 900}
-        lowVeil={isFinal}
+        lowVeil
       />
 
       <div className="pointer-events-none absolute inset-y-0 left-1/2 z-10 w-full -translate-x-1/2 landscape:w-[56.25vh]">
