@@ -102,7 +102,7 @@ export function SpeechBubble({ bubble }: { bubble: Bubble }) {
   );
 }
 
-const TAIL_PATH = "M3 0 C 8 14, 10 24, 4 34 C 16 28, 24 16, 27 0 Z";
+const TAIL_PATH = "M4 0 C 6 9, 7 16, 5 26 C 11 20, 15 10, 18 0 Z";
 
 /**
  * 타원 말풍선에서 휘어져 나오는 꼬리.
@@ -120,8 +120,8 @@ function BubbleTail({ tail, fill, stroke, layer }: { tail: Tail; fill: string; s
   return (
     <svg
       aria-hidden
-      viewBox="0 0 30 34"
-      className={`pointer-events-none absolute h-[34px] w-[30px] overflow-visible ${layer === "over" ? "z-20" : "z-0"}`}
+      viewBox="0 0 22 26"
+      className={`pointer-events-none absolute h-[26px] w-[22px] overflow-visible ${layer === "over" ? "z-20" : "z-0"}`}
       style={style}
     >
       {layer === "under" ? (

@@ -37,10 +37,10 @@ export default async function ResultPage({ params, searchParams }: PageProps<"/r
   if (!loaded) notFound();
   const { result, paid } = loaded;
   const cta = paid
-    ? { href: `/report/${token}`, label: "펼친 꽃 다시 보러 가기" }
+    ? { href: `/report/${token}`, label: "내 리포트 보러 가기" }
     : token === "sample"
-      ? { href: "/start", label: "내 숨겨진 색기력 확인하기" }
-      : { href: `/checkout/${token}`, label: "색기 쓰는 법 배우기" };
+      ? { href: "/start", label: "숨겨진 색기 사용법 배우기" }
+      : { href: `/checkout/${token}`, label: "숨겨진 색기 사용법 배우기" };
 
   return (
     <PageShell withStickyBar>
@@ -91,9 +91,10 @@ export default async function ResultPage({ params, searchParams }: PageProps<"/r
           id={PUSH_PANEL_ID}
           src="/images/result/push.jpg"
           alt="복숭아를 입가에 대고 위험하게 웃으며 이쪽을 내려다보는 도화신선"
+          headroom={0.15}
           bubbles={[
             { kind: "speech", text: "네가 마음만 먹으면,\n상대는 이미 네 손안에 있어.", at: 0.3, place: { top: "3%", left: "4%" }, tail: "bottom-right" },
-            { kind: "whisper", text: "그 방법,\n내가 알려줄게.", at: 1.5, place: { top: "74%", right: "4%" }, tail: "top-left", big: true },
+            { kind: "whisper", text: "그 방법,\n내가 알려줄게.", at: 1.5, place: { top: "77%", right: "4%" }, tail: "top-left", big: true },
           ]}
         />
       </div>
