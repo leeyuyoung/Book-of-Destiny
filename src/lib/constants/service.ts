@@ -36,11 +36,17 @@ export const DETAILED_REPORT_PRICE = 19900;
 export const formatPrice = (won: number) => `${won.toLocaleString("ko-KR")}원`;
 
 /** 도화신선이 손목을 잡고 맥을 짚는 동안 보여주는 문구 */
-export const ANALYSIS_MESSAGES = [
-  "가만히 있거라. 맥 좀 짚어보자.",
-  "…심장이 왜 이리 뛰지? 나 때문인가.",
-  "찾았다. 네 꽃.",
-] as const;
+/**
+ * 분석하는 동안 로딩 화면 그림 위에 차례로 뜨는 웹툰 대사. thought는 주인공의 속마음, sfx는 효과음이다.
+ * 말풍선 안에서 줄을 바꿀 자리에 \n을 넣는다.
+ */
+export const ANALYSIS_SCRIPT = {
+  hold: "가만.\n맥 좀 짚어보자.",
+  flustered: "…손은 왜…",
+  pin: "탁—",
+  doubt: "…이거 사주 보는 거\n맞아요?",
+  tease: "쉿.\n몸은 거짓말 못 하거든.",
+} as const;
 
 /** 결제 후 리포트를 쓰는 동안 보여주는 문구 */
 export const REPORT_WRITING_MESSAGES = [

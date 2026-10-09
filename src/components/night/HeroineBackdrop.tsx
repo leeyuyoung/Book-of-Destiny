@@ -10,6 +10,8 @@ const SCENES = {
   trapped: { src: "/images/intro/04-trapped.jpg", ratio: 9 / 16, alt: "나무에 한 손을 짚고 여자주인공의 눈앞까지 얼굴을 들이민 도화신선" },
   scent: { src: "/images/intro/05-scent.jpg", ratio: 9 / 16, alt: "뒤에서 여자주인공의 목덜미에 얼굴을 묻고 향을 맡는 도화신선과 얼굴이 붉어진 여자주인공" },
   main: { src: "/images/intro/06-main.jpg", ratio: 9 / 16, alt: "여자주인공을 뒤에서 끌어안아 얼굴을 감싼 채 혀를 살짝 내밀고 웃는 도화신선" },
+  pinHands: { src: "/images/loading/01-hands.jpg", ratio: 9 / 16, alt: "여자주인공을 벽에 밀어붙이고 그녀가 모은 두 손을 감싸 쥔 도화신선" },
+  pinRaised: { src: "/images/loading/02-raised.jpg", ratio: 9 / 16, alt: "여자주인공의 두 손목을 머리 위 벽에 눌러 쥐고 내려다보는 도화신선" },
   final: { src: "/images/sinseon/hero.jpg", ratio: 3 / 4, alt: "달밤의 복숭아꽃 정원에서 꽃가지를 입가에 대고 웃는 한복 차림의 도화신선" },
 } as const;
 

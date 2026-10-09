@@ -1,10 +1,11 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { HeroineBackdrop, type HeroineScene } from "@/components/night/HeroineBackdrop";
 import { Button, ButtonLink } from "@/components/ui/Button";
+import { SpeechBubble, type Bubble } from "@/components/webtoon/SpeechBubble";
 import {
   clearAnalysisToken,
   clearPendingAnalysis,
@@ -12,17 +13,40 @@ import {
   loadPendingAnalysis,
   saveAnalysisToken,
 } from "@/lib/client/inputStorage";
-import { ANALYSIS_MESSAGES } from "@/lib/constants/service";
+import { ANALYSIS_SCRIPT } from "@/lib/constants/service";
 import { analysisInputSchema } from "@/lib/validation/analysisInput";
 
-const MESSAGE_INTERVAL_MS = 2000;
-/** 계산은 금방 끝나지만, 의식처럼 보이도록 문구가 모두 지나갈 때까지는 보여준다. */
-const MIN_RITUAL_MS = MESSAGE_INTERVAL_MS * ANALYSIS_MESSAGES.length;
+type Beat = { scene: HeroineScene; ms: number; bubbles: Bubble[] };
+
+/** 두 손을 쥐었다가, 그 손을 머리 위로 들어 벽에 누르는 두 컷 */
+const BEATS = [
+  {
+    scene: "pinHands",
+    ms: 4200,
+    bubbles: [
+      { kind: "speech", text: ANALYSIS_SCRIPT.hold, at: 0.6, place: { top: "6%", left: "5%" }, tail: "bottom-right" },
+      { kind: "thought", text: ANALYSIS_SCRIPT.flustered, at: 2.1, place: { top: "52%", right: "6%" } },
+    ],
+  },
+  {
+    scene: "pinRaised",
+    ms: 5000,
+    bubbles: [
+      { kind: "sfx", text: ANALYSIS_SCRIPT.pin, at: 0.2, place: { top: "3%", right: "24%" } },
+      { kind: "speech", text: ANALYSIS_SCRIPT.doubt, at: 0.9, place: { top: "38%", right: "4%" }, tail: "top-right" },
+      { kind: "whisper", text: ANALYSIS_SCRIPT.tease, at: 2.6, place: { top: "56%", left: "5%" }, tail: "top-right" },
+    ],
+  },
+] as const satisfies readonly Beat[];
+
+const SCENES = BEATS.map((beat) => beat.scene);
+/** 계산은 금방 끝나지만, 의식처럼 보이도록 두 컷이 모두 지나갈 때까지는 보여준다. */
+const MIN_RITUAL_MS = BEATS.reduce((total, beat) => total + beat.ms, 0);
 const REDIRECT_DELAY_MS = 1400;
 const POLL_INTERVAL_MS = 2000;
 const GIVE_UP_AFTER_MS = 60 * 1000;
-/** 진행 원이 대략 이 시간에 63%쯤 차도록 한다. 실제 진행률이 아니라 기다림을 보여주는 장치다. */
-const PROGRESS_TIME_CONSTANT_MS = 2500;
+/** 진행 바가 대략 이 시간에 63%쯤 차도록 한다. 실제 진행률이 아니라 기다림을 보여주는 장치다. */
+const PROGRESS_TIME_CONSTANT_MS = 3200;
 const MAX_PENDING_PROGRESS = 0.95;
 
 type Phase =
@@ -105,7 +129,7 @@ async function runAnalysis(isActive: () => boolean, startedAt: number): Promise<
 export function AnalyzingExperience() {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>({ kind: "working" });
-  const [messageIndex, setMessageIndex] = useState(0);
+  const [beatIndex, setBeatIndex] = useState(0);
   const [elapsedMs, setElapsedMs] = useState(0);
   const startedRef = useRef(false);
   const activeRef = useRef(true);
@@ -115,7 +139,7 @@ export function AnalyzingExperience() {
     const startedAt = Date.now();
     startTimeRef.current = startedAt;
     setElapsedMs(0);
-    setMessageIndex(0);
+    setBeatIndex(0);
     setPhase({ kind: "working" });
     void runAnalysis(() => activeRef.current, startedAt).then(async (next) => {
       if (!next || !activeRef.current) return;
@@ -143,13 +167,13 @@ export function AnalyzingExperience() {
   }, [begin]);
 
   const working = phase.kind === "working";
-  const lastMessage = ANALYSIS_MESSAGES.length - 1;
+  const lastBeat = BEATS.length - 1;
 
   useEffect(() => {
-    if (!working || messageIndex >= lastMessage) return;
-    const timer = window.setTimeout(() => setMessageIndex((index) => index + 1), MESSAGE_INTERVAL_MS);
+    if (!working || beatIndex >= lastBeat) return;
+    const timer = window.setTimeout(() => setBeatIndex((index) => index + 1), BEATS[beatIndex].ms);
     return () => window.clearTimeout(timer);
-  }, [working, messageIndex, lastMessage]);
+  }, [working, beatIndex, lastBeat]);
 
   useEffect(() => {
     if (!working) return;
@@ -161,72 +185,52 @@ export function AnalyzingExperience() {
     phase.kind === "ready"
       ? 1
       : Math.min(1 - Math.exp(-elapsedMs / PROGRESS_TIME_CONSTANT_MS), MAX_PENDING_PROGRESS);
-  const listIndex = phase.kind === "ready" ? ANALYSIS_MESSAGES.length : messageIndex;
+  const beat = BEATS[beatIndex];
+  const showBubbles = phase.kind === "working" || phase.kind === "ready";
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-8 pb-12 text-center">
-      <div className="-mx-5 flex w-[calc(100%+2.5rem)] flex-col items-center gap-5">
-        <div
-          className="relative aspect-[3/4] max-h-[58dvh] w-full overflow-hidden"
-          style={{
-            maskImage: "linear-gradient(180deg, transparent 0%, black 5%, black 72%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(180deg, transparent 0%, black 5%, black 72%, transparent 100%)",
-          }}
-        >
-          <motion.div
-            className="absolute inset-0"
-            initial={{ scale: 1, opacity: 0 }}
-            animate={{ scale: 1.08, opacity: 1 }}
-            transition={{ scale: { duration: 12, ease: "easeOut" }, opacity: { duration: 1.4 } }}
-          >
-            <Image
-              src="/images/sinseon/pulse.jpg"
-              alt="여자주인공을 벽에 밀어붙이고 머리 위로 올린 손목을 쥐어 맥을 짚는 도화신선"
-              fill
-              loading="eager"
-              sizes="(max-width: 640px) 100vw, 576px"
-              className="object-cover object-[50%_20%]"
-            />
-          </motion.div>
-        </div>
-        <div className="h-px w-40 overflow-hidden rounded-full bg-gold/15">
-          <motion.div
-            className="h-full origin-left bg-gradient-to-r from-[#fff3dc] to-blossom"
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: progress }}
-            transition={{ duration: 1.6, ease: "easeInOut" }}
-          />
-        </div>
+    <div className="relative flex flex-1 flex-col text-center">
+      <HeroineBackdrop scenes={SCENES} scene={beat.scene} fadeMs={700} />
+
+      <div
+        role="progressbar"
+        aria-label="사주를 읽는 중"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(progress * 100)}
+        className="fixed inset-x-0 top-[env(safe-area-inset-top)] z-30 h-[3px] bg-paper/10"
+      >
+        <motion.div
+          className="h-full origin-left bg-gradient-to-r from-[#fff3dc] via-blossom-glow to-blossom shadow-[0_0_12px_rgb(232_143_176_/_0.8)]"
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: progress }}
+          transition={{ duration: 1.6, ease: "easeInOut" }}
+        />
       </div>
 
-      <div className="flex min-h-24 flex-col items-center justify-center px-4">
+      <div className="pointer-events-none fixed inset-y-0 left-1/2 z-10 w-full -translate-x-1/2 landscape:w-[56.25vh]">
+        <AnimatePresence>
+          {showBubbles &&
+            beat.bubbles.map((bubble) => <SpeechBubble key={`${beat.scene}-${bubble.text}`} bubble={bubble} />)}
+        </AnimatePresence>
+      </div>
+
+      <div className="relative z-20 mt-auto flex min-h-40 flex-col items-center justify-end px-4 pb-[max(2.5rem,env(safe-area-inset-bottom))]">
         <AnimatePresence mode="wait">
-          {phase.kind === "working" && (
-            <motion.p
-              key={messageIndex}
-              initial={{ opacity: 0, y: 8, filter: "blur(6px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -8, filter: "blur(6px)" }}
-              transition={{ duration: 0.9 }}
-              className="font-serif text-lg font-light leading-relaxed text-paper"
-            >
-              {ANALYSIS_MESSAGES[messageIndex]}
-            </motion.p>
-          )}
           {phase.kind === "ready" && (
             <motion.div
               key="done"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2 }}
-              className="flex w-full max-w-xs flex-col items-center gap-8"
+              className="flex w-full max-w-xs flex-col items-center gap-6"
             >
-              <p className="font-serif text-lg font-light leading-relaxed">
-                찾았다, 네 꽃.
+              <p className="font-serif text-lg font-light leading-relaxed [text-shadow:0_1px_10px_rgba(10,6,20,0.9)]">
+                다 찾았다. 네가 숨긴 데까지.
                 <br />
-                <span className="text-gold-gradient">이제 보여주마.</span>
+                <span className="text-gold-gradient">이제… 하나씩 벗겨 주마.</span>
               </p>
-              <ButtonLink href={`/result/${phase.token}`}>내 꽃 보러 가기</ButtonLink>
+              <ButtonLink href={`/result/${phase.token}`}>숨김없이 보여줘</ButtonLink>
             </motion.div>
           )}
           {phase.kind === "error" && (
@@ -265,24 +269,6 @@ export function AnalyzingExperience() {
           )}
         </AnimatePresence>
       </div>
-
-      <ol className="flex flex-col gap-2 text-left">
-        {ANALYSIS_MESSAGES.map((message, index) => (
-          <li
-            key={message}
-            className={`flex items-center gap-3 text-xs transition-colors duration-700 ${
-              index < listIndex ? "text-gold/70" : index === listIndex ? "text-paper" : "text-mist-dim/50"
-            }`}
-          >
-            <span
-              className={`h-1.5 w-1.5 rotate-45 border transition-all duration-700 ${
-                index < listIndex ? "border-gold bg-gold/70" : "border-mist-dim/50"
-              }`}
-            />
-            {message}
-          </li>
-        ))}
-      </ol>
     </div>
   );
 }
