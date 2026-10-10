@@ -93,11 +93,11 @@ export const DOHWA_GRADES = [
 
 export const gradeOf = (score: number) => DOHWA_GRADES.find((grade) => score >= grade.min)!;
 
+/** 화면에 보여주는 매력 지수. 인기력은 도화 점수 계산에만 쓰고 따로 보여주지 않는다. */
 export const CHARM_INDICES: { key: CharmIndexKey; label: string; hanja: string }[] = [
-  { key: "allure", label: "끌림력", hanja: "桃" },
+  { key: "allure", label: "색기력", hanja: "桃" },
   { key: "sensual", label: "관능미", hanja: "艶" },
   { key: "flirt", label: "유혹력", hanja: "誘" },
-  { key: "popularity", label: "인기력", hanja: "人" },
   { key: "mystery", label: "신비력", hanja: "秘" },
 ];
 
@@ -123,7 +123,7 @@ const CHAPTERS = [
       {
         title: "남자들이 너한테 꽂히는 진짜 이유",
         guide:
-          "일간과 오행으로 본 타고난 분위기와 기질, 도화 유형이 실제로 어떻게 드러나는지, 사내들이 끌리는 매력의 정체를 <dohwa>의 다섯 매력 지수(가장 높은 지수를 중심으로)와 사주 근거로 푼다. 출생 시간을 모르면 여기서 그 한계를 한 번만 짧게 밝힌다",
+          "일간과 오행으로 본 타고난 분위기와 기질, 도화 유형이 실제로 어떻게 드러나는지, 사내들이 끌리는 매력의 정체를 <dohwa>의 네 매력 지수(가장 높은 지수를 중심으로)와 사주 근거로 푼다. 출생 시간을 모르면 여기서 그 한계를 한 번만 짧게 밝힌다",
       },
       {
         title: "너만 모르는 네 치명적인 무기",

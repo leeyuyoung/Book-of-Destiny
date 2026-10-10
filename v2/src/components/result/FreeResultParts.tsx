@@ -2,7 +2,7 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 import { LockIcon } from "@/components/result/ResultParts";
 import { Reveal } from "@/components/ui/Reveal";
-import { REPORT_CHAPTERS, REPORT_SECTION_COUNT, type ReportChapterKey, withPartner } from "@/lib/constants/result";
+import { REPORT_CHAPTERS, type ReportChapterKey, withPartner } from "@/lib/constants/result";
 import type { DohwaView } from "@/types/result";
 
 const RADAR_SIZE = 300;
@@ -18,7 +18,7 @@ const radarPoint = (index: number, total: number, ratio: number) => {
 
 const toPath = (points: (readonly [number, number])[]) => points.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
 
-/** 도화 지수와 다섯 갈래 매력을 오각형 하나로 보여준다. */
+/** 도화 지수와 네 갈래 매력을 다각형 하나로 보여준다. */
 export function DohwaRadarCard({ dohwa }: { dohwa: DohwaView }) {
   const total = dohwa.indices.length;
   const ratios = dohwa.indices.map((index) => Math.min(1, Math.max(0.12, (index.score - RADAR_FLOOR) / (100 - RADAR_FLOOR))));
@@ -43,7 +43,7 @@ export function DohwaRadarCard({ dohwa }: { dohwa: DohwaView }) {
       </div>
       <p className="relative mt-3 font-serif text-[14px] leading-relaxed text-paper/90">“{dohwa.grade.line}”</p>
 
-      <svg viewBox={`0 0 ${RADAR_SIZE} ${RADAR_SIZE}`} className="relative mx-auto mt-2 w-full max-w-[300px]" role="img" aria-label="다섯 갈래 매력 지수">
+      <svg viewBox={`0 0 ${RADAR_SIZE} ${RADAR_SIZE}`} className="relative mx-auto mt-2 w-full max-w-[300px]" role="img" aria-label="네 갈래 매력 지수">
         {[0.25, 0.5, 0.75, 1].map((ring) => (
           <polygon
             key={ring}
@@ -265,9 +265,7 @@ export function ReportToc({ gender }: { gender: "female" | "male" }) {
     <section className="flex flex-col gap-4">
       <div className="flex flex-col items-center gap-1.5 text-center">
         <p className="text-xs tracking-[0.3em] text-gold-soft">목차</p>
-        <h2 className="font-serif text-[20px] text-paper">
-          {REPORT_CHAPTERS.length}장 {REPORT_SECTION_COUNT}편, 전부 너의 이야기
-        </h2>
+        <h2 className="font-serif text-[20px] text-paper">들킬 준비 됐지?</h2>
       </div>
       <ol className="flex flex-col gap-2.5">
         {REPORT_CHAPTERS.map((chapter) => (

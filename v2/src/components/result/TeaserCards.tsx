@@ -101,7 +101,7 @@ function LockedPicture({ src, alt, caption, lockY }: { src: string; alt: string;
   );
 }
 
-/** 도화 점수와 다섯 매력 지수를 막대로 보여준다. */
+/** 도화 점수와 네 매력 지수를 막대로 보여준다. */
 export function ScoreCard({ result }: { result: FreeResultView }) {
   const { dohwa } = result;
   return (
