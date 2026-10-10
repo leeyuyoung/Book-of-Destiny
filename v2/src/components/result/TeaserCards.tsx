@@ -7,11 +7,14 @@ import { WebtoonPanel } from "@/components/webtoon/WebtoonPanel";
 import type { FreeResultView } from "@/types/result";
 
 /** 카드 사이에 끼는 도화신선의 대사. 문단마다 차례로 떠오른다. */
-export function SinseonLines({ lines }: { lines: ReactNode[] }) {
+export function SinseonLines({ lines, divided = false }: { lines: ReactNode[]; divided?: boolean }) {
   return (
     <div className="flex flex-col items-center gap-5 py-14 text-center">
       {lines.map((line, index) => (
-        <Reveal key={index} delay={index * 0.25}>
+        <Reveal key={index} delay={index * 0.25} className="flex flex-col items-center gap-5">
+          {divided && index > 0 && (
+            <span aria-hidden className="h-10 w-px bg-gradient-to-b from-transparent via-cinnabar/70 to-transparent" />
+          )}
           <p className="font-serif text-[clamp(1.2rem,5.4vw,1.4rem)] leading-relaxed text-paper break-keep [text-shadow:0_0_20px_rgb(232_137_155_/_0.25)]">
             {line}
           </p>
@@ -29,6 +32,7 @@ export function SinseonScene({
   headroom = 0.2,
   cropBottom,
   lines,
+  divided,
 }: {
   src: string;
   alt: string;
@@ -36,13 +40,16 @@ export function SinseonScene({
   headroom?: number;
   cropBottom?: number;
   lines: ReactNode[];
+  divided?: boolean;
 }) {
   return (
     <div className="mt-14">
       <WebtoonPanel src={src} alt={alt} bubbles={bubbles} headroom={headroom} cropBottom={cropBottom} />
-      <div className="relative -mt-10">
-        <SinseonLines lines={lines} />
-      </div>
+      {lines.length > 0 && (
+        <div className="relative -mt-10">
+          <SinseonLines lines={lines} divided={divided} />
+        </div>
+      )}
     </div>
   );
 }
@@ -150,7 +157,7 @@ const PEACH_MONTH_RANGE: Record<number, string> = { 12: "12월 초 ~ 1월 초", 
 export function BloomCard({ result }: { result: FreeResultView }) {
   const { bloom } = result.teasers;
   return (
-    <TeaserCard title={`${result.name}의 도화가 피는 ${bloom.now ? "달" : "다음 달"}`}>
+    <TeaserCard title={`${result.name}의 도화가 피는 달`}>
       <div className="flex flex-col items-center gap-2 px-5 pb-6 pt-6 text-center">
         <p className="font-serif text-[clamp(2.2rem,11vw,2.8rem)] leading-none text-paper">
           {bloom.year}년 <span className="text-blossom-glow">{bloom.month}월</span>
@@ -195,7 +202,7 @@ export function FaceCard({ result }: { result: FreeResultView }) {
         <LockedRow label="잊지 못할 장면" mask="■■■■ ■■■" />
       </TeaserCard>
 
-      <TeaserCard title="이렇게만 바꾸면 더 예뻐질 텐데">
+      <TeaserCard title="이렇게만 바꾸면 남자들이 못 참을 텐데">
         <div className="flex items-center gap-4 px-5 py-3.5">
           <span className="w-[6.5rem] shrink-0 whitespace-nowrap rounded border border-gold/30 px-2 py-0.5 text-center text-[12px] text-gold-soft">포인트 컬러</span>
           <span aria-hidden className="size-5 shrink-0 rounded-full border border-white/30" style={{ backgroundColor: face.color.hex }} />
@@ -208,5 +215,41 @@ export function FaceCard({ result }: { result: FreeResultView }) {
         <LockedRow label="예뻐 보이는 때" mask="■■ ■시 ■■" />
       </TeaserCard>
     </div>
+  );
+}
+
+/** 19금 장을 통째로 잠가 보여주는 카드. 소개 한 줄만 열고 본문은 흐린 가짜 글자로 덮는다. */
+export function AdultCard() {
+  return (
+    <TeaserCard
+      title={
+        <>
+          <span className="text-[#ff3b55]">[19금]</span> 밤의 너
+        </>
+      }
+    >
+      <div className="flex flex-col items-center gap-4 px-5 pb-6 pt-6 text-center">
+        <span
+          aria-hidden
+          className="flex size-12 items-center justify-center rounded-full border border-[#ff3b55]/60 bg-ink/70 text-[#ff8a9a] shadow-[0_0_22px_rgb(255_59_85_/_0.4)]"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.8" />
+            <path d="M8 11V8a4 4 0 1 1 8 0v3" stroke="currentColor" strokeWidth="1.8" />
+          </svg>
+        </span>
+        <p className="font-serif text-[17px] text-paper break-keep">한 번 맛보면 못 헤어나오게 만드는 법</p>
+        <div aria-label="잠김" className="@container w-full select-none">
+          <div
+            aria-hidden
+            className="flex flex-col gap-[0.4em] overflow-hidden whitespace-nowrap text-left font-serif text-[length:calc(100cqw/19)] text-paper/80 blur-[5px]"
+          >
+            <p>처음엔 다 주지 말고 반만 열어 애를 태우다가 그가 참지 못할 때</p>
+            <p>귓가에 낮게 속삭이고 목덜미부터 천천히 내려가면 그는 숨을</p>
+            <p>그 밤을 한 번 맛본 남자는 다른 여자에게선 같은 걸 못 찾고</p>
+          </div>
+        </div>
+      </div>
+    </TeaserCard>
   );
 }

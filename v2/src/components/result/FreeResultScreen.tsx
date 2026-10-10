@@ -3,7 +3,7 @@ import { ComingSoonNotice } from "@/components/result/ComingSoonNotice";
 import { ReportToc } from "@/components/result/FreeResultParts";
 import { ReviewCarousel } from "@/components/result/ReviewCarousel";
 import { StickyCheckoutBar } from "@/components/result/StickyCheckoutBar";
-import { BloomCard, FaceCard, PartnerCard, ScoreCard, SinseonLines, SinseonScene } from "@/components/result/TeaserCards";
+import { AdultCard, BloomCard, FaceCard, PartnerCard, ScoreCard, SinseonLines, SinseonScene } from "@/components/result/TeaserCards";
 import { WebtoonPanel } from "@/components/webtoon/WebtoonPanel";
 import type { FreeResultView } from "@/types/result";
 
@@ -56,9 +56,9 @@ export function FreeResultScreen({ result, sample = false }: { result: FreeResul
         ]}
         lines={[
           <>
-            네 사주엔 도화가 드는
+            네 사주엔 {glow("색기가 터지는 때")}가
             <br />
-            {glow("때")}가 정해져 있거든.
+            정해져 있거든.
           </>,
         ]}
       />
@@ -74,14 +74,14 @@ export function FreeResultScreen({ result, sample = false }: { result: FreeResul
           { kind: "speech", text: bloom.now ? "바로 지금이다." : "얼마 안 남았지?", at: 0.3, place: { top: "10%", left: "8%" } },
           {
             kind: "speech",
-            text: bloom.now ? "가만있어도\n시선이 따라다니는 때지." : "그 달엔 가만있어도\n시선이 따라다니지.",
+            text: bloom.now ? "가만있어도\n남자들이 안달 나는 때지." : "그 달엔 가만있어도\n남자들이 안달 나지.",
             at: 1.4,
             place: { top: "66%", right: "3%" },
           },
         ]}
         lines={[
           <>
-            그때 네 앞에 설 남자…
+            그때 너한테 목맬 남자…
             <br />
             궁금하지? {glow("살짝만")} 보여주지.
           </>,
@@ -99,11 +99,15 @@ export function FreeResultScreen({ result, sample = false }: { result: FreeResul
         ]}
         lines={[
           <>
-            그런데 그 남자 눈엔,
-            <br />
-            {glow("네가 어떻게 보일까?")}
+            네가 마음만 먹으면,
+            <br />그 남잔 이미 {glow("네 손안에")} 있어.
+          </>,
+          <>
+            근데 먼저 알아야지.
+            <br />그 남자 눈에 {glow("네가 어떻게 보이는지.")}
           </>,
         ]}
+        divided
       />
       <FaceCard result={result} />
 
@@ -121,15 +125,36 @@ export function FreeResultScreen({ result, sample = false }: { result: FreeResul
         ]}
         lines={[
           <>
-            이렇게 짙은 도화는 오랜만이라…
+            그 남자 {glow("정신 못 차리게")} 하는 법,
             <br />
-            숨김없이, {glow("아주 자세히")} 적었다.
+            숨김없이, 아주 자세히 적었다.
           </>,
         ]}
       />
-      <div className="flex flex-col gap-16">
-        <ReviewCarousel />
+
+      <SinseonScene
+        src="/images/result/chapter-4.jpg"
+        alt="촛불이 켜진 방, 두 손목이 묶인 채 누운 여자주인공에게 얼굴을 기대고 웃는 도화신선"
+        headroom={0.25}
+        bubbles={[
+          { kind: "speech", text: "아직 안 보여준 게\n하나 있다.", at: 0.3, place: { top: "2%", left: "3%" } },
+          { kind: "speech", text: "불이 꺼지면 드러나는\n네 진짜 얼굴.", at: 1.4, place: { top: "19%", right: "3%" } },
+          { kind: "whisper", text: "은밀한 부분까지\n다 보여줄게.", at: 2.5, place: { top: "75%", left: "6%" }, big: true },
+        ]}
+        lines={[
+          <>
+            이걸 알고 나면,
+            <br />
+            {glow("네 밤이 달라질 것이야.")}
+          </>,
+        ]}
+      />
+      <AdultCard />
+      <span aria-hidden className="mx-auto mt-10 block h-14 w-px bg-gradient-to-b from-transparent via-cinnabar/70 to-transparent" />
+
+      <div className="mt-10 flex flex-col gap-16">
         <ReportToc gender={result.gender} />
+        <ReviewCarousel />
       </div>
 
       <div className="mt-16 mb-3">
@@ -139,7 +164,7 @@ export function FreeResultScreen({ result, sample = false }: { result: FreeResul
           headroom={0.22}
           bubbles={[
             { kind: "speech", text: "그 색기,\n썩히기엔 아깝잖아?", at: 0.3, place: { top: "7%", left: "4%" } },
-            { kind: "whisper", text: "이제\n써먹어야지.", at: 1.6, place: { top: "77%", right: "5%" }, big: true },
+            { kind: "whisper", text: "이제\n써먹어야지.", at: 1.6, place: { top: "72%", right: "5%" } },
           ]}
         />
       </div>
