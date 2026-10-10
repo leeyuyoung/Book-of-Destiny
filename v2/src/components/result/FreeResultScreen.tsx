@@ -49,9 +49,10 @@ export function FreeResultScreen({ result, sample = false }: { result: FreeResul
       <SinseonScene
         src="/images/sinseon/hero.jpg"
         alt="달밤의 복숭아꽃 아래에서 꽃가지를 입가에 대고 웃는 도화신선"
+        cropBottom={0.12}
         bubbles={[
-          { kind: "speech", text: "이 정도면…\n남자들이 가만 안 뒀겠는데?", at: 0.3, place: { top: "2%", left: "3%" } },
-          { kind: "speech", text: "근데 꽃은\n아무 때나 피는 게 아니야.", at: 1.4, place: { top: "62%", right: "3%" } },
+          { kind: "speech", text: "이 정도면…\n남자들이 가만 안 뒀겠는데?", at: 0.3, place: { top: "6%", left: "3%" } },
+          { kind: "speech", text: "근데 꽃은\n아무 때나 피는 게 아니야.", at: 1.4, place: { top: "64%", right: "3%" } },
         ]}
         lines={[
           <>
@@ -114,7 +115,7 @@ export function FreeResultScreen({ result, sample = false }: { result: FreeResul
             kind: "speech",
             text: "색 하나 바꿨을 뿐인데,\n그 남자의 눈빛이\n달라질 거다.",
             at: 0.3,
-            place: { top: "1%", left: "3%" },
+            place: { top: "5%", left: "3%" },
           },
           { kind: "speech", text: "머리끝부터 향까지,\n다 적어 뒀다.", at: 1.4, place: { top: "64%", right: "3%" } },
         ]}
@@ -137,7 +138,7 @@ export function FreeResultScreen({ result, sample = false }: { result: FreeResul
           alt="한 팔로 여자주인공의 어깨를 감싸 귓가에 속삭이며, 다른 손을 내밀어 함께 가자고 청하는 도화신선"
           headroom={0.22}
           bubbles={[
-            { kind: "speech", text: "그 색기,\n썩히기엔 아깝잖아?", at: 0.3, place: { top: "3%", left: "4%" } },
+            { kind: "speech", text: "그 색기,\n썩히기엔 아깝잖아?", at: 0.3, place: { top: "7%", left: "4%" } },
             { kind: "whisper", text: "이제\n써먹어야지.", at: 1.6, place: { top: "77%", right: "5%" }, big: true },
           ]}
         />
