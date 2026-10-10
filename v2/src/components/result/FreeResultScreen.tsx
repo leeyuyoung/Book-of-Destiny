@@ -68,13 +68,14 @@ export function FreeResultScreen({ result, sample = false }: { result: FreeResul
       <SinseonScene
         src="/images/result/chapter-1.jpg"
         alt="보름달 아래 복숭아나무에 기대어 팔짱을 낀 채, 돌아보는 여자주인공을 내려다보며 웃는 도화신선"
+        cropBottom={0.12}
         bubbles={[
-          { kind: "speech", text: bloom.now ? "바로 지금이다." : "얼마 안 남았지?", at: 0.3, place: { top: "2%", right: "5%" } },
+          { kind: "speech", text: bloom.now ? "바로 지금이다." : "얼마 안 남았지?", at: 0.3, place: { top: "10%", left: "8%" } },
           {
             kind: "speech",
             text: bloom.now ? "가만있어도\n시선이 따라다니는 때지." : "그 달엔 가만있어도\n시선이 따라다니지.",
             at: 1.4,
-            place: { top: "64%", right: "3%" },
+            place: { top: "66%", right: "3%" },
           },
         ]}
         lines={[

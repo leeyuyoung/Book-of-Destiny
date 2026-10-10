@@ -27,17 +27,19 @@ export function SinseonScene({
   alt,
   bubbles,
   headroom = 0.2,
+  cropBottom,
   lines,
 }: {
   src: string;
   alt: string;
   bubbles: Bubble[];
   headroom?: number;
+  cropBottom?: number;
   lines: ReactNode[];
 }) {
   return (
     <div className="mt-14">
-      <WebtoonPanel src={src} alt={alt} bubbles={bubbles} headroom={headroom} />
+      <WebtoonPanel src={src} alt={alt} bubbles={bubbles} headroom={headroom} cropBottom={cropBottom} />
       <div className="relative -mt-10">
         <SinseonLines lines={lines} />
       </div>
@@ -57,11 +59,21 @@ function TeaserCard({ title, children }: { title: ReactNode; children: ReactNode
   );
 }
 
-function Row({ label, children }: { label: string; children: ReactNode }) {
+/**
+ * oneLine이면 글자를 줄 폭에 맞춰 줄여 좁은 화면에서도 한 줄로 남긴다.
+ * 13.8은 가장 긴 첫인상 문구의 폭을 글자 크기로 나눈 값이라, 문구가 더 길어지면 함께 키워야 한다.
+ */
+function Row({ label, oneLine = false, children }: { label: string; oneLine?: boolean; children: ReactNode }) {
   return (
-    <div className="flex items-center gap-4 border-t border-line/40 px-5 py-3.5 first:border-t-0">
+    <div className={`flex items-center gap-4 border-t border-line/40 px-5 py-3.5 first:border-t-0 ${oneLine ? "[container-type:inline-size]" : ""}`}>
       <span className="w-[6.5rem] shrink-0 whitespace-nowrap rounded border border-gold/30 px-2 py-0.5 text-center text-[12px] text-gold-soft">{label}</span>
-      <span className="flex-1 font-serif text-[16px] text-paper break-keep">{children}</span>
+      {oneLine ? (
+        <span className="flex-1 whitespace-nowrap font-serif text-paper" style={{ fontSize: "clamp(11px, calc((100cqw - 7.5rem) / 13.8), 16px)" }}>
+          {children}
+        </span>
+      ) : (
+        <span className="flex-1 font-serif text-[16px] text-paper break-keep">{children}</span>
+      )}
     </div>
   );
 }
@@ -80,9 +92,9 @@ function LockedRow({ label, mask = "■■■■■■" }: { label: string; mask
 }
 
 /** 얼굴을 가린 그림 가운데에 자물쇠를 띄운다. */
-function LockedPicture({ src, alt, caption, lockY }: { src: string; alt: string; caption: string; lockY: string }) {
+function LockedPicture({ src, alt, caption, lockY, ratio }: { src: string; alt: string; caption: string; lockY: string; ratio: string }) {
   return (
-    <figure className="relative aspect-[4/5] overflow-hidden">
+    <figure className="relative overflow-hidden" style={{ aspectRatio: ratio }}>
       <Image src={src} alt={alt} fill sizes="(max-width: 640px) 100vw, 576px" className="object-cover object-top" />
       <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-night to-transparent" />
       <figcaption className="absolute left-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-2.5" style={{ top: lockY }}>
@@ -159,7 +171,7 @@ export function PartnerCard({ result }: { result: FreeResultView }) {
   const { partner } = result.teasers;
   return (
     <TeaserCard title={`${result.name}에게 끌리는 남자`}>
-      <LockedPicture src="/images/result/chapter-5-locked.jpg" alt="얼굴을 흐리게 가린 남자" caption="그 남자의 얼굴" lockY="33%" />
+      <LockedPicture src="/images/result/chapter-5-locked.jpg" alt="얼굴을 흐리게 가린 남자" caption="그 남자의 얼굴" lockY="41%" ratio="1 / 1" />
       <Row label="분위기">{partner.vibe}</Row>
       <Row label="나이">{partner.age}</Row>
       <LockedRow label="직업의 결" mask="■■■ ■■■■" />
@@ -174,8 +186,10 @@ export function FaceCard({ result }: { result: FreeResultView }) {
   return (
     <div className="flex flex-col gap-6">
       <TeaserCard title="남자들 눈에 비친 네 얼굴">
-        <LockedPicture src="/images/result/chapter-2-locked.jpg" alt="거울 속 얼굴이 흐리게 가려진 모습" caption="그 남자가 보는 네 얼굴" lockY="47%" />
-        <Row label="첫인상">{face.impression}</Row>
+        <LockedPicture src="/images/result/chapter-2-locked.jpg" alt="거울 속 얼굴이 흐리게 가려진 모습" caption="그 남자가 보는 네 얼굴" lockY="53%" ratio="10 / 11" />
+        <Row label="첫인상" oneLine>
+          {face.impression}
+        </Row>
         <LockedRow label="매력 포인트" mask="■■■ ■■■■" />
         <LockedRow label="필살 멘트" mask="■■■ ■■ ■■" />
         <LockedRow label="잊지 못할 장면" mask="■■■■ ■■■" />

@@ -1,5 +1,6 @@
 import Image from "next/image";
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
+import { GardenLife, GardenWalk } from "./GardenLife";
 import { PetalCanvas } from "./PetalCanvas";
 import { SceneVideo } from "./SceneVideo";
 
@@ -35,6 +36,12 @@ const SCENE_ZOOM: Partial<Record<HeroineScene, { scale: number; origin: string }
   main: { scale: 1.45, origin: "44% 5%" },
   pinRaised: { scale: 1.08, origin: "100% 0%" },
 };
+
+/** 정원 장면만 길을 따라 걸어 들어가는 움직임을 입힌다. */
+function SceneMotion({ scene, active, children }: { scene: HeroineScene; active: boolean; children: ReactNode }) {
+  if (scene !== "garden") return children;
+  return <GardenWalk active={active}>{children}</GardenWalk>;
+}
 
 /**
  * 인트로 전체를 채우는 도화신선 그림과 그 위로 흩날리는 꽃잎. scene이 바뀌면 그림이 천천히 겹쳐 바뀐다.
@@ -91,27 +98,30 @@ export function HeroineBackdrop({
                 style={{ "--scene-w": `${SCENES[key].ratio * 100}vh` } as CSSProperties}
               >
                 <div className="absolute inset-0 animate-portrait-breathe will-change-transform">
-                  <div
-                    className="absolute inset-0"
-                    style={
-                      SCENE_ZOOM[key] && {
-                        transform: `scale(${SCENE_ZOOM[key].scale})`,
-                        transformOrigin: SCENE_ZOOM[key].origin,
+                  <SceneMotion scene={key} active={key === scene}>
+                    <div
+                      className="absolute inset-0"
+                      style={
+                        SCENE_ZOOM[key] && {
+                          transform: `scale(${SCENE_ZOOM[key].scale})`,
+                          transformOrigin: SCENE_ZOOM[key].origin,
+                        }
                       }
-                    }
-                  >
-                    <Image
-                      src={spec.src}
-                      alt={spec.alt}
-                      fill
-                      sizes="100vw"
-                      loading="eager"
-                      fetchPriority={key === scenes[0] ? "high" : "auto"}
-                      className="select-none object-cover object-[50%_22%]"
-                      draggable={false}
-                    />
-                    {spec.video && <SceneVideo src={spec.video} active={key === scene} />}
-                  </div>
+                    >
+                      <Image
+                        src={spec.src}
+                        alt={spec.alt}
+                        fill
+                        sizes="100vw"
+                        loading="eager"
+                        fetchPriority={key === scenes[0] ? "high" : "auto"}
+                        className="select-none object-cover object-[50%_22%]"
+                        draggable={false}
+                      />
+                      {spec.video && <SceneVideo src={spec.video} active={key === scene} />}
+                      {key === "garden" && <GardenLife active={key === scene} />}
+                    </div>
+                  </SceneMotion>
                 </div>
               </div>
             </div>

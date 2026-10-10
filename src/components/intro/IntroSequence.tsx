@@ -35,14 +35,14 @@ const BEATS = [
     key: "awake",
     scene: "awake",
     ms: 3000,
-    bubbles: [{ kind: "speech", text: INTRO_SCRIPT.who, at: 0.5, place: { top: "36%", left: "6%" }, tail: "top-right" }],
+    bubbles: [{ kind: "speech", text: INTRO_SCRIPT.who, at: 0.5, place: { top: "36%", left: "6%" } }],
   },
   {
     key: "trapped",
     scene: "trapped",
     ms: 3200,
     bubbles: [
-      { kind: "speech", text: INTRO_SCRIPT.stop, at: 0.4, place: { top: "9%", right: "6%" }, tail: "bottom-left" },
+      { kind: "speech", text: INTRO_SCRIPT.stop, at: 0.4, place: { top: "9%", right: "6%" } },
       { kind: "thought", text: INTRO_SCRIPT.flustered, at: 1.6, place: { top: "52%", left: "7%" } },
     ],
   },
@@ -51,9 +51,9 @@ const BEATS = [
     scene: "scent",
     ms: 5200,
     bubbles: [
-      { kind: "speech", text: INTRO_SCRIPT.scent, at: 0.5, place: { top: "5%", left: "5%" }, tail: "bottom-right" },
+      { kind: "speech", text: INTRO_SCRIPT.scent, at: 0.5, place: { top: "5%", left: "5%" } },
       { kind: "thought", text: INTRO_SCRIPT.gasp, at: 1.9, place: { top: "47%", left: "8%" } },
-      { kind: "whisper", text: INTRO_SCRIPT.tease, at: 2.9, place: { top: "57%", right: "5%" }, tail: "top-right" },
+      { kind: "whisper", text: INTRO_SCRIPT.tease, at: 2.9, place: { top: "57%", right: "5%" } },
     ],
   },
   {
@@ -61,8 +61,8 @@ const BEATS = [
     scene: "main",
     ms: 0,
     bubbles: [
-      { kind: "speech", text: HERO_COPY.lead, at: 0.8, place: { top: "3%", left: "6%" }, tail: "bottom-right" },
-      { kind: "whisper", text: HERO_COPY.invite, at: 2.3, place: { top: "47%", right: "5%" }, tail: "top-right", big: true },
+      { kind: "speech", text: HERO_COPY.lead, at: 0.8, place: { top: "3%", left: "6%" } },
+      { kind: "whisper", text: HERO_COPY.invite, at: 2.3, place: { top: "47%", right: "5%" }, big: true },
     ],
   },
 ] as const satisfies readonly Beat[];
