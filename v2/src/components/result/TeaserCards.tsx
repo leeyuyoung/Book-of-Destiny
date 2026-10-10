@@ -207,7 +207,7 @@ export function FaceCard({ result }: { result: FreeResultView }) {
           <span className="w-[6.5rem] shrink-0 whitespace-nowrap rounded border border-gold/30 px-2 py-0.5 text-center text-[12px] text-gold-soft">포인트 컬러</span>
           <span aria-hidden className="size-5 shrink-0 rounded-full border border-white/30" style={{ backgroundColor: face.color.hex }} />
           <span className="flex-1 font-serif text-[16px] text-paper">
-            {face.color.name} <span className="text-[13px] text-mist">({face.color.hanja})</span>
+            {face.color.name}
           </span>
         </div>
         <LockedRow label="헤어·메이크업" mask="■■■ ■■ ■■■" />
