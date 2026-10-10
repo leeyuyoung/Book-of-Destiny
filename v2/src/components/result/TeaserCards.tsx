@@ -152,8 +152,6 @@ export function ScoreCard({ result }: { result: FreeResultView }) {
   );
 }
 
-const PEACH_MONTH_RANGE: Record<number, string> = { 12: "12월 초 ~ 1월 초", 3: "3월 초 ~ 4월 초", 6: "6월 초 ~ 7월 초", 9: "9월 초 ~ 10월 초" };
-
 export function BloomCard({ result }: { result: FreeResultView }) {
   const { bloom } = result.teasers;
   return (
@@ -163,7 +161,7 @@ export function BloomCard({ result }: { result: FreeResultView }) {
           {bloom.year}년 <span className="text-blossom-glow">{bloom.month}월</span>
         </p>
         <p className="text-[13px] text-mist">
-          {PEACH_MONTH_RANGE[bloom.month]} · {bloom.hanja}月{bloom.now && " · 바로 지금"}
+          {bloom.month}월 초 ~ {(bloom.month % 12) + 1}월 초 · {bloom.hanja}月
         </p>
       </div>
       <div className="border-t border-line/40">

@@ -42,7 +42,7 @@ export type FreeResultView = {
   birth: { year: number; month: number };
   /** 반만 열어 보여주는 카드들. 잠긴 칸의 값은 담지 않는다. */
   teasers: {
-    bloom: { year: number; month: number; hanja: string; now: boolean };
+    bloom: { year: number; month: number; hanja: string };
     partner: { vibe: string; age: string };
     face: { impression: string; point: string; color: { name: string; hex: string; hanja: string } };
   };

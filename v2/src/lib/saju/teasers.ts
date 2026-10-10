@@ -1,45 +1,41 @@
-import type { EarthlyBranch } from "manseryeok";
+import { EARTHLY_BRANCHES, type EarthlyBranch } from "manseryeok";
 import type { CharmIndexKey, DohwaReading } from "./dohwa";
 import type { FiveElementKey, SajuProfile } from "./profileTypes";
-import { ELEMENT_ORDER } from "./tables";
+import { ELEMENT_ORDER, SIX_COMBINATIONS, THREE_HARMONIES, branchHanja } from "./tables";
 
 /**
  * 무료 결과에서 반만 열어 보여주는 값들. 만세력 계산 결과만으로 정하므로 같은 사주는 항상 같은 값이 나온다.
  * 잠긴 칸의 값은 여기서 만들지 않는다(화면에도 내려가지 않는다).
  */
 
-/** 도화 글자(子午卯酉)가 다스리는 달. start는 그 달이 시작되는 절기의 대략적인 날짜(양력)다. */
-const PEACH_MONTHS: Partial<Record<EarthlyBranch, { month: number; start: number; hanja: string }>> = {
-  자: { month: 12, start: 7, hanja: "子" },
-  묘: { month: 3, start: 6, hanja: "卯" },
-  오: { month: 6, start: 6, hanja: "午" },
-  유: { month: 9, start: 8, hanja: "酉" },
-};
+export type BloomMonth = { year: number; month: number; hanja: string };
 
-export type BloomMonth = { year: number; month: number; hanja: string; now: boolean };
+/** 다음 달부터 몇 달 앞까지 볼지. 子·卯·午·酉 어느 도화 글자든 이 안에 깨우는 달이 하나 이상 든다. */
+const BLOOM_WINDOW = 4;
 
-/** 도화살을 깨우는 글자가 드는 달 중 오늘에서 가장 가까운 달. 그 달 안이면 now가 true다. */
+/** 양력 m월 초 절기부터 드는 월지. 12월이 子月, 1월이 丑月, 3월이 卯月이다. */
+const monthBranch = (month: number) => EARTHLY_BRANCHES[month % 12];
+
+/** 이 달의 월지가 도화 글자를 얼마나 세게 깨우는지. 같은 글자 3, 육합 2, 같은 삼합 1, 그 밖은 0. */
+function awakening(branch: EarthlyBranch, peach: EarthlyBranch): number {
+  if (branch === peach) return 3;
+  if (SIX_COMBINATIONS.some(({ members }) => members.includes(branch) && members.includes(peach))) return 2;
+  if (THREE_HARMONIES.some(({ members }) => members.includes(branch) && members.includes(peach))) return 1;
+  return 0;
+}
+
+/** 다음 달부터 BLOOM_WINDOW달 안에서 도화살을 가장 세게 깨우는 달. 세기가 같으면 이른 달을 고른다. */
 export function nextBloomMonth(profile: SajuProfile, reading: DohwaReading): BloomMonth {
   const triggers = reading.stars.find((star) => star.key === "dohwa")!.triggers;
-  const { year, month, day } = profile.referenceDate;
-  const candidates = triggers.flatMap((branch) => {
-    const peach = PEACH_MONTHS[branch];
-    if (!peach) return [];
-    const startsThisYear = new Date(year, peach.month - 1, peach.start);
-    const endsThisYear = new Date(year, peach.month, peach.start - 1);
-    const today = new Date(year, month - 1, day);
-    // 子月은 해를 넘겨 1월 초에 끝난다.
-    if (peach.month === 12 && today < new Date(year, 0, peach.start - 1)) {
-      return [{ year: year - 1, month: peach.month, hanja: peach.hanja, now: true, at: today.getTime() }];
-    }
-    if (today >= startsThisYear && today <= endsThisYear) {
-      return [{ year, month: peach.month, hanja: peach.hanja, now: true, at: today.getTime() }];
-    }
-    const nextYear = today < startsThisYear ? year : year + 1;
-    return [{ year: nextYear, month: peach.month, hanja: peach.hanja, now: false, at: new Date(nextYear, peach.month - 1, peach.start).getTime() }];
+  const { year, month } = profile.referenceDate;
+  const candidates = Array.from({ length: BLOOM_WINDOW }, (_, index) => {
+    const offset = month + index;
+    const candidate = { year: year + Math.floor(offset / 12), month: (offset % 12) + 1 };
+    const branch = monthBranch(candidate.month);
+    return { ...candidate, hanja: branchHanja(branch), strength: Math.max(...triggers.map((peach) => awakening(branch, peach))) };
   });
-  const nearest = candidates.reduce((best, candidate) => (candidate.at < best.at ? candidate : best));
-  return { year: nearest.year, month: nearest.month, hanja: nearest.hanja, now: nearest.now };
+  const best = candidates.reduce((top, candidate) => (candidate.strength > top.strength ? candidate : top));
+  return { year: best.year, month: best.month, hanja: best.hanja };
 }
 
 /** 일간을 다스리는 오행. 여성 사주에서 남자(관성)를 뜻한다. */

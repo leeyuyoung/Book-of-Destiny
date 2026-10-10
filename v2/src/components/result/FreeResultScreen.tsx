@@ -21,7 +21,6 @@ const glow = (text: string) => <span className="text-blossom-glow">{text}</span>
 /** 무료 결과 화면. 도화신선의 대사와 반만 열린 카드가 번갈아 나온다. 샘플이면 버튼이 입력 화면으로 간다. */
 export function FreeResultScreen({ result, sample = false }: { result: FreeResultView; sample?: boolean }) {
   const cta = { href: sample ? "/start" : COMING_SOON_HREF, label: "숨겨진 색기 쓰는 법" };
-  const { bloom } = result.teasers;
 
   return (
     <PageShell withStickyBar>
@@ -71,13 +70,8 @@ export function FreeResultScreen({ result, sample = false }: { result: FreeResul
         alt="보름달 아래 복숭아나무에 기대어 팔짱을 낀 채, 돌아보는 여자주인공을 내려다보며 웃는 도화신선"
         cropBottom={0.12}
         bubbles={[
-          { kind: "speech", text: bloom.now ? "바로 지금이다." : "얼마 안 남았지?", at: 0.3, place: { top: "10%", left: "8%" } },
-          {
-            kind: "speech",
-            text: bloom.now ? "가만있어도\n남자들이 안달 나는 때지." : "그 달엔 가만있어도\n남자들이 안달 나지.",
-            at: 1.4,
-            place: { top: "66%", right: "3%" },
-          },
+          { kind: "speech", text: "얼마 안 남았지?", at: 0.3, place: { top: "10%", left: "8%" } },
+          { kind: "speech", text: "그 달엔 가만있어도\n남자들이 안달 나지.", at: 1.4, place: { top: "66%", right: "3%" } },
         ]}
         lines={[
           <>
