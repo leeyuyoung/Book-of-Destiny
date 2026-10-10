@@ -15,7 +15,6 @@ import {
 } from "@/lib/validation/analysisInput";
 import { BirthDateStep } from "./steps/BirthDateStep";
 import { BirthTimeStep } from "./steps/BirthTimeStep";
-import { GenderStep } from "./steps/GenderStep";
 import { LoveStep } from "./steps/LoveStep";
 import { NameStep } from "./steps/NameStep";
 import type { StepProps } from "./steps/types";
@@ -23,12 +22,13 @@ import type { StepProps } from "./steps/types";
 const STEP_COMPONENTS: ReadonlyArray<(props: StepProps) => ReactNode> = [
   BirthDateStep,
   BirthTimeStep,
-  GenderStep,
   NameStep,
   LoveStep,
 ];
 
 const EASE = [0.22, 0.61, 0.36, 1] as const;
+/** 이보다 긴 질문은 좁은 폰에서도 한 줄에 들도록 글자 크기를 화면 폭에 맞춰 줄인다. 나눗수 14.4는 가장 긴 질문의 폭(em)이다. */
+const LONG_QUESTION_CHARS = 18;
 
 export default function InputWizard() {
   const router = useRouter();
@@ -138,7 +138,13 @@ export default function InputWizard() {
             >
               <header className="flex flex-col gap-2">
                 <p className="font-serif text-sm tracking-[0.04em] text-mist">{step.sub}</p>
-                <h1 className="font-eerie text-[clamp(1.5rem,6.6vw,1.9rem)] leading-snug tracking-[0.02em] break-keep text-paper [text-shadow:0_0_24px_rgb(232_137_155/0.35)]">
+                <h1
+                  className={`font-eerie whitespace-nowrap leading-snug tracking-[0.02em] text-paper [text-shadow:0_0_24px_rgb(232_137_155/0.35)] ${
+                    step.question.length > LONG_QUESTION_CHARS
+                      ? "text-[min(clamp(1.5rem,6.6vw,1.9rem),calc((min(100vw,31rem)-3rem)/14.4))]"
+                      : "text-[clamp(1.5rem,6.6vw,1.9rem)]"
+                  }`}
+                >
                   {step.question}
                 </h1>
               </header>
@@ -147,11 +153,11 @@ export default function InputWizard() {
           </AnimatePresence>
 
           <Button type="submit" variant="light" disabled={submitting} className="mt-7">
-            {isLastStep ? (submitting ? "꽃을 펼치는 중…" : "내 꽃 읽어주기") : "다음으로"}
+            {isLastStep ? (submitting ? "신선이 다가오는 중…" : "도화신선에게 맡기기") : "다음으로"}
           </Button>
           {isLastStep && (
             <p className="mt-3 text-center text-[11px] leading-relaxed text-mist-dim">
-              만 14세 이상만 이용할 수 있어요 · 들려준 이야기는 사주 풀이에만 쓰여요
+              만 19세 이상만 이용할 수 있어요 · 들려준 이야기는 사주 풀이에만 쓰여요
             </p>
           )}
         </div>

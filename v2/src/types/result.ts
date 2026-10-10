@@ -1,3 +1,4 @@
+import type { ReportChapterKey } from "@/lib/constants/result";
 import type { FiveElementKey, PillarPosition, TenGod, TwelveStage } from "@/lib/saju/profileTypes";
 
 export type { FiveElementKey };
@@ -22,8 +23,9 @@ export type DohwaView = {
     headline: string;
     description: string;
     story: string;
-    tease: string;
     vibes: string[];
+    plain: string;
+    checks: [string, string, string];
   };
 };
 
@@ -35,19 +37,27 @@ export type FreeResultView = {
   pillars: PillarView[];
   birthTimeKnown: boolean;
   dohwa: DohwaView;
-  /** 연애운 표에 쓰는 앞으로의 연도 */
-  timelineYears: number[];
+  gender: "female" | "male";
+  /** 양력 생년월. 결과 첫머리에서 신선이 읽어 준다. */
+  birth: { year: number; month: number };
+  /** 반만 열어 보여주는 카드들. 잠긴 칸의 값은 담지 않는다. */
+  teasers: {
+    bloom: { year: number; month: number; hanja: string; now: boolean };
+    partner: { vibe: string; age: string };
+    face: { impression: string; point: string; color: { name: string; hex: string; hanja: string } };
+  };
 };
 
 export type CharmStarView = { key: string; name: string; hanja: string; found: boolean; positions: PillarPosition[]; score: number };
 
 export type ReportChapterView = {
   chapter: number;
-  key: string;
+  key: ReportChapterKey;
   title: string;
-  teaser: string;
+  subtitle: string;
+  image: string;
   headline: string;
-  paragraphs: string[];
+  sections: { title: string; paragraphs: string[] }[];
 };
 
 /** 만세력으로 센 오행 개수와 가장 짙은·비어 있는 기운 */
@@ -68,6 +78,8 @@ export type CurrentLuckView = {
 };
 
 /** 결제가 확인되고 리포트가 완성된 뒤에만 만들어진다. */
+export type ReportPortraitView = { src: string; caption: string };
+
 export type FullReportView = FreeResultView & {
   analyzedAt: string;
   summary: string;
@@ -77,4 +89,5 @@ export type FullReportView = FreeResultView & {
   currentLuck: CurrentLuckView | null;
   chapters: ReportChapterView[];
   loveTimeline: { year: number; mood: string; body: string }[];
+  portraits: { self: ReportPortraitView; partner: ReportPortraitView };
 };

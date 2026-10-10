@@ -1,104 +1,149 @@
 import { PageShell } from "@/components/layout/PageShell";
-import { DohwaLetter, DohwaRadarCard, LockedChapterList, LoveTimelineStrip, PeachInterlude } from "@/components/result/FreeResultParts";
-import { CharmStars, MidCheckoutPrompt, ReportContents, SectionTitle, StickyCheckoutBar } from "@/components/result/ResultParts";
 import { ComingSoonNotice } from "@/components/result/ComingSoonNotice";
-import { ResultStory } from "@/components/result/ResultStory";
+import { ReportToc } from "@/components/result/FreeResultParts";
 import { ReviewCarousel } from "@/components/result/ReviewCarousel";
-import { Reveal } from "@/components/ui/Reveal";
-import { chapterOf, type ReportChapterKey } from "@/lib/constants/result";
+import { StickyCheckoutBar } from "@/components/result/StickyCheckoutBar";
+import { BloomCard, FaceCard, PartnerCard, ScoreCard, SinseonLines, SinseonScene } from "@/components/result/TeaserCards";
+import { WebtoonPanel } from "@/components/webtoon/WebtoonPanel";
 import type { FreeResultView } from "@/types/result";
 
-/** 결제 기능이 없는 버전이라 유료 리포트로 가는 링크는 모두 이 주소로 보내고, 누르면 준비 중 안내를 띄운다. */
+/** 이 버전엔 결제가 없어서, 이 주소로 가는 버튼은 누르면 "준비 중" 안내만 뜬다. */
 export const COMING_SOON_HREF = "/coming-soon";
 
-const starTypes = chapterOf("starTypes");
-const timeline = chapterOf("timeline");
-/** 서찰 아래에 이어 보여주는 잠긴 장. 5장과 6장 사이에 선녀 그림, 7장과 8장 사이에 중간 결제 안내를 끼우고, 12장은 11장 인연 시기 뒤에 따로 둔다. */
-const STORY_CHAPTERS_BEFORE_PICTURE: ReportChapterKey[] = ["firstImpression", "looks", "flirt"];
-const STORY_CHAPTERS_BEFORE_PROMPT: ReportChapterKey[] = ["language", "styling"];
-const STORY_CHAPTERS_AFTER_PROMPT: ReportChapterKey[] = ["admirers", "inLove", "match"];
+const SEASONS = ["겨울", "봄", "여름", "가을"] as const;
+const seasonOf = (month: number) => SEASONS[Math.floor((month % 12) / 3)];
 
+/** 결제 버튼이 이 칸에 닿은 뒤부터 화면 아래에 따라다닌다. */
+const BLOOM_CARD_ID = "dohwa-bloom";
+
+const glow = (text: string) => <span className="text-blossom-glow">{text}</span>;
+
+/** 무료 결과 화면. 도화신선의 대사와 반만 열린 카드가 번갈아 나온다. 샘플이면 버튼이 입력 화면으로 간다. */
 export function FreeResultScreen({ result, sample = false }: { result: FreeResultView; sample?: boolean }) {
-  const checkoutHref = sample ? "/start" : COMING_SOON_HREF;
-  const sticky = sample
-    ? { href: "/start", label: "내 꽃도 보러 가기" }
-    : { href: COMING_SOON_HREF, label: "숨겨진 도화력 확인하기" };
+  const cta = { href: sample ? "/start" : COMING_SOON_HREF, label: "숨겨진 색기 쓰는 법" };
+  const { bloom } = result.teasers;
 
   return (
     <PageShell withStickyBar>
-      <ResultStory name={result.name} type={result.dohwa.type}>
-        <div className="mt-12 flex flex-col gap-12">
-          <Reveal>
-            <section className="flex flex-col gap-5">
-              <SectionTitle
-                eyebrow="도화 지수"
-                title={
-                  <>
-                    너, 생각보다 훨씬
-                    <br />
-                    <span className="text-blossom-glow">치명적인 아이란다</span>
-                  </>
-                }
-              />
-              <DohwaRadarCard dohwa={result.dohwa} />
-            </section>
-          </Reveal>
+      <h1 className="sr-only">{result.name}의 도화 풀이</h1>
 
-          <Reveal>
-            <section className="flex flex-col gap-5">
-              <SectionTitle
-                eyebrow={`제${starTypes.chapter}장`}
-                title={starTypes.title}
-                description="몇 개를 쥐고 태어났는지, 어디에 숨겨 뒀는지가 네 색기의 결을 정한단다."
-              />
-              <CharmStars />
-            </section>
-          </Reveal>
+      <WebtoonPanel
+        priority
+        src="/images/result/opening.jpg"
+        alt="달밤의 복숭아꽃 정원에서 한 손에 사주가 적힌 종이를 들어 보이고, 다른 팔로 여자주인공의 허리를 감싸며 웃는 도화신선"
+        bubbles={[
+          { kind: "speech", text: "이것 봐라…", at: 0.4, place: { top: "4%", left: "5%" } },
+          { kind: "whisper", text: `${result.name}.`, at: 1.4, place: { top: "31%", right: "3%" }, big: true },
+          {
+            kind: "caption",
+            text: `${result.birth.year}년 ${seasonOf(result.birth.month)}에 태어난 꽃이로구나`,
+            at: 2.4,
+            place: { top: "84%", left: "5%" },
+          },
+        ]}
+      />
 
-          <Reveal>
-            <section className="flex flex-col gap-5">
-              <SectionTitle
-                eyebrow="펼치면 보이는 이야기"
-                title={
-                  <>
-                    네 꽃에 숨은 <span className="text-blossom-glow">이야기</span>
-                  </>
-                }
-              />
-              <DohwaLetter name={result.name} href={checkoutHref} />
-              <LockedChapterList keys={STORY_CHAPTERS_BEFORE_PICTURE} href={checkoutHref} />
-              <div className="my-7">
-                <PeachInterlude />
-              </div>
-              <LockedChapterList keys={STORY_CHAPTERS_BEFORE_PROMPT} href={checkoutHref} />
-              <div className="my-7">
-                <MidCheckoutPrompt checkoutHref={checkoutHref} />
-              </div>
-              <LockedChapterList keys={STORY_CHAPTERS_AFTER_PROMPT} href={checkoutHref} />
-            </section>
-          </Reveal>
+      <SinseonLines lines={[<>자, 먼저 네 {glow("도화 점수")}부터 보자.</>]} />
+      <ScoreCard result={result} />
 
-          <Reveal>
-            <section className="flex flex-col gap-5">
-              <SectionTitle eyebrow={`제${timeline.chapter}장`} title={timeline.title} description={timeline.teaser} />
-              <LoveTimelineStrip years={result.timelineYears} />
-            </section>
-          </Reveal>
+      <SinseonScene
+        src="/images/sinseon/hero.jpg"
+        alt="달밤의 복숭아꽃 아래에서 꽃가지를 입가에 대고 웃는 도화신선"
+        bubbles={[
+          { kind: "speech", text: "이 정도면…\n남자들이 가만 안 뒀겠는데?", at: 0.3, place: { top: "2%", left: "3%" } },
+          { kind: "speech", text: "근데 꽃은\n아무 때나 피는 게 아니야.", at: 1.4, place: { top: "62%", right: "3%" } },
+        ]}
+        lines={[
+          <>
+            네 사주엔 도화가 드는
+            <br />
+            {glow("때")}가 정해져 있거든.
+          </>,
+        ]}
+      />
+      <div id={BLOOM_CARD_ID}>
+        <BloomCard result={result} />
+      </div>
 
-          <Reveal>
-            <LockedChapterList keys={["heart"]} href={checkoutHref} />
-          </Reveal>
+      <SinseonScene
+        src="/images/result/chapter-1.jpg"
+        alt="보름달 아래 복숭아나무에 기대어 팔짱을 낀 채, 돌아보는 여자주인공을 내려다보며 웃는 도화신선"
+        bubbles={[
+          { kind: "speech", text: bloom.now ? "바로 지금이다." : "얼마 안 남았지?", at: 0.3, place: { top: "2%", right: "5%" } },
+          {
+            kind: "speech",
+            text: bloom.now ? "가만있어도\n시선이 따라다니는 때지." : "그 달엔 가만있어도\n시선이 따라다니지.",
+            at: 1.4,
+            place: { top: "64%", right: "3%" },
+          },
+        ]}
+        lines={[
+          <>
+            그때 네 앞에 설 남자…
+            <br />
+            궁금하지? {glow("살짝만")} 보여주지.
+          </>,
+        ]}
+      />
+      <PartnerCard result={result} />
 
-          <ReviewCarousel />
+      <SinseonScene
+        src="/images/result/push.jpg"
+        alt="복숭아를 입가에 대고 위험하게 웃으며 이쪽을 내려다보는 도화신선"
+        headroom={0.15}
+        bubbles={[
+          { kind: "speech", text: "이런 남자가\n너한테 온다니.", at: 0.3, place: { top: "3%", left: "4%" } },
+          { kind: "speech", text: "믿기지 않는군.", at: 1.4, place: { top: "68%", right: "4%" } },
+        ]}
+        lines={[
+          <>
+            그런데 그 남자 눈엔,
+            <br />
+            {glow("네가 어떻게 보일까?")}
+          </>,
+        ]}
+      />
+      <FaceCard result={result} />
 
-          <Reveal>
-            <ReportContents />
-          </Reveal>
-        </div>
-      </ResultStory>
+      <SinseonScene
+        src="/images/sinseon/peach-bite.jpg"
+        alt="복숭아나무 아래 비스듬히 기대앉아 복숭아를 입에 문 도화신선"
+        bubbles={[
+          {
+            kind: "speech",
+            text: "색 하나 바꿨을 뿐인데,\n그 남자의 눈빛이\n달라질 거다.",
+            at: 0.3,
+            place: { top: "1%", left: "3%" },
+          },
+          { kind: "speech", text: "머리끝부터 향까지,\n다 적어 뒀다.", at: 1.4, place: { top: "64%", right: "3%" } },
+        ]}
+        lines={[
+          <>
+            이렇게 짙은 도화는 오랜만이라…
+            <br />
+            숨김없이, {glow("아주 자세히")} 적었다.
+          </>,
+        ]}
+      />
+      <div className="flex flex-col gap-16">
+        <ReviewCarousel />
+        <ReportToc gender={result.gender} />
+      </div>
 
-      <StickyCheckoutBar href={sticky.href} label={sticky.label} />
-      <ComingSoonNotice href={COMING_SOON_HREF} />
+      <div className="mt-16 mb-3">
+        <WebtoonPanel
+          src="/images/result/closing.jpg"
+          alt="한 팔로 여자주인공의 어깨를 감싸 귓가에 속삭이며, 다른 손을 내밀어 함께 가자고 청하는 도화신선"
+          headroom={0.22}
+          bubbles={[
+            { kind: "speech", text: "그 색기,\n썩히기엔 아깝잖아?", at: 0.3, place: { top: "3%", left: "4%" } },
+            { kind: "whisper", text: "이제\n써먹어야지.", at: 1.6, place: { top: "77%", right: "5%" }, big: true },
+          ]}
+        />
+      </div>
+
+      <StickyCheckoutBar href={cta.href} label={cta.label} showAfterId={BLOOM_CARD_ID} />
+      {!sample && <ComingSoonNotice href={COMING_SOON_HREF} />}
     </PageShell>
   );
 }

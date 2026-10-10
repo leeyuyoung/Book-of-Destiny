@@ -1,8 +1,8 @@
-import Link from "next/link";
+import Image from "next/image";
 import type { ReactNode } from "react";
-import { CHARM_STAR_LABELS, REPORT_CHAPTERS } from "@/lib/constants/result";
+import { CHARM_STAR_LABELS } from "@/lib/constants/result";
 import type { CharmStarKey } from "@/lib/saju/dohwa";
-import type { CharmStarView } from "@/types/result";
+import type { CharmStarView, ReportPortraitView } from "@/types/result";
 
 export function SectionTitle({ eyebrow, title, description }: { eyebrow?: string; title: ReactNode; description?: string }) {
   return (
@@ -14,7 +14,7 @@ export function SectionTitle({ eyebrow, title, description }: { eyebrow?: string
   );
 }
 
-/** 결제 전에는 점수를 흐리게 가리고, 결제 후에는 실제 점수를 보여준다. 원국에 있는 살은 카드가 붉게 빛난다. */
+/** 결제 전에는 점수를 흐리게 가리고 풀이 한 줄도 숨긴다. 결제 후에는 실제 점수를 보여주고, 원국에 있는 살은 카드가 붉게 빛난다. */
 export function CharmStars({ stars }: { stars?: CharmStarView[] }) {
   const items = (Object.keys(CHARM_STAR_LABELS) as CharmStarKey[]).map((key) => ({
     ...CHARM_STAR_LABELS[key],
@@ -37,7 +37,7 @@ export function CharmStars({ stars }: { stars?: CharmStarView[] }) {
               <StarTulip starKey={star.key} />
             </span>
             <span className="text-sm text-paper">{star.name}</span>
-            <span className="text-[11px] leading-snug text-mist break-keep">{star.meaning}</span>
+            {stars && <span className="text-[11px] leading-snug text-mist break-keep">{star.meaning}</span>}
             <span className="mt-auto pt-1 font-serif leading-none">
               {score === undefined ? (
                 <span aria-hidden className="inline-block select-none text-[26px] text-paper/90 blur-[6px]">
@@ -116,62 +116,17 @@ export function LoveTimeline({ timeline }: { timeline: { year: number; mood: str
   );
 }
 
-type CheckoutProps = { checkoutHref: string };
-
-export function MidCheckoutPrompt({ checkoutHref }: CheckoutProps) {
+/** 리포트 본문 사이에 넣는 얼굴 그림. 아래에 짧은 설명을 단다. */
+export function ReportPortrait({ portrait }: { portrait: ReportPortraitView }) {
   return (
-    <div className="flex flex-col items-center gap-4 rounded-3xl border border-cinnabar/30 bg-gradient-to-b from-crimson-deep/60 to-night px-6 py-8 text-center">
-      <p className="font-serif text-[17px] leading-relaxed text-paper">
-        여기까지는 맛보기란다.
-        <br />
-        네 매력을 <span className="text-blossom-glow">끝까지 꺼내는 법</span>은
-        <br />
-        꽃을 펼친 이에게만 알려주마.
-      </p>
-      <CheckoutLink href={checkoutHref} />
-    </div>
-  );
-}
-
-/** 리포트 전 장의 제목 목록 */
-export function ReportContents() {
-  return (
-    <nav aria-label="리포트 목차" className="rounded-3xl border border-line bg-night/70 px-6 py-5">
-      <p className="text-xs text-cinnabar">연애·매력 리포트 전 {REPORT_CHAPTERS.length}장</p>
-      <ol className="mt-3 flex flex-col">
-        {REPORT_CHAPTERS.map((chapter) => (
-          <li key={chapter.key} className="flex items-baseline gap-3 border-b border-line/50 py-3 last:border-0">
-            <span className="w-10 shrink-0 text-xs text-cinnabar/80">제{chapter.chapter}장</span>
-            <span className="font-serif text-[15px] text-paper">{chapter.title}</span>
-          </li>
-        ))}
-      </ol>
-    </nav>
-  );
-}
-
-function CheckoutLink({ href }: { href: string }) {
-  return (
-    <Link
-      href={href}
-      className="flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-crimson to-cinnabar px-6 font-serif text-[15px] text-paper shadow-[0_0_40px_-8px_rgb(232_137_155_/_0.8)] transition-transform active:scale-[0.98]"
-    >
-      숨겨진 도화력 확인하기
-    </Link>
-  );
-}
-
-/** 화면 아래에 늘 떠 있는 결제 버튼 */
-export function StickyCheckoutBar({ href, label }: { href: string; label: string }) {
-  return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 bg-gradient-to-t from-ink via-ink/90 to-transparent px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-8">
-      <Link
-        href={href}
-        className="pointer-events-auto mx-auto flex min-h-14 max-w-xl items-center justify-center rounded-full bg-gradient-to-r from-crimson to-cinnabar px-6 font-serif text-[15px] text-paper shadow-[0_0_40px_-8px_rgb(232_137_155_/_0.9)] transition-transform active:scale-[0.98]"
-      >
-        {label}
-      </Link>
-    </div>
+    <figure className="flex flex-col items-center gap-3">
+      <div className="relative aspect-[3/4] w-full max-w-[340px] overflow-hidden rounded-3xl border border-gold/30 shadow-[0_0_40px_rgb(232_137_155_/_0.25)]">
+        <Image src={portrait.src} alt={portrait.caption} fill sizes="340px" className="object-cover" />
+      </div>
+      <figcaption className="rounded-full border border-gold/40 bg-ink/60 px-3.5 py-1 font-serif text-[13px] text-gold-soft">
+        {portrait.caption}
+      </figcaption>
+    </figure>
   );
 }
 

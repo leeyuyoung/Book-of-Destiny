@@ -3,20 +3,22 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { HeroineBackdrop, type HeroineScene } from "@/components/night/HeroineBackdrop";
 import { Button, ButtonLink } from "@/components/ui/Button";
-import { BloomingBlossom } from "@/components/ui/BloomingBlossom";
+import { MythicButtonLink } from "@/components/ui/MythicButtonLink";
 import { clearPendingAnalysis, loadPendingAnalysis } from "@/lib/client/inputStorage";
-import { ANALYSIS_MESSAGES } from "@/lib/constants/service";
+import { ANALYSIS_MISSING_COPY, ANALYSIS_READY_COPY } from "@/lib/constants/service";
 import { analysisInputSchema } from "@/lib/validation/analysisInput";
 
-const MESSAGE_INTERVAL_MS = 2000;
-/** 계산은 금방 끝나지만, 의식처럼 보이도록 문구가 모두 지나갈 때까지는 보여준다. */
-const MIN_RITUAL_MS = MESSAGE_INTERVAL_MS * ANALYSIS_MESSAGES.length;
-const REDIRECT_DELAY_MS = 1400;
-/** 진행 원이 대략 이 시간에 63%쯤 차도록 한다. 실제 진행률이 아니라 기다림을 보여주는 장치다. */
-const PROGRESS_TIME_CONSTANT_MS = 2500;
-const MAX_PENDING_PROGRESS = 0.95;
+/** 두 손을 머리 위 벽에 누르고 허리를 감싼 한 컷 */
+const SCENE = "pinRaised" satisfies HeroineScene;
+const SCENES: HeroineScene[] = [SCENE];
+/** 계산은 금방 끝나지만, 의식처럼 보이도록 이 시간만큼은 그림을 보여준다. */
+const MIN_RITUAL_MS = 2000;
 const RESULT_PATH = "/result";
+/** 진행 바가 대략 이 시간에 63%쯤 차도록 한다. 실제 진행률이 아니라 기다림을 보여주는 장치다. */
+const PROGRESS_TIME_CONSTANT_MS = 700;
+const MAX_PENDING_PROGRESS = 0.95;
 
 type Phase =
   | { kind: "working" }
@@ -54,7 +56,6 @@ async function runAnalysis(): Promise<Phase> {
 export function AnalyzingExperience() {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>({ kind: "working" });
-  const [messageIndex, setMessageIndex] = useState(0);
   const [elapsedMs, setElapsedMs] = useState(0);
   const startedRef = useRef(false);
   const activeRef = useRef(true);
@@ -64,7 +65,6 @@ export function AnalyzingExperience() {
     const startedAt = Date.now();
     startTimeRef.current = startedAt;
     setElapsedMs(0);
-    setMessageIndex(0);
     setPhase({ kind: "working" });
     void runAnalysis().then(async (next) => {
       if (!activeRef.current) return;
@@ -72,13 +72,11 @@ export function AnalyzingExperience() {
         await wait(Math.max(0, MIN_RITUAL_MS - (Date.now() - startedAt)));
         if (!activeRef.current) return;
         setPhase(next);
-        await wait(REDIRECT_DELAY_MS);
-        if (activeRef.current) router.replace(RESULT_PATH);
         return;
       }
       setPhase(next);
     });
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     activeRef.current = true;
@@ -92,17 +90,10 @@ export function AnalyzingExperience() {
   }, [begin]);
 
   const working = phase.kind === "working";
-  const lastMessage = ANALYSIS_MESSAGES.length - 1;
-
-  useEffect(() => {
-    if (!working || messageIndex >= lastMessage) return;
-    const timer = window.setTimeout(() => setMessageIndex((index) => index + 1), MESSAGE_INTERVAL_MS);
-    return () => window.clearTimeout(timer);
-  }, [working, messageIndex, lastMessage]);
 
   useEffect(() => {
     if (!working) return;
-    const timer = window.setInterval(() => setElapsedMs(Date.now() - startTimeRef.current), 1000);
+    const timer = window.setInterval(() => setElapsedMs(Date.now() - startTimeRef.current), 200);
     return () => window.clearInterval(timer);
   }, [working]);
 
@@ -110,65 +101,70 @@ export function AnalyzingExperience() {
     phase.kind === "ready"
       ? 1
       : Math.min(1 - Math.exp(-elapsedMs / PROGRESS_TIME_CONSTANT_MS), MAX_PENDING_PROGRESS);
-  const listIndex = phase.kind === "ready" ? ANALYSIS_MESSAGES.length : messageIndex;
+  const centerCopy =
+    phase.kind === "ready" ? ANALYSIS_READY_COPY : phase.kind === "missing" ? ANALYSIS_MISSING_COPY : null;
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-14 py-16 text-center">
-      <div className="relative flex h-56 w-56 items-center justify-center">
-        <svg viewBox="0 0 200 200" className="absolute inset-0 h-full w-full -rotate-90">
-          <circle cx="100" cy="100" r="92" fill="none" stroke="rgb(214 176 122 / 0.14)" strokeWidth="1" />
-          <motion.circle
-            cx="100"
-            cy="100"
-            r="92"
-            fill="none"
-            stroke="url(#progress-gold)"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: progress }}
-            transition={{ duration: 1.6, ease: "easeInOut" }}
-          />
-          <defs>
-            <linearGradient id="progress-gold" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#fff3dc" />
-              <stop offset="100%" stopColor="#e8899b" />
-            </linearGradient>
-          </defs>
-        </svg>
-        <div className="absolute inset-6 rounded-full border border-line animate-spin-celestial" />
-        <div className="absolute inset-0 rounded-full bg-gold/5 blur-2xl animate-breathe" />
-        <BloomingBlossom bloom={progress} size={140} />
+    <div className="relative flex flex-1 flex-col text-center">
+      <HeroineBackdrop scenes={SCENES} scene={SCENE} fadeMs={700} noVeil={working || !!centerCopy} />
+
+      <motion.div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 z-10 bg-ink"
+        initial={{ opacity: 0.92 }}
+        animate={{ opacity: 0 }}
+        transition={{ duration: MIN_RITUAL_MS / 1000, ease: "easeIn" }}
+      />
+
+      <div
+        role="progressbar"
+        aria-label="사주를 읽는 중"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(progress * 100)}
+        className="fixed inset-x-0 top-[env(safe-area-inset-top)] z-30 h-[5px] bg-ink/60"
+      >
+        <motion.div
+          className="h-full origin-left bg-gradient-to-r from-[#7a1f6e] via-[#b0308a] to-[#e04aa6] shadow-[0_0_14px_rgb(200_50_150_/_0.9)]"
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: progress }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+        />
       </div>
 
-      <div className="flex min-h-24 flex-col items-center justify-center px-4">
+      <AnimatePresence>
+        {centerCopy && (
+          <motion.p
+            key={phase.kind}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="pointer-events-none fixed inset-x-0 top-[46%] z-20 mx-auto w-fit max-w-[calc(100%-2rem)] rounded-[2rem] bg-[radial-gradient(closest-side,rgb(10_6_20_/_0.6),rgb(10_6_20_/_0.3)_75%,transparent)] px-6 py-4 font-serif text-[clamp(16px,5vw,20px)] font-light whitespace-nowrap leading-relaxed [text-shadow:0_1px_4px_rgba(10,6,20,0.95),0_0_14px_rgba(10,6,20,0.8)]"
+          >
+            {centerCopy.found}
+            <br />
+            <span className="text-gold-soft">{centerCopy.tease}</span>
+          </motion.p>
+        )}
+      </AnimatePresence>
+
+      <div
+        className={`relative z-20 flex flex-1 flex-col items-center justify-end px-4 ${
+          centerCopy ? "pb-[max(12dvh,env(safe-area-inset-bottom))]" : "pb-[max(2.5rem,env(safe-area-inset-bottom))]"
+        }`}
+      >
         <AnimatePresence mode="wait">
-          {phase.kind === "working" && (
-            <motion.p
-              key={messageIndex}
-              initial={{ opacity: 0, y: 8, filter: "blur(6px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -8, filter: "blur(6px)" }}
-              transition={{ duration: 0.9 }}
-              className="font-serif text-lg font-light leading-relaxed text-paper"
-            >
-              {ANALYSIS_MESSAGES[messageIndex]}
-            </motion.p>
-          )}
           {phase.kind === "ready" && (
             <motion.div
               key="done"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.2 }}
-              className="flex w-full max-w-xs flex-col items-center gap-8"
+              className="w-full max-w-sm"
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5, type: "spring", stiffness: 260, damping: 16 }}
             >
-              <p className="font-serif text-lg font-light leading-relaxed">
-                네 꽃의 첫 잎이
-                <br />
-                <span className="text-gold-gradient">피어났구나.</span>
-              </p>
-              <ButtonLink href={RESULT_PATH}>내 꽃 보러 가기</ButtonLink>
+              <MythicButtonLink onClick={() => router.replace(RESULT_PATH)}>
+                {ANALYSIS_READY_COPY.cta}
+              </MythicButtonLink>
             </motion.div>
           )}
           {phase.kind === "error" && (
@@ -192,39 +188,16 @@ export function AnalyzingExperience() {
           {phase.kind === "missing" && (
             <motion.div
               key="missing"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="flex w-full max-w-xs flex-col items-center gap-6"
+              className="w-full max-w-sm"
+              initial={{ opacity: 0, scale: 0.6 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5, type: "spring", stiffness: 260, damping: 16 }}
             >
-              <p className="font-serif text-base leading-relaxed text-paper">
-                아직 네 이야기를 듣지 못했구나.
-                <br />
-                <span className="text-mist">처음부터 다시 들려주겠느냐?</span>
-              </p>
-              <ButtonLink href="/start">정보 입력하기</ButtonLink>
+              <MythicButtonLink href="/start">{ANALYSIS_MISSING_COPY.cta}</MythicButtonLink>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-
-      <ol className="flex flex-col gap-2 text-left">
-        {ANALYSIS_MESSAGES.map((message, index) => (
-          <li
-            key={message}
-            className={`flex items-center gap-3 text-xs transition-colors duration-700 ${
-              index < listIndex ? "text-gold/70" : index === listIndex ? "text-paper" : "text-mist-dim/50"
-            }`}
-          >
-            <span
-              className={`h-1.5 w-1.5 rotate-45 border transition-all duration-700 ${
-                index < listIndex ? "border-gold bg-gold/70" : "border-mist-dim/50"
-              }`}
-            />
-            {message}
-          </li>
-        ))}
-      </ol>
     </div>
   );
 }

@@ -28,10 +28,8 @@ export function ReviewCarousel() {
           <span className="text-blossom-glow">{REVIEWS_INCLUDE_SAMPLES ? "먼저 꽃을 펼친 이들" : `100% 솔직 리뷰`}</span>
         </h2>
         {REVIEW_AVERAGE && (
-          <p className="text-sm leading-relaxed text-mist">
-            나의 도화 기운을 확인한 이용자들이
-            <br />
-            평균 <span className="font-medium text-paper">{REVIEW_AVERAGE}</span>점의 만족도를 남겨주었어요.
+          <p className="text-sm text-mist">
+            평균 만족도 <span className="text-gold">★</span> <span className="font-medium text-paper">{REVIEW_AVERAGE}</span>
           </p>
         )}
         {REVIEWS_INCLUDE_SAMPLES && (

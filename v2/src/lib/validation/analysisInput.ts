@@ -1,9 +1,8 @@
 import { z } from "zod";
-import { sanitizeEmail, sanitizeMultiLine, sanitizeSingleLine } from "./sanitize";
+import { sanitizeEmail, sanitizeSingleLine } from "./sanitize";
 
 export const MIN_BIRTH_YEAR = 1920;
 export const NAME_MAX_LENGTH = 12;
-export const CONCERN_MAX_LENGTH = 1000;
 export const LUNAR_MAX_DAY = 30;
 
 export const RELATIONSHIP_STATUSES = [
@@ -33,10 +32,8 @@ export type AnalysisFormValues = {
   birthHour: string;
   birthMinute: string;
   birthTimeUnknown: boolean;
-  gender: "" | "female" | "male";
   name: string;
   relationshipStatus: "" | RelationshipStatus;
-  concern: string;
 };
 
 export const EMPTY_FORM_VALUES: AnalysisFormValues = {
@@ -48,10 +45,8 @@ export const EMPTY_FORM_VALUES: AnalysisFormValues = {
   birthHour: "",
   birthMinute: "",
   birthTimeUnknown: false,
-  gender: "",
   name: "",
   relationshipStatus: "",
-  concern: "",
 };
 
 export function daysInMonth(calendarType: "solar" | "lunar", year: number, month: number): number {
@@ -68,14 +63,9 @@ const nameRule = z
   .pipe(
     z
       .string()
-      .min(1, "이름을 알려주렴.")
-      .max(NAME_MAX_LENGTH, `${NAME_MAX_LENGTH}자 이내로 알려주렴.`),
+      .min(1, "이름 정도는 알려주거라.")
+      .max(NAME_MAX_LENGTH, `${NAME_MAX_LENGTH}자 이내로 줄이거라.`),
   );
-
-const concernRule = z
-  .string()
-  .transform(sanitizeMultiLine)
-  .pipe(z.string().max(CONCERN_MAX_LENGTH, `${CONCERN_MAX_LENGTH}자 이내로 적어주렴.`));
 
 export const birthDateStepSchema = z
   .object({
@@ -92,17 +82,17 @@ export const birthDateStepSchema = z
     const currentYear = new Date().getFullYear();
 
     if (Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day)) {
-      ctx.addIssue({ code: "custom", path: ["birthDate"], message: "태어난 해와 달, 날을 모두 골라주렴." });
+      ctx.addIssue({ code: "custom", path: ["birthDate"], message: "태어난 해와 달, 날을 모두 적거라." });
     } else if (year < MIN_BIRTH_YEAR || year > currentYear || month < 1 || month > 12) {
-      ctx.addIssue({ code: "custom", path: ["birthDate"], message: "올바른 날을 골라주렴." });
+      ctx.addIssue({ code: "custom", path: ["birthDate"], message: "제대로 된 날을 적거라." });
     } else if (day < 1 || day > daysInMonth(values.calendarType, year, month)) {
-      ctx.addIssue({ code: "custom", path: ["birthDate"], message: "그런 날은 없단다. 다시 골라주렴." });
+      ctx.addIssue({ code: "custom", path: ["birthDate"], message: "그런 날은 없다. 날 속일 생각은 마라." });
     } else if (values.calendarType === "solar" && new Date(year, month - 1, day).getTime() > Date.now()) {
-      ctx.addIssue({ code: "custom", path: ["birthDate"], message: "아직 오지 않은 날은 고를 수 없단다." });
+      ctx.addIssue({ code: "custom", path: ["birthDate"], message: "아직 오지도 않은 날에 태어났다고?" });
     }
 
     if (values.isLeapMonth && values.calendarType !== "lunar") {
-      ctx.addIssue({ code: "custom", path: ["isLeapMonth"], message: "윤달은 음력에서만 고를 수 있단다." });
+      ctx.addIssue({ code: "custom", path: ["isLeapMonth"], message: "윤달은 음력에서만 고를 수 있다." });
     }
   });
 
@@ -113,30 +103,23 @@ export const birthTimeStepSchema = z
     const hour = toInt(values.birthHour);
     const minute = toInt(values.birthMinute);
     if (Number.isNaN(hour) || Number.isNaN(minute) || hour > 23 || minute > 59) {
-      ctx.addIssue({ code: "custom", path: ["birthTime"], message: "태어난 시각을 고르거나 ‘모름’을 눌러주렴." });
+      ctx.addIssue({ code: "custom", path: ["birthTime"], message: "태어난 시각을 적거나 ‘모름’을 누르거라." });
     }
   });
-
-export const genderStepSchema = z.object({ gender: z.string() }).superRefine((values, ctx) => {
-  if (values.gender !== "female" && values.gender !== "male") {
-    ctx.addIssue({ code: "custom", path: ["gender"], message: "하나를 골라주렴." });
-  }
-});
 
 export const nameStepSchema = z.object({ name: nameRule });
 
 export const loveStepSchema = z
-  .object({ relationshipStatus: z.string(), concern: concernRule })
+  .object({ relationshipStatus: z.string() })
   .superRefine((values, ctx) => {
     if (!RELATIONSHIP_STATUS_VALUES.includes(values.relationshipStatus as RelationshipStatus)) {
-      ctx.addIssue({ code: "custom", path: ["relationshipStatus"], message: "지금 네 마음에 가까운 것을 골라주렴." });
+      ctx.addIssue({ code: "custom", path: ["relationshipStatus"], message: "숨기지 말고 하나 고르거라." });
     }
   });
 
 export const STEP_SCHEMAS = [
   birthDateStepSchema,
   birthTimeStepSchema,
-  genderStepSchema,
   nameStepSchema,
   loveStepSchema,
 ] as const;
@@ -154,7 +137,7 @@ export function validateStep(stepIndex: number, values: AnalysisFormValues): Fie
   return errors;
 }
 
-/** 서버와 만세력 계산에 넘기는 정규화된 입력 */
+/** 서버와 만세력 계산에 넘기는 정규화된 입력. 여성 전용 서비스라 성별은 묻지 않고 female로 고정한다(대운 방향 계산에 쓰인다). */
 export const analysisInputSchema = z.object({
   name: nameRule,
   birth: z.object({
@@ -166,9 +149,8 @@ export const analysisInputSchema = z.object({
     hour: z.number().int().min(0).max(23).nullable(),
     minute: z.number().int().min(0).max(59).nullable(),
   }),
-  gender: z.enum(["female", "male"]),
+  gender: z.literal("female"),
   relationshipStatus: z.enum(RELATIONSHIP_STATUS_VALUES),
-  concern: concernRule.nullable(),
 });
 
 export type AnalysisInput = z.infer<typeof analysisInputSchema>;
@@ -183,7 +165,6 @@ export function toAnalysisInput(
   }
 
   const timeKnown = !values.birthTimeUnknown;
-  const concern = sanitizeMultiLine(values.concern);
   const parsed = analysisInputSchema.safeParse({
     name: values.name,
     birth: {
@@ -195,12 +176,11 @@ export function toAnalysisInput(
       hour: timeKnown ? Number(values.birthHour) : null,
       minute: timeKnown ? Number(values.birthMinute) : null,
     },
-    gender: values.gender,
+    gender: "female",
     relationshipStatus: values.relationshipStatus,
-    concern: concern.length > 0 ? concern : null,
   });
 
-  if (!parsed.success) return { ok: false, stepIndex: 0, errors: { form: "입력을 다시 확인해주렴." } };
+  if (!parsed.success) return { ok: false, stepIndex: 0, errors: { form: "다시 한번 확인해 보거라." } };
   return { ok: true, input: parsed.data };
 }
 
@@ -211,5 +191,5 @@ export const checkoutContactSchema = z.object({
     .transform(sanitizeEmail)
     .pipe(z.string().min(1, "이메일을 입력해주세요.").max(254).pipe(z.email("올바른 이메일 주소를 입력해주세요."))),
   agreePrivacy: z.literal(true, { error: "개인정보 수집·이용에 동의해주세요." }),
-  agreeAge14: z.literal(true, { error: "만 14세 이상만 이용할 수 있습니다." }),
+  agreeAge14: z.literal(true, { error: "만 19세 이상만 이용할 수 있습니다." }),
 });

@@ -43,7 +43,6 @@
   --animate-glow-pulse: glow-pulse 4s ease-in-out infinite;
   --animate-hover-float: hover-float 7s ease-in-out infinite;
   --animate-portrait-breathe: portrait-breathe 9s ease-in-out infinite;
-
   @keyframes portrait-breathe {
     0%, 100% { transform: scale(1) translateY(0); }
     50% { transform: scale(1.025) translateY(-6px); }

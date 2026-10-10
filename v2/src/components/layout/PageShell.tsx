@@ -34,8 +34,8 @@ export function PageShell({ children, showHeader = true, showFooter = true, inte
 
 function SiteFooter() {
   return (
-    <footer className="mt-20 border-t border-line/50">
-      <div className="mx-auto flex max-w-xl flex-col gap-3 px-5 py-10 text-xs leading-relaxed text-mist-dim">
+    <footer className="mt-12 border-t border-line/50">
+      <div className="mx-auto flex max-w-xl flex-col gap-3 px-5 pt-8 pb-6 text-xs leading-relaxed text-mist-dim">
         <p className="font-serif tracking-[0.2em] text-mist">
           {SERVICE.tagline} | {SERVICE.name}
         </p>

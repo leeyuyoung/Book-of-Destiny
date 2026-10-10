@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/layout/PageShell";
+import { ChapterTitle } from "@/components/result/FreeResultParts";
 import { ButtonLink } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import { Ornament, SectionHeading } from "@/components/ui/SectionHeading";
@@ -118,8 +119,10 @@ export default function AboutPage() {
                 <li key={chapter.chapter} className="flex items-baseline gap-4 py-4">
                   <span className="w-14 shrink-0 text-xs text-cinnabar/80">제{chapter.chapter}장</span>
                   <div className="flex flex-col gap-1">
-                    <span className="font-serif text-[15px] text-paper">{chapter.title}</span>
-                    <span className="text-xs leading-relaxed text-mist-dim">{chapter.teaser}</span>
+                    <span className="font-serif text-[15px] text-paper">
+                      <ChapterTitle title={chapter.title} />
+                    </span>
+                    <span className="text-xs leading-relaxed text-mist-dim">{chapter.subtitle}</span>
                   </div>
                 </li>
               ))}
